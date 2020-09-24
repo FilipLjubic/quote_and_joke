@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1007317564498",
+    "firebase_url": "https://quotes-and-jokes-4d4ea.firebaseio.com",
+    "project_id": "quotes-and-jokes-4d4ea",
+    "storage_bucket": "quotes-and-jokes-4d4ea.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1007317564498:android:f24e60287edeea21b5338b",
+        "android_client_info": {
+          "package_name": "com.fljubic.quote_and_joke"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1007317564498-3dvoo6s6eujlpaeh5seuvgtm4scjm2uk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBrXyndB5GmcUi86Qt0dfyH5XXryOndJL4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1007317564498-3dvoo6s6eujlpaeh5seuvgtm4scjm2uk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

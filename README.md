@@ -1,4 +1,4 @@
-# Quote & Joke
+# „ Quote & Joke ” 
 
 ## Stuff I plan to learn in this project
 
@@ -7,7 +7,7 @@
 - correctly setting theme
 - local databases
 - Firebase ML kit
-- 
+
 
 ## What the application is gonna do
 

@@ -1,3 +1,4 @@
+import 'package:after_init/after_init.dart';
 import 'package:flutter/material.dart';
 import 'package:quote_and_joke/screen_size_config.dart';
 import 'package:quote_and_joke/screens/jokes.dart';
@@ -9,7 +10,7 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends State<Home> with AfterInitMixin<Home> {
   final List<Widget> _screens = [Quotes(), Jokes(), Camera()];
   int _currentIndex = 0;
   PageController _pageController;
@@ -22,14 +23,22 @@ class _HomeState extends State<Home> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  void didInitState() {
     SizeConfig().init(context);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Padding(
           padding: EdgeInsets.only(top: SizeConfig.safeBlockVertical * 2),
-          child: const Text("Quote & Joke",
-              style: TextStyle(color: Colors.black54)),
+          child: Text(
+            "Quote & Joke",
+            style: TextStyle(
+                color: Colors.black54,
+                fontSize: SizeConfig.safeBlockHorizontal * 5),
+          ),
         ),
         centerTitle: true,
         elevation: 0.0,

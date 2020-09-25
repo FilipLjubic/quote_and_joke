@@ -1,38 +1,14 @@
 import 'dart:io';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_ml_vision/firebase_ml_vision.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  return runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
+class Camera extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Realtime translation',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: MyHomePage(title: 'Realtime translation'),
-    );
-  }
+  CameraState createState() => CameraState();
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  final String title;
-
-  @override
-  MyHomePageState createState() => MyHomePageState();
-}
-
-class MyHomePageState extends State<MyHomePage> {
+class CameraState extends State<Camera> {
   PickedFile _pickedImage;
   bool _isImageLoaded = false;
   bool _isTextLoaded = false;
@@ -61,43 +37,37 @@ class MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text(widget.title),
+    return Column(
+      children: <Widget>[
+        _isImageLoaded
+            ? Center(
+                child: Container(
+                  height: 500.0,
+                  width: 400.0,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                        image: FileImage(File(_pickedImage.path)),
+                        fit: BoxFit.scaleDown),
+                  ),
+                ),
+              )
+            : Container(),
+        _isTextLoaded ? Center(child: Text(_text)) : Container(),
+        SizedBox(
+          height: 10.0,
         ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              _isImageLoaded
-                  ? Center(
-                      child: Container(
-                        height: 500.0,
-                        width: 400.0,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                              image: FileImage(File(_pickedImage.path)),
-                              fit: BoxFit.scaleDown),
-                        ),
-                      ),
-                    )
-                  : Container(),
-              _isTextLoaded ? Center(child: Text(_text)) : Container(),
-              SizedBox(
-                height: 10.0,
-              ),
-              RaisedButton(
-                child: Text('Choose an image'),
-                onPressed: pickImage,
-              ),
-              SizedBox(
-                height: 10.0,
-              ),
-              RaisedButton(
-                child: Text('Read Text'),
-                onPressed: readText,
-              ),
-            ],
-          ),
-        ));
+        RaisedButton(
+          child: Text('Choose an image'),
+          onPressed: pickImage,
+        ),
+        SizedBox(
+          height: 10.0,
+        ),
+        RaisedButton(
+          child: Text('Read Text'),
+          onPressed: readText,
+        ),
+      ],
+    );
   }
 }

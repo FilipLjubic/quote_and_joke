@@ -1,8 +1,64 @@
 import 'package:flutter/material.dart';
+import 'package:quote_and_joke/screens/jokes.dart';
+import 'package:quote_and_joke/screens/quotes.dart';
+import 'package:quote_and_joke/screens/camera.dart';
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
+  @override
+  _HomeState createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  final List<Widget> _screens = [Quotes(), Jokes(), Camera()];
+  int _currentIndex = 0;
+  PageController _pageController = PageController();
+
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+      appBar: AppBar(
+        title: Padding(
+          padding: const EdgeInsets.only(top: 16.0),
+          child: const Text("Quote & Joke",
+              style: TextStyle(color: Colors.black54)),
+        ),
+        centerTitle: true,
+        elevation: 0.0,
+        backgroundColor: Colors.transparent,
+      ),
+      body: PageView(
+        controller: _pageController,
+        children: _screens,
+        physics: NeverScrollableScrollPhysics(),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        elevation: 7.0,
+        showUnselectedLabels: false,
+        selectedItemColor: Colors.orange,
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.format_quote),
+            title: Text("Quotes"),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.tag_faces),
+            title: Text("Jokes"),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.camera_alt),
+            title: Text("Camera"),
+          ),
+        ],
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+          _pageController.animateToPage(index,
+              duration: const Duration(milliseconds: 600),
+              curve: Curves.fastLinearToSlowEaseIn);
+        },
+      ),
+    );
   }
 }

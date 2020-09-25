@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quote_and_joke/screen_size_config.dart';
 import 'package:quote_and_joke/screens/jokes.dart';
 import 'package:quote_and_joke/screens/quotes.dart';
 import 'package:quote_and_joke/screens/camera.dart';
@@ -11,14 +12,22 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final List<Widget> _screens = [Quotes(), Jokes(), Camera()];
   int _currentIndex = 0;
-  PageController _pageController = PageController();
+  PageController _pageController;
+  MediaQueryData mediaQueryData;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+  }
 
   @override
   Widget build(BuildContext context) {
+    SizeConfig().init(context);
     return Scaffold(
       appBar: AppBar(
         title: Padding(
-          padding: const EdgeInsets.only(top: 16.0),
+          padding: EdgeInsets.only(top: SizeConfig.safeBlockVertical * 2),
           child: const Text("Quote & Joke",
               style: TextStyle(color: Colors.black54)),
         ),

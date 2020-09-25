@@ -1,4 +1,4 @@
-# „ Quote & Joke ” 
+# „ Quote ” & Joke 😄
 
 ## Stuff I plan to learn in this project
 
@@ -11,8 +11,8 @@
 
 ## What the application is gonna do
 
-- Get jokes or some quotes from APIs
-- save text from a picture
+- get jokes or some quotes from APIs
 - ability to save them
+- save text from a picture
 
  

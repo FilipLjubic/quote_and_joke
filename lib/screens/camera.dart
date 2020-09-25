@@ -38,7 +38,7 @@ class CameraState extends State<Camera> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: <Widget>[
+      children: [
         _isImageLoaded
             ? Center(
                 child: Container(

@@ -4,6 +4,7 @@ import 'package:quote_and_joke/screen_size_config.dart';
 import 'package:quote_and_joke/screens/jokes.dart';
 import 'package:quote_and_joke/screens/quotes.dart';
 import 'package:quote_and_joke/screens/camera.dart';
+import 'package:quote_and_joke/screens/today.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -11,7 +12,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> with AfterInitMixin<Home> {
-  final List<Widget> _screens = [Quotes(), Jokes(), Camera()];
+  final List<Widget> _screens = [Today(), Quotes(), Jokes(), Camera()];
   int _currentIndex = 0;
   PageController _pageController;
   MediaQueryData mediaQueryData;
@@ -24,7 +25,14 @@ class _HomeState extends State<Home> with AfterInitMixin<Home> {
 
   @override
   void didInitState() {
+    // since there's only portrait mode
     SizeConfig().init(context);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 
   @override
@@ -52,9 +60,14 @@ class _HomeState extends State<Home> with AfterInitMixin<Home> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         elevation: 7.0,
+        unselectedItemColor: Colors.black38,
         showUnselectedLabels: false,
         selectedItemColor: Colors.orange,
         items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            title: Text("Today"),
+          ),
           BottomNavigationBarItem(
             icon: Icon(Icons.format_quote),
             title: Text("Quotes"),

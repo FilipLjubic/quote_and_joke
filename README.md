@@ -1,16 +1,18 @@
-# quote_and_joke
+# Quote & Joke
 
-A new Flutter project.
+## Stuff I plan to learn in this project
 
-## Getting Started
+- Provider with ChangeNotifier for state management
+- responsive design
+- correctly setting theme
+- local databases
+- Firebase ML kit
+- 
 
-This project is a starting point for a Flutter application.
+## What the application is gonna do
 
-A few resources to get you started if this is your first Flutter project:
+- Get jokes or some quotes from APIs
+- save text from a picture
+- ability to save them
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+ 

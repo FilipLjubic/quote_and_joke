@@ -59,54 +59,82 @@ class SettingsDropdowns extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin:
-          EdgeInsets.symmetric(horizontal: SizeConfig.safeBlockHorizontal * 5),
+      margin: EdgeInsets.symmetric(
+          horizontal: SizeConfig.safeBlockHorizontal * 5,
+          vertical: SizeConfig.safeBlockVertical * 2),
       child: Row(
-        children: [FrequencyDropdown()],
+        children: [
+          FrequencyDropdown(
+            items: ['Everyday', 'Every monday', 'Never'],
+          ),
+          FrequencyDropdown(items: [
+            '8:00 AM',
+            '8:30 AM',
+            '9:00 AM',
+            '9:30 AM',
+            '10:00 AM',
+            '8:00 PM',
+            '8:30 PM',
+            '9:00 PM',
+            '9:30 PM',
+            '10:00 PM'
+          ]),
+        ],
       ),
     );
   }
 }
 
 class FrequencyDropdown extends StatefulWidget {
+  final List<String> items;
+  FrequencyDropdown({this.items});
+
   @override
   _FrequencyDropdownState createState() => _FrequencyDropdownState();
 }
 
 class _FrequencyDropdownState extends State<FrequencyDropdown> {
-  String _value = 'Everyday';
+  String _value;
+
+  @override
+  void initState() {
+    super.initState();
+    _value = widget.items[0];
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding:
-          EdgeInsets.symmetric(horizontal: SizeConfig.safeBlockHorizontal * 2),
-      decoration: BoxDecoration(
-          border: Border.all(width: 1.0, color: Colors.black12),
-          borderRadius: BorderRadius.circular(3.0)),
-      child: DropdownButton(
-        value: _value,
-        icon: Icon(
-          Icons.keyboard_arrow_down,
-          color: Colors.orange,
+    return Expanded(
+      child: Container(
+        padding: EdgeInsets.symmetric(
+            horizontal: SizeConfig.safeBlockHorizontal * 2),
+        decoration: BoxDecoration(
+            border: Border.all(width: 1.0, color: Colors.black12),
+            borderRadius: BorderRadius.circular(3.0)),
+        child: DropdownButton(
+          value: _value,
+          icon: Icon(
+            Icons.keyboard_arrow_down,
+            color: Colors.orange,
+          ),
+          underline: Container(
+            height: 2.0,
+            color: Colors.grey[50],
+          ),
+          style: TextStyle(color: Colors.grey),
+          isExpanded: true,
+          items: widget.items.map<DropdownMenuItem<String>>((String value) {
+            return DropdownMenuItem<String>(
+              value: value,
+              child: Text(value),
+            );
+          }).toList(),
+          onChanged: (String newValue) {
+            setState(() {
+              _value = newValue;
+            });
+          },
         ),
-        underline: Container(
-          height: 2.0,
-          color: Colors.grey[50],
-        ),
-        style: TextStyle(color: Colors.grey),
-        items: ['Everyday', 'Every monday', 'Never']
-            .map<DropdownMenuItem<String>>((String value) {
-          return DropdownMenuItem<String>(
-            value: value,
-            child: Text(value),
-          );
-        }).toList(),
-        onChanged: (String newValue) {
-          setState(() {
-            _value = newValue;
-          });
-        },
       ),
     );
   }

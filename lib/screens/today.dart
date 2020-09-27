@@ -10,25 +10,123 @@ class Today extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
-            child: Container(
-              margin: EdgeInsets.only(left: SizeConfig.blockSizeHorizontal * 3),
-              child: Text(
-                "Today",
-                style: TextStyle(
-                    fontSize: SizeConfig.safeBlockHorizontal * 8,
-                    color: Colors.black87),
-              ),
-            ),
+            flex: 1,
+            child: TodayHeadline(),
           ),
           Expanded(
-            flex: 8,
+            flex: 7,
             child: TodayCard(),
           ),
           Expanded(
-            flex: 3,
-            child: Text("Notification"),
+            flex: 2,
+            child: NotificationSettings(),
           )
         ],
+      ),
+    );
+  }
+}
+
+class NotificationSettings extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      alignment: Alignment.center,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Icon(
+            Icons.notifications_active,
+            color: Colors.orange,
+            size: SizeConfig.safeBlockHorizontal * 6,
+          ),
+          Text(
+            "YOUR NOTIFICATION SETTINGS",
+            style: TextStyle(
+                fontSize: SizeConfig.safeBlockHorizontal * 2.5,
+                color: Colors.black54,
+                letterSpacing: SizeConfig.safeBlockHorizontal * 0.15,
+                fontWeight: FontWeight.bold),
+          ),
+          SettingsDropdowns()
+        ],
+      ),
+    );
+  }
+}
+
+class SettingsDropdowns extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin:
+          EdgeInsets.symmetric(horizontal: SizeConfig.safeBlockHorizontal * 5),
+      child: Row(
+        children: [FrequencyDropdown()],
+      ),
+    );
+  }
+}
+
+class FrequencyDropdown extends StatefulWidget {
+  @override
+  _FrequencyDropdownState createState() => _FrequencyDropdownState();
+}
+
+class _FrequencyDropdownState extends State<FrequencyDropdown> {
+  String _value = 'Everyday';
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding:
+          EdgeInsets.symmetric(horizontal: SizeConfig.safeBlockHorizontal * 2),
+      decoration: BoxDecoration(
+          border: Border.all(width: 1.0, color: Colors.black12),
+          borderRadius: BorderRadius.circular(3.0)),
+      child: DropdownButton(
+        value: _value,
+        icon: Icon(
+          Icons.keyboard_arrow_down,
+          color: Colors.orange,
+        ),
+        underline: Container(
+          height: 2.0,
+          color: Colors.grey[50],
+        ),
+        style: TextStyle(color: Colors.grey),
+        items: ['Everyday', 'Every monday', 'Never']
+            .map<DropdownMenuItem<String>>((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(value),
+          );
+        }).toList(),
+        onChanged: (String newValue) {
+          setState(() {
+            _value = newValue;
+          });
+        },
+      ),
+    );
+  }
+}
+
+class TodayHeadline extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(
+          left: SizeConfig.blockSizeHorizontal * 3,
+          top: SizeConfig.safeBlockVertical * 3),
+      child: Text(
+        "Today's",
+        style: TextStyle(
+          fontSize: SizeConfig.safeBlockHorizontal * 7,
+          color: Colors.black87,
+          fontWeight: FontWeight.bold,
+          letterSpacing: SizeConfig.safeBlockHorizontal * 0.3,
+        ),
       ),
     );
   }
@@ -42,7 +140,7 @@ class TodayCard extends StatelessWidget {
           horizontal: SizeConfig.safeBlockHorizontal * 5,
           vertical: SizeConfig.safeBlockVertical * 3),
       child: Material(
-        elevation: 8.0,
+        elevation: 5.0,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -67,8 +165,11 @@ class TodayChoice extends StatelessWidget {
         children: [
           Expanded(
             child: RaisedButton(
+                // change to orange[200] if not selected
+                color: Colors.orange,
+                elevation: 1.0,
                 child: Text(
-                  "Today's quote",
+                  "Today's Quote",
                   style: TextStyle(
                     fontSize: SizeConfig.safeBlockHorizontal * 4,
                   ),
@@ -80,8 +181,11 @@ class TodayChoice extends StatelessWidget {
           ),
           Expanded(
             child: RaisedButton(
+                // change to orange if selected
+                color: Colors.orange[200],
+                elevation: 1.0,
                 child: Text(
-                  "Today's quote",
+                  "Today's Joke",
                   style: TextStyle(
                     fontSize: SizeConfig.safeBlockHorizontal * 4,
                   ),
@@ -101,13 +205,15 @@ class TodayQuote extends StatelessWidget {
       margin: EdgeInsets.symmetric(
           horizontal: SizeConfig.safeBlockHorizontal * 2,
           vertical: SizeConfig.safeBlockVertical),
-      color: Colors.orange.withOpacity(0.2),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          QuoteText(),
-          Save(),
-        ],
+      child: Material(
+        elevation: 1.0,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            QuoteText(),
+            Save(),
+          ],
+        ),
       ),
     );
   }
@@ -132,9 +238,9 @@ class Save extends StatelessWidget {
             width: SizeConfig.safeBlockHorizontal,
           ),
           Text(
-            "save",
+            "SAVE",
             style: TextStyle(
-                color: Colors.black38,
+                color: Colors.black45,
                 fontSize: SizeConfig.safeBlockHorizontal * 3),
           )
         ],
@@ -155,7 +261,7 @@ class QuoteText extends StatelessWidget {
       child: Column(
         children: [
           Text(
-            "\"Always aim for the moon, even if you miss, you'll land among the stars\"",
+            "\"Always aim for the moon, even if you miss, you'll land among the stars.\"",
             style: TextStyle(
                 fontSize: SizeConfig.safeBlockHorizontal * 6,
                 color: Colors.black87),

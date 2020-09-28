@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:quote_and_joke/utils/screen_size_config.dart';
 
@@ -241,7 +242,11 @@ class TodayQuote extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            QuoteText(),
+            QuoteText(
+              author: "W. Clement Stone",
+              quote:
+                  "\"Always aim for the moon, even if you miss, you'll land among the stars.\"",
+            ),
             Save(),
           ],
         ),
@@ -281,6 +286,11 @@ class Save extends StatelessWidget {
 }
 
 class QuoteText extends StatelessWidget {
+  QuoteText({this.quote, this.author});
+
+  final String quote;
+  final String author;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -291,11 +301,12 @@ class QuoteText extends StatelessWidget {
           0),
       child: Column(
         children: [
-          Text(
-            "\"Always aim for the moon, even if you miss, you'll land among the stars.\"",
+          AutoSizeText(
+            quote,
             style: TextStyle(
                 fontSize: SizeConfig.safeBlockHorizontal * 6,
                 color: Colors.black87),
+            maxLines: 4,
           ),
           SizedBox(
             height: SizeConfig.safeBlockVertical * 2,
@@ -307,7 +318,7 @@ class QuoteText extends StatelessWidget {
                 width: SizeConfig.safeBlockVertical,
               ),
               Text(
-                "W. Clement Stone",
+                author,
                 style: TextStyle(color: Colors.black45),
               ),
             ],

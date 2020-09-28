@@ -31,9 +31,13 @@ class BottomNavBar extends StatelessWidget {
           title: Text("Jokes"),
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.camera_alt),
-          title: Text("Camera"),
+          icon: Icon(Icons.add),
+          title: Text("Add"),
         ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.collections_bookmark),
+          title: Text("Bookmarks"),
+        )
       ],
       onTap: onTap,
     );

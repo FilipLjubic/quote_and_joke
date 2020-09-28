@@ -1,5 +1,6 @@
 import 'package:after_init/after_init.dart';
 import 'package:flutter/material.dart';
+import 'package:quote_and_joke/screens/bookmarks.dart';
 import 'package:quote_and_joke/utils/screen_size_config.dart';
 import 'package:quote_and_joke/screens/jokes.dart';
 import 'package:quote_and_joke/screens/quotes.dart';
@@ -13,7 +14,13 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> with AfterInitMixin<Home> {
-  final List<Widget> _screens = [Today(), Quotes(), Jokes(), Camera()];
+  final List<Widget> _screens = [
+    Today(),
+    Quotes(),
+    Jokes(),
+    Camera(),
+    Bookmarks()
+  ];
   int _currentIndex = 0;
   PageController _pageController;
 

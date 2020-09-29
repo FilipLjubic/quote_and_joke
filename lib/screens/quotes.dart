@@ -14,9 +14,9 @@ class _QuotesState extends State<Quotes> with SingleTickerProviderStateMixin {
   void initState() {
     _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 2000),
     );
-    _animation = Tween(begin: 0.0, end: 1.0).animate(_animationController);
+    _animation =
+        CurvedAnimation(curve: Curves.easeInExpo, parent: _animationController);
     super.initState();
   }
 
@@ -33,7 +33,6 @@ class _QuotesState extends State<Quotes> with SingleTickerProviderStateMixin {
     _animationController.forward();
     return GestureDetector(
       onTap: () => setState(() {
-        _animationController.repeat();
         _index++;
         if (_index == quotes.length) {
           _index = 0;
@@ -41,22 +40,9 @@ class _QuotesState extends State<Quotes> with SingleTickerProviderStateMixin {
       }),
       child: Center(
         child: Container(
-          child: FadeTransition(
-            child: Dismissible(
-              key: ValueKey(quotes[_index]),
-              onDismissed: (direction) => setState(() {
-                _animationController.repeat();
-                _index++;
-                if (_index == quotes.length) {
-                  _index = 0;
-                }
-              }),
-              child: Text(
-                quotes[_index],
-                style: TextStyle(fontSize: 30.0),
-              ),
-            ),
-            opacity: _animation,
+          child: Text(
+            quotes[_index],
+            style: TextStyle(fontSize: 30.0),
           ),
         ),
       ),

@@ -16,6 +16,7 @@ class _QuotesState extends State<Quotes> with SingleTickerProviderStateMixin {
   int _index = 0;
   double y = pi / 2;
   bool _canBeDragged = false;
+  bool _isSwipe = false;
   int _maxSlide = -100;
 
   @override
@@ -49,14 +50,15 @@ class _QuotesState extends State<Quotes> with SingleTickerProviderStateMixin {
   void _onDragStart(DragStartDetails details) {
     bool isDragFromLeft =
         _animationController.isDismissed && details.globalPosition.dx > 200;
-    print(details.globalPosition.dx);
     _canBeDragged = isDragFromLeft;
   }
 
   void _onDragUpdate(DragUpdateDetails details) {
     if (_canBeDragged) {
+      if (details.primaryDelta < -11) {
+        _isSwipe = true;
+      }
       double delta = details.primaryDelta / (_maxSlide * 1.5);
-      print(details.primaryDelta);
       _animationController.value += delta;
     }
   }
@@ -65,7 +67,10 @@ class _QuotesState extends State<Quotes> with SingleTickerProviderStateMixin {
     if (_animationController.isDismissed || _animationController.isCompleted) {
       return;
     }
-    if (details.velocity.pixelsPerSecond.dx.abs() >= 365.0) {
+    if (_isSwipe) {
+      _animationController.forward(from: _animationController.value);
+      _isSwipe = false;
+    } else if (details.velocity.pixelsPerSecond.dx.abs() >= 365.0) {
       double visualVelocity =
           details.velocity.pixelsPerSecond.dx / SizeConfig.screenHeight;
       _animationController.fling(velocity: visualVelocity);
@@ -97,14 +102,23 @@ class _QuotesState extends State<Quotes> with SingleTickerProviderStateMixin {
                 transform: Matrix4.identity()
                   ..translate(slide)
                   ..rotateZ(angleY),
-                child: Text(
-                  quotes[_index],
-                  style: TextStyle(
-                    fontSize: 30.0,
-                    color: Colors.black
-                        .withOpacity(1 - _animationController.value),
+                child: Padding(
+                  padding: EdgeInsets.only(
+                      left: SizeConfig.safeBlockHorizontal * 10,
+                      bottom: SizeConfig.blockSizeVertical * 25),
+                  child: SizedBox(
+                    width: SizeConfig.screenWidth * 0.9,
+                    child: Text(
+                      quotes[_index],
+                      maxLines: 5,
+                      style: TextStyle(
+                        fontSize: SizeConfig.blockSizeHorizontal * 9.5,
+                        color: Colors.black
+                            .withOpacity(1 - _animationController.value),
+                      ),
+                      textAlign: TextAlign.left,
+                    ),
                   ),
-                  textAlign: TextAlign.center,
                 ),
               );
             },

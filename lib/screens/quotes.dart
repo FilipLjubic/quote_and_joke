@@ -85,31 +85,29 @@ class _QuotesState extends State<Quotes> with SingleTickerProviderStateMixin {
       onHorizontalDragEnd: _onDragEnd,
       behavior: HitTestBehavior.opaque,
       child: Stack(
+        alignment: Alignment.centerLeft,
         children: [
-          Positioned(
-            left: 30.0,
-            top: 100.0,
-            child: AnimatedBuilder(
-              animation: _animationController,
-              builder: (context, _) {
-                double slide = _maxSlide * _animationController.value;
-                double angleY = y * _animationController.value;
+          AnimatedBuilder(
+            animation: _animationController,
+            builder: (context, _) {
+              double slide = _maxSlide * _animationController.value;
+              double angleY = y * _animationController.value;
 
-                return Transform(
-                  transform: Matrix4.identity()
-                    ..translate(slide)
-                    ..rotateZ(angleY),
-                  child: Text(
-                    quotes[_index],
-                    style: TextStyle(
-                      fontSize: 30.0,
-                      color: Colors.black
-                          .withOpacity(1 - _animationController.value),
-                    ),
+              return Transform(
+                transform: Matrix4.identity()
+                  ..translate(slide)
+                  ..rotateZ(angleY),
+                child: Text(
+                  quotes[_index],
+                  style: TextStyle(
+                    fontSize: 30.0,
+                    color: Colors.black
+                        .withOpacity(1 - _animationController.value),
                   ),
-                );
-              },
-            ),
+                  textAlign: TextAlign.center,
+                ),
+              );
+            },
           ),
         ],
       ),

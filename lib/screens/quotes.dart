@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:quote_and_joke/utils/screen_size_config.dart';
 
@@ -16,17 +17,18 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
   AnimationController _animationController2;
   int _index = 0;
   double y = pi / 2;
+  double angle = -pi / 6;
   bool _canBeDragged = false;
   bool _isSwipe = false;
   int _maxMainSlide = -100;
-  int _maxSecondarySlide = -300;
+  int _maxSecondarySlide = -200;
 
   @override
   void initState() {
     super.initState();
     _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 200),
+      duration: const Duration(milliseconds: 450),
     );
     _animationController2 = AnimationController(
       vsync: this,
@@ -121,29 +123,33 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
               animation: _animationController2,
               builder: (context, _) {
                 double slide = _maxSecondarySlide * _animationController2.value;
-                double angleY = y * _animationController2.value;
+                double angleY = angle * _animationController2.value;
                 return Transform(
                   transform: Matrix4.identity()
                     ..translate(slide)
                     ..rotateZ(-angleY),
                   child: Padding(
                     padding: EdgeInsets.only(
-                      left: SizeConfig.safeBlockHorizontal * 90,
+                      left: SizeConfig.safeBlockHorizontal * 20,
                       bottom: SizeConfig.blockSizeVertical *
-                          (15 + 10 * _animationController2.value),
+                          (15 + 40 * _animationController2.value),
                       top: SizeConfig.blockSizeVertical * 4,
                     ),
-                    child: SizedBox(
+                    child: Container(
                       width: SizeConfig.screenWidth * 0.9,
-                      child: Text(
-                        quotes[_index],
-                        maxLines: 5,
-                        style: TextStyle(
-                          fontSize: SizeConfig.blockSizeHorizontal * 9.5,
-                          color: Colors.black
-                              .withOpacity(1 - _animationController.value),
+                      child: UnconstrainedBox(
+                        child: Transform.rotate(
+                          angle: -pi / 6,
+                          child: AutoSizeText(
+                            quotes[_index],
+                            maxLines: 5,
+                            style: TextStyle(
+                              fontSize: SizeConfig.blockSizeHorizontal * 9.5,
+                              color: Colors.black,
+                            ),
+                            textAlign: TextAlign.left,
+                          ),
                         ),
-                        textAlign: TextAlign.left,
                       ),
                     ),
                   ),
@@ -185,7 +191,7 @@ class MainQuote extends StatelessWidget {
             bottom: SizeConfig.blockSizeVertical * 25),
         child: SizedBox(
           width: SizeConfig.screenWidth * 0.9,
-          child: Text(
+          child: AutoSizeText(
             quotes[_index],
             maxLines: 5,
             style: TextStyle(

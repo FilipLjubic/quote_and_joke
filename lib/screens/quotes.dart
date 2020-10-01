@@ -135,9 +135,10 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
                           (15 + 40 * _animationController2.value),
                       top: SizeConfig.blockSizeVertical * 4,
                     ),
-                    child: Container(
-                      width: SizeConfig.screenWidth * 0.9,
-                      child: UnconstrainedBox(
+                    child: UnconstrainedBox(
+                      clipBehavior: Clip.none,
+                      child: SizedBox(
+                        width: SizeConfig.screenWidth * 0.9,
                         child: Transform.rotate(
                           angle: -pi / 6,
                           child: AutoSizeText(

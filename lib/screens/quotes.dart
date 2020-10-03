@@ -10,18 +10,18 @@ class Quotes extends StatefulWidget {
 
 class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
   final List<String> quotes = [
-    'The size of the sword doesn\'t matter. It\'s the size of the thought that counts!',
-    'NOT A QUOTE 2'
+    "It's so hard to forget pain, but it's even harder to remember sweetness.",
+    'Darkness cannot drive out darkness, only light can do that.',
+    "Even the smallest person can change the course of the future.",
   ];
   AnimationController _animationController;
   AnimationController _animationController2;
   Animation _animation2;
   int _index = 0;
   double y = pi / 2;
-  double angle = -pi / 6;
   bool _canBeDragged = false;
   bool _isSwipe = false;
-  // change to sizeconfig
+  // TODO: get rid of hard coded values
   int _maxMainSlide = -100;
   int _maxSecondarySlide = -200;
 
@@ -34,10 +34,13 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
     );
     _animationController2 = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 350),
+      duration: const Duration(milliseconds: 410),
     );
     _animation2 =
-        CurvedAnimation(curve: Curves.easeInOut, parent: _animationController2);
+        CurvedAnimation(curve: Curves.easeOut, parent: _animationController2)
+          ..addListener(() {
+            if (_animation2.value == 1) _nextPage();
+          });
   }
 
   @override
@@ -126,9 +129,10 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
           AnimatedBuilder(
               animation: _animationController2,
               builder: (context, _) {
-                double slideX = _maxSecondarySlide * _animation2.value * 1.45;
-                double slideY = -380.0 * _animation2.value;
-                double angleY = angle * _animation2.value;
+                // TODO: get rid of hard coded values
+                double slideX = 70 * _animation2.value;
+                double slideY = -550.0 * _animation2.value;
+                double angleY = -y * _animation2.value;
                 return Transform(
                   transform: Matrix4.identity()
                     ..translate(slideX, slideY)
@@ -138,10 +142,10 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
                     child: SizedBox(
                       width: SizeConfig.screenWidth * 0.9,
                       child: Transform.translate(
-                        offset: Offset(SizeConfig.safeBlockHorizontal * 110,
-                            SizeConfig.safeBlockVertical * -5),
+                        offset: Offset(SizeConfig.safeBlockHorizontal * 90,
+                            SizeConfig.safeBlockVertical * -35),
                         child: Transform.rotate(
-                          angle: -pi / 6,
+                          angle: -pi / 2,
                           child: AutoSizeText(
                             quotes[_index],
                             maxLines: 5,

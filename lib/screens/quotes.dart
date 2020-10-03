@@ -15,6 +15,7 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
   ];
   AnimationController _animationController;
   AnimationController _animationController2;
+  Animation _animation2;
   int _index = 0;
   double y = pi / 2;
   double angle = -pi / 6;
@@ -34,6 +35,8 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
       vsync: this,
       duration: const Duration(milliseconds: 500),
     );
+    _animation2 =
+        CurvedAnimation(curve: Curves.easeIn, parent: _animationController2);
   }
 
   @override
@@ -122,33 +125,40 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
           AnimatedBuilder(
               animation: _animationController2,
               builder: (context, _) {
-                double slide = _maxSecondarySlide * _animationController2.value;
-                double angleY = angle * _animationController2.value;
+                double slide = _maxSecondarySlide * _animation2.value;
+                double angleY = angle * _animation2.value;
                 return Transform(
                   transform: Matrix4.identity()
                     ..translate(slide)
                     ..rotateZ(-angleY),
                   child: Padding(
                     padding: EdgeInsets.only(
-                      left: SizeConfig.safeBlockHorizontal * 20,
+                      left: SizeConfig.safeBlockHorizontal * 98,
                       bottom: SizeConfig.blockSizeVertical *
-                          (15 + 40 * _animationController2.value),
+                          (15 + 40 * _animation2.value),
                       top: SizeConfig.blockSizeVertical * 4,
                     ),
-                    child: UnconstrainedBox(
-                      clipBehavior: Clip.none,
-                      child: SizedBox(
-                        width: SizeConfig.screenWidth * 0.9,
-                        child: Transform.rotate(
-                          angle: -pi / 6,
-                          child: AutoSizeText(
-                            quotes[_index],
-                            maxLines: 5,
-                            style: TextStyle(
-                              fontSize: SizeConfig.blockSizeHorizontal * 9.5,
-                              color: Colors.black,
+                    child: Visibility(
+                      maintainSize: true,
+                      maintainAnimation: true,
+                      maintainSemantics: true,
+                      maintainState: true,
+                      visible: true,
+                      child: UnconstrainedBox(
+                        clipBehavior: Clip.none,
+                        child: SizedBox(
+                          width: SizeConfig.screenWidth * 0.9,
+                          child: Transform.rotate(
+                            angle: -pi / 6,
+                            child: AutoSizeText(
+                              quotes[_index],
+                              maxLines: 5,
+                              style: TextStyle(
+                                fontSize: SizeConfig.blockSizeHorizontal * 9.5,
+                                color: Colors.black,
+                              ),
+                              textAlign: TextAlign.left,
                             ),
-                            textAlign: TextAlign.left,
                           ),
                         ),
                       ),

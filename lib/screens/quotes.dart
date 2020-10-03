@@ -21,6 +21,7 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
   double angle = -pi / 6;
   bool _canBeDragged = false;
   bool _isSwipe = false;
+  // change to sizeconfig
   int _maxMainSlide = -100;
   int _maxSecondarySlide = -200;
 
@@ -33,10 +34,10 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
     );
     _animationController2 = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 350),
     );
     _animation2 =
-        CurvedAnimation(curve: Curves.easeIn, parent: _animationController2);
+        CurvedAnimation(curve: Curves.easeInOut, parent: _animationController2);
   }
 
   @override
@@ -125,40 +126,29 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
           AnimatedBuilder(
               animation: _animationController2,
               builder: (context, _) {
-                double slide = _maxSecondarySlide * _animation2.value;
+                double slide = _maxSecondarySlide * _animation2.value * 1.2;
                 double angleY = angle * _animation2.value;
                 return Transform(
                   transform: Matrix4.identity()
                     ..translate(slide)
                     ..rotateZ(-angleY),
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      left: SizeConfig.safeBlockHorizontal * 98,
-                      bottom: SizeConfig.blockSizeVertical *
-                          (15 + 40 * _animation2.value),
-                      top: SizeConfig.blockSizeVertical * 4,
-                    ),
-                    child: Visibility(
-                      maintainSize: true,
-                      maintainAnimation: true,
-                      maintainSemantics: true,
-                      maintainState: true,
-                      visible: true,
-                      child: UnconstrainedBox(
-                        clipBehavior: Clip.none,
-                        child: SizedBox(
-                          width: SizeConfig.screenWidth * 0.9,
-                          child: Transform.rotate(
-                            angle: -pi / 6,
-                            child: AutoSizeText(
-                              quotes[_index],
-                              maxLines: 5,
-                              style: TextStyle(
-                                fontSize: SizeConfig.blockSizeHorizontal * 9.5,
-                                color: Colors.black,
-                              ),
-                              textAlign: TextAlign.left,
+                  child: UnconstrainedBox(
+                    clipBehavior: Clip.none,
+                    child: SizedBox(
+                      width: SizeConfig.screenWidth * 0.9,
+                      child: Transform.translate(
+                        offset:
+                            Offset(SizeConfig.blockSizeHorizontal * 105, 0.0),
+                        child: Transform.rotate(
+                          angle: -pi / 6,
+                          child: AutoSizeText(
+                            quotes[_index],
+                            maxLines: 5,
+                            style: TextStyle(
+                              fontSize: SizeConfig.blockSizeHorizontal * 9.5,
+                              color: Colors.black,
                             ),
+                            textAlign: TextAlign.left,
                           ),
                         ),
                       ),

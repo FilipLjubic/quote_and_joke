@@ -126,19 +126,20 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
           AnimatedBuilder(
               animation: _animationController2,
               builder: (context, _) {
-                double slide = _maxSecondarySlide * _animation2.value * 1.2;
+                double slideX = _maxSecondarySlide * _animation2.value * 1.45;
+                double slideY = -380.0 * _animation2.value;
                 double angleY = angle * _animation2.value;
                 return Transform(
                   transform: Matrix4.identity()
-                    ..translate(slide)
+                    ..translate(slideX, slideY)
                     ..rotateZ(-angleY),
                   child: UnconstrainedBox(
                     clipBehavior: Clip.none,
                     child: SizedBox(
                       width: SizeConfig.screenWidth * 0.9,
                       child: Transform.translate(
-                        offset:
-                            Offset(SizeConfig.blockSizeHorizontal * 105, 0.0),
+                        offset: Offset(SizeConfig.safeBlockHorizontal * 110,
+                            SizeConfig.safeBlockVertical * -5),
                         child: Transform.rotate(
                           angle: -pi / 6,
                           child: AutoSizeText(

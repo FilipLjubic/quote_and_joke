@@ -18,12 +18,15 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
   AnimationController _animationController2;
   Animation _animation2;
   int _index = 0;
+  int _nextIndex = 1;
   double y = pi / 2;
   bool _canBeDragged = false;
   bool _isSwipe = false;
-  // TODO: get rid of hard coded values
+  // to slide off screen
   int _maxMainSlide = -100;
-  int _maxSecondarySlide = -200;
+  // to get to position of last one
+  double _maxSecondarySlideX = SizeConfig.safeBlockHorizontal * 10.8;
+  double _maxSecondarySlideY = SizeConfig.safeBlockVertical * -72.5;
 
   @override
   void initState() {
@@ -39,7 +42,9 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
     _animation2 =
         CurvedAnimation(curve: Curves.easeOut, parent: _animationController2)
           ..addListener(() {
-            if (_animation2.value == 1) _nextPage();
+            if (_animation2.value == 1) {
+              _nextPage();
+            }
           });
   }
 
@@ -53,9 +58,13 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
   void _nextPage() {
     setState(() {
       _index++;
+      _nextIndex++;
+      _animationController.value = 0;
+      _animationController2.value = 0;
       if (_index == quotes.length) {
         _index = 0;
       }
+      if (_nextIndex == quotes.length) _nextIndex = 0;
     });
   }
 
@@ -102,6 +111,7 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    //TODO: wrap with Opacity opacity: _animation2.value == 1 ? 1 : 0 to show new page with new index
     return GestureDetector(
       onTap: _toggle,
       onHorizontalDragStart: _onDragStart,
@@ -130,8 +140,8 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
               animation: _animationController2,
               builder: (context, _) {
                 // TODO: get rid of hard coded values
-                double slideX = 70 * _animation2.value;
-                double slideY = -550.0 * _animation2.value;
+                double slideX = _maxSecondarySlideX * _animation2.value;
+                double slideY = _maxSecondarySlideY * _animation2.value;
                 double angleY = -y * _animation2.value;
                 return Transform(
                   transform: Matrix4.identity()
@@ -147,7 +157,7 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
                         child: Transform.rotate(
                           angle: -pi / 2,
                           child: AutoSizeText(
-                            quotes[_index],
+                            quotes[_nextIndex],
                             maxLines: 5,
                             style: TextStyle(
                               fontSize: SizeConfig.blockSizeHorizontal * 9.5,

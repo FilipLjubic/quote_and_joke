@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:quote_and_joke/utils/screen_size_config.dart';
@@ -16,28 +17,30 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
   ];
   AnimationController _animationController;
   AnimationController _animationController2;
+  AnimationController _animationController3;
   Animation _animation2;
+  Animation _animation3;
   int _index = 0;
   int _nextIndex = 1;
-  double y = pi / 2;
-  bool _canBeDragged = false;
+  bool _leftDrag = false;
   bool _isSwipe = false;
   // to slide off screen
   int _maxMainSlide = -100;
   // to get to position of last one
   double _maxSecondarySlideX = SizeConfig.safeBlockHorizontal * 10.8;
   double _maxSecondarySlideY = SizeConfig.safeBlockVertical * -72.5;
+  double ctrl3 = 0.0;
 
   @override
   void initState() {
     super.initState();
     _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 450),
+      duration: const Duration(milliseconds: 350),
     );
     _animationController2 = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 350),
+      duration: const Duration(milliseconds: 250),
     );
     _animation2 = CurvedAnimation(
         curve: Curves.easeOutCubic, parent: _animationController2)
@@ -46,13 +49,32 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
           _nextPage();
         }
       });
+    _animationController3 = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+    _animation3 = CurvedAnimation(
+        curve: Curves.easeInOutCubic, parent: _animationController3)
+      ..addListener(
+        () => setState(() {
+          ctrl3 = _animation3.value;
+          if (ctrl3 == 1) {
+            _nextPage();
+          }
+        }),
+      );
   }
 
   @override
   void dispose() {
     _animationController.dispose();
     _animationController2.dispose();
+    _animationController3.dispose();
     super.dispose();
+  }
+
+  void _onTap() {
+    _animationController3.forward();
   }
 
   void _nextPage() {
@@ -61,28 +83,23 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
       _nextIndex++;
       _animationController.value = 0;
       _animationController2.value = 0;
-      if (_index == quotes.length) {
-        _index = 0;
-      }
+      _animationController3.value = 0;
+      if (_index == quotes.length) _index = 0;
       if (_nextIndex == quotes.length) _nextIndex = 0;
     });
   }
 
-  void _toggle() => _animationController.isDismissed
-      ? {_animationController.forward(), _animationController2.forward()}
-      : {_animationController.reverse(), _animationController2.reverse()};
-
   void _onDragStart(DragStartDetails details) {
-    bool isDragFromLeft =
+    _leftDrag =
         _animationController.isDismissed && details.globalPosition.dx > 200;
-    _canBeDragged = isDragFromLeft;
   }
 
   void _onDragUpdate(DragUpdateDetails details) {
-    if (_canBeDragged) {
+    if (_leftDrag) {
       if (details.primaryDelta < -11) {
         _isSwipe = true;
       }
+      // makes dragging smooth instead of linear and awkward
       double delta =
           -details.primaryDelta / (-_maxMainSlide * 1.2 * log(-_maxMainSlide));
       _animationController.value += delta;
@@ -93,27 +110,20 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
     if (_animationController.isDismissed || _animationController.isCompleted) {
       return;
     }
-    if (_isSwipe) {
-      _animationController.forward(from: _animationController.value);
+    bool isDismissedOrSwiped = _animationController.value > 0.3 || _isSwipe;
+    if (!isDismissedOrSwiped) {
+      _animationController.reverse();
+    } else {
+      _animationController.forward();
       _animationController2.forward();
       _isSwipe = false;
-    } else if (details.velocity.pixelsPerSecond.dx.abs() >= 365.0) {
-      double visualVelocity =
-          details.velocity.pixelsPerSecond.dx / SizeConfig.screenHeight;
-      _animationController.fling(velocity: visualVelocity);
-    } else if (_animationController.value > 0.3) {
-      _animationController.forward(from: _animationController.value);
-      _animationController2.forward();
-    } else if (_animationController.value <= 0.3) {
-      _animationController.reverse(from: _animationController.value);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    //TODO: wrap with Opacity opacity: _animation2.value == 1 ? 1 : 0 to show new page with new index
     return GestureDetector(
-      onTap: _toggle,
+      onTap: _onTap,
       onHorizontalDragStart: _onDragStart,
       onHorizontalDragUpdate: _onDragUpdate,
       onHorizontalDragEnd: _onDragEnd,
@@ -121,28 +131,53 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
       child: Stack(
         alignment: Alignment.centerLeft,
         children: [
-          AnimatedBuilder(
-            animation: _animationController,
-            builder: (context, _) {
-              double slide = _maxMainSlide * _animationController.value;
-              double angleY = y * _animationController.value;
+          Opacity(
+            opacity: 1 - ctrl3,
+            child: Transform.scale(
+              scale: 1 - (0.2 * ctrl3),
+              child: AnimatedBuilder(
+                animation: _animationController,
+                builder: (context, _) {
+                  double slide = _maxMainSlide * _animationController.value;
+                  double angleY = (pi / 2) * _animationController.value;
 
-              return MainQuote(
-                slide: slide,
-                angleY: angleY,
+                  return MainQuote(
+                    slide: slide,
+                    angleY: angleY,
+                    quotes: quotes,
+                    index: _index,
+                    animationController: _animationController,
+                  );
+                },
+              ),
+            ),
+          ),
+          Opacity(
+            opacity: ctrl3,
+            child: Transform.scale(
+              scale: 0.9 + (0.1 * ctrl3),
+              child: MainQuote(
                 quotes: quotes,
-                index: _index,
+                index: _nextIndex,
                 animationController: _animationController,
-              );
-            },
+              ),
+            ),
+          ),
+          BackdropFilter(
+            filter: ImageFilter.blur(
+              sigmaX: 2 * sin(pi * ctrl3).abs(),
+              sigmaY: 2 * sin(pi * ctrl3).abs(),
+            ),
+            child: Container(
+              color: Colors.transparent,
+            ),
           ),
           AnimatedBuilder(
               animation: _animationController2,
               builder: (context, _) {
-                // TODO: get rid of hard coded values
                 double slideX = _maxSecondarySlideX * _animation2.value;
                 double slideY = _maxSecondarySlideY * _animation2.value;
-                double angleY = -y * _animation2.value;
+                double angleY = -(pi / 2) * _animation2.value;
                 return Transform(
                   transform: Matrix4.identity()
                     ..translate(slideX, slideY)
@@ -180,11 +215,11 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
 class MainQuote extends StatelessWidget {
   const MainQuote({
     Key key,
-    @required this.slide,
-    @required this.angleY,
     @required this.quotes,
     @required int index,
     @required AnimationController animationController,
+    this.slide = 0,
+    this.angleY = 0,
   })  : _index = index,
         _animationController = animationController,
         super(key: key);

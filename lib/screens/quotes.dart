@@ -37,15 +37,15 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
     );
     _animationController2 = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 410),
+      duration: const Duration(milliseconds: 350),
     );
-    _animation2 =
-        CurvedAnimation(curve: Curves.easeOut, parent: _animationController2)
-          ..addListener(() {
-            if (_animation2.value == 1) {
-              _nextPage();
-            }
-          });
+    _animation2 = CurvedAnimation(
+        curve: Curves.easeOutCubic, parent: _animationController2)
+      ..addListener(() {
+        if (_animation2.value == 1) {
+          _nextPage();
+        }
+      });
   }
 
   @override

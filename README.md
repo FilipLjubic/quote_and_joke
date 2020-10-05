@@ -7,6 +7,7 @@
 - correctly setting theme
 - local databases
 - Firebase ML kit
+- learn animations !!
 
 
 ## What the application is gonna do

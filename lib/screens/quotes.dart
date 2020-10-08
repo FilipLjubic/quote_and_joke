@@ -156,9 +156,9 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
                     child: MainQuote(
                       quotes: quotes,
                       index: _index,
-                      animationController: _animationController,
                       isUnconstrained: false,
-                      color: Colors.black,
+                      color: Colors.black
+                          .withOpacity(1 - _animationController.value),
                     ),
                   );
                 },
@@ -173,8 +173,7 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
               child: MainQuote(
                 quotes: quotes,
                 index: _nextIndex,
-                animationController: _animationController,
-                color: Colors.black.withOpacity(1 - _animationController.value),
+                color: Colors.black.withOpacity(ctrl3),
                 isUnconstrained: false,
               ),
             ),
@@ -209,9 +208,8 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
                       child: MainQuote(
                         index: _nextIndex,
                         quotes: quotes,
-                        animationController: _animationController2,
                         isUnconstrained: true,
-                        color: Colors.black,
+                        color: Colors.black.withOpacity(_animation2.value),
                       ),
                     ),
                   ),
@@ -227,13 +225,11 @@ class MainQuote extends StatelessWidget {
   const MainQuote(
       {@required this.quotes,
       @required this.index,
-      @required this.animationController,
       @required this.isUnconstrained,
       @required this.color});
   //TODO: Load quotes through get_it
   final List<String> quotes;
   final int index;
-  final AnimationController animationController;
   final bool isUnconstrained;
   final Color color;
 
@@ -258,10 +254,6 @@ class MainQuote extends StatelessWidget {
               ),
               textAlign: TextAlign.left,
             ),
-            // if (isUnconstrained)
-            //   SizedBox(
-            //     height: SizeConfig.safeBlockVertical * 23.8,
-            //   ),
             AutoSizeText(
               "KING",
               maxLines: 1,

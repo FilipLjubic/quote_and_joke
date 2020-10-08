@@ -1,4 +1,4 @@
-import 'dart:math';
+import 'dart:math' as math;
 import 'dart:ui';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
@@ -84,6 +84,7 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
       _animationController.value = 0;
       _animationController2.value = 0;
       _animationController3.value = 0;
+      //TODO: delete ifs
       if (_index == quotes.length) _index = 0;
       if (_nextIndex == quotes.length) _nextIndex = 0;
     });
@@ -100,8 +101,8 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
         _isSwipe = true;
       }
       // makes dragging smooth instead of linear and awkward
-      double delta =
-          -details.primaryDelta / (-_maxMainSlide * 1.2 * log(-_maxMainSlide));
+      double delta = -details.primaryDelta /
+          (-_maxMainSlide * 1.2 * math.log(-_maxMainSlide));
       _animationController.value += delta;
     }
   }
@@ -131,15 +132,19 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
       child: Stack(
         alignment: Alignment.centerLeft,
         children: [
+          // text of quote shown at start
+          // fades out depending on whether it's being slided or tapped
+          // if tapped it also scales down a bit to make the other text seem to pop out
+          // in builder is swipe functionality
           Opacity(
             opacity: 1 - ctrl3,
             child: Transform.scale(
-              scale: 1 - (0.2 * ctrl3),
+              scale: 1 - (0.3 * ctrl3),
               child: AnimatedBuilder(
                 animation: _animationController,
                 builder: (context, _) {
                   double slide = _maxMainSlide * _animationController.value;
-                  double angleY = (pi / 2) * _animationController.value;
+                  double angleY = (math.pi / 2) * _animationController.value;
 
                   return MainQuote(
                     slide: slide,
@@ -152,6 +157,7 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
               ),
             ),
           ),
+          // quote following the first one, basically is just invisible till it's needed
           Opacity(
             opacity: ctrl3,
             child: Transform.scale(
@@ -163,21 +169,23 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
               ),
             ),
           ),
+          // blur activated when quote is tapped
           BackdropFilter(
             filter: ImageFilter.blur(
-              sigmaX: 2 * sin(pi * ctrl3).abs(),
-              sigmaY: 2 * sin(pi * ctrl3).abs(),
+              sigmaX: 2 * math.sin(math.pi * ctrl3).abs(),
+              sigmaY: 2 * math.sin(math.pi * ctrl3).abs(),
             ),
             child: Container(
               color: Colors.transparent,
             ),
           ),
+          // next quote that is rendered outside of screen so that when you swipe it comes out flying
           AnimatedBuilder(
               animation: _animationController2,
               builder: (context, _) {
                 double slideX = _maxSecondarySlideX * _animation2.value;
                 double slideY = _maxSecondarySlideY * _animation2.value;
-                double angleY = -(pi / 2) * _animation2.value;
+                double angleY = -(math.pi / 2) * _animation2.value;
                 return Transform(
                   transform: Matrix4.identity()
                     ..translate(slideX, slideY)
@@ -190,7 +198,7 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
                         offset: Offset(SizeConfig.safeBlockHorizontal * 90,
                             SizeConfig.safeBlockVertical * -35),
                         child: Transform.rotate(
-                          angle: -pi / 2,
+                          angle: -math.pi / 2,
                           child: AutoSizeText(
                             quotes[_nextIndex],
                             maxLines: 5,

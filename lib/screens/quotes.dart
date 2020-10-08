@@ -99,10 +99,12 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
     if (_leftDrag) {
       if (details.primaryDelta < -11) {
         _isSwipe = true;
+      } else {
+        _isSwipe = false;
       }
       // makes dragging smooth instead of linear and awkward
       double delta = -details.primaryDelta /
-          (-_maxMainSlide * 1.2 * math.log(-_maxMainSlide));
+          (-_maxMainSlide * 1.5 * math.log(-_maxMainSlide));
       _animationController.value += delta;
     }
   }
@@ -111,7 +113,8 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
     if (_animationController.isDismissed || _animationController.isCompleted) {
       return;
     }
-    bool isDismissedOrSwiped = _animationController.value > 0.3 || _isSwipe;
+    // if quote is over "half" screen
+    bool isDismissedOrSwiped = _animationController.value > 0.25 || _isSwipe;
     if (!isDismissedOrSwiped) {
       _animationController.reverse();
     } else {
@@ -146,12 +149,17 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
                   double slide = _maxMainSlide * _animationController.value;
                   double angleY = (math.pi / 2) * _animationController.value;
 
-                  return MainQuote(
-                    slide: slide,
-                    angleY: angleY,
-                    quotes: quotes,
-                    index: _index,
-                    animationController: _animationController,
+                  return Transform(
+                    transform: Matrix4.identity()
+                      ..translate(slide)
+                      ..rotateZ(angleY),
+                    child: MainQuote(
+                      quotes: quotes,
+                      index: _index,
+                      animationController: _animationController,
+                      isUnconstrained: false,
+                      color: Colors.black,
+                    ),
                   );
                 },
               ),
@@ -166,6 +174,8 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
                 quotes: quotes,
                 index: _nextIndex,
                 animationController: _animationController,
+                color: Colors.black.withOpacity(1 - _animationController.value),
+                isUnconstrained: false,
               ),
             ),
           ),
@@ -192,22 +202,17 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
                     ..rotateZ(-angleY),
                   child: UnconstrainedBox(
                     clipBehavior: Clip.none,
-                    child: SizedBox(
-                      width: SizeConfig.screenWidth * 0.9,
-                      child: Transform.translate(
-                        offset: Offset(SizeConfig.safeBlockHorizontal * 90,
-                            SizeConfig.safeBlockVertical * -35),
-                        child: Transform.rotate(
-                          angle: -math.pi / 2,
-                          child: AutoSizeText(
-                            quotes[_nextIndex],
-                            maxLines: 5,
-                            style: TextStyle(
-                              fontSize: SizeConfig.blockSizeHorizontal * 9.5,
-                              color: Colors.black,
-                            ),
-                            textAlign: TextAlign.left,
-                          ),
+                    child: Transform.translate(
+                      offset: Offset(SizeConfig.safeBlockVertical * 77.2,
+                          SizeConfig.safeBlockHorizontal * -98.1),
+                      child: Transform.rotate(
+                        angle: -math.pi / 2,
+                        child: MainQuote(
+                          index: _nextIndex,
+                          quotes: quotes,
+                          animationController: _animationController2,
+                          isUnconstrained: true,
+                          color: Colors.black,
                         ),
                       ),
                     ),
@@ -221,75 +226,56 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
 }
 
 class MainQuote extends StatelessWidget {
-  const MainQuote({
-    Key key,
-    @required this.quotes,
-    @required int index,
-    @required AnimationController animationController,
-    this.slide = 0,
-    this.angleY = 0,
-  })  : _index = index,
-        _animationController = animationController,
-        super(key: key);
-
-  final double slide;
-  final double angleY;
+  const MainQuote(
+      {@required this.quotes,
+      @required this.index,
+      @required this.animationController,
+      @required this.isUnconstrained,
+      @required this.color});
+  //TODO: Load quotes through get_it
   final List<String> quotes;
-  final int _index;
-  final AnimationController _animationController;
+  final int index;
+  final AnimationController animationController;
+  final bool isUnconstrained;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
-    return Transform(
-      transform: Matrix4.identity()
-        ..translate(slide)
-        ..rotateZ(angleY),
+    return Padding(
+      padding: EdgeInsets.only(
+          left: SizeConfig.safeBlockHorizontal * 10,
+          top: SizeConfig.safeBlockVertical * 12),
       child: SizedBox(
         width: SizeConfig.screenWidth * 0.9,
-        child: Padding(
-          padding: EdgeInsets.only(
-              left: SizeConfig.safeBlockHorizontal * 10,
-              top: SizeConfig.safeBlockVertical * 11),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Flexible(
-                flex: 3,
-                child: AutoSizeText(
-                  quotes[_index],
-                  maxLines: 5,
-                  style: TextStyle(
-                    fontSize: SizeConfig.blockSizeHorizontal * 9.5,
-                    color: Colors.black
-                        .withOpacity(1 - _animationController.value),
-                  ),
-                  textAlign: TextAlign.left,
-                ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AutoSizeText(
+              quotes[index],
+              maxLines: 5,
+              style: TextStyle(
+                fontSize: SizeConfig.blockSizeHorizontal * 9.5,
+                color: color,
               ),
-              Flexible(
-                flex: 2,
-                child: AutoSizeText(
-                  "KING",
-                  maxLines: 1,
-                  style: TextStyle(
-                    fontSize: SizeConfig.blockSizeHorizontal * 4.5,
-                    color: Colors.black54
-                        .withOpacity(1 - _animationController.value),
-                  ),
-                  textAlign: TextAlign.left,
-                ),
+              textAlign: TextAlign.left,
+            ),
+            if (isUnconstrained)
+              SizedBox(
+                height: SizeConfig.safeBlockVertical * 23.8,
               ),
-              Spacer(
-                flex: 1,
+            AutoSizeText(
+              "KING",
+              maxLines: 1,
+              style: TextStyle(
+                fontSize: SizeConfig.blockSizeHorizontal * 4.5,
+                color: color.withOpacity(0.5),
               ),
-            ],
-          ),
+              textAlign: TextAlign.left,
+            ),
+          ],
         ),
       ),
     );
   }
 }
-
-// left: SizeConfig.safeBlockHorizontal * 10,
-// bottom: SizeConfig.blockSizeVertical * 25)

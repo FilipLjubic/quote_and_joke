@@ -244,23 +244,52 @@ class MainQuote extends StatelessWidget {
       transform: Matrix4.identity()
         ..translate(slide)
         ..rotateZ(angleY),
-      child: Padding(
-        padding: EdgeInsets.only(
-            left: SizeConfig.safeBlockHorizontal * 10,
-            bottom: SizeConfig.blockSizeVertical * 25),
-        child: SizedBox(
-          width: SizeConfig.screenWidth * 0.9,
-          child: AutoSizeText(
-            quotes[_index],
-            maxLines: 5,
-            style: TextStyle(
-              fontSize: SizeConfig.blockSizeHorizontal * 9.5,
-              color: Colors.black.withOpacity(1 - _animationController.value),
-            ),
-            textAlign: TextAlign.left,
+      child: SizedBox(
+        width: SizeConfig.screenWidth * 0.9,
+        child: Padding(
+          padding: EdgeInsets.only(
+              left: SizeConfig.safeBlockHorizontal * 10,
+              top: SizeConfig.safeBlockVertical * 11),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Flexible(
+                flex: 3,
+                child: AutoSizeText(
+                  quotes[_index],
+                  maxLines: 5,
+                  style: TextStyle(
+                    fontSize: SizeConfig.blockSizeHorizontal * 9.5,
+                    color: Colors.black
+                        .withOpacity(1 - _animationController.value),
+                  ),
+                  textAlign: TextAlign.left,
+                ),
+              ),
+              Flexible(
+                flex: 2,
+                child: AutoSizeText(
+                  "KING",
+                  maxLines: 1,
+                  style: TextStyle(
+                    fontSize: SizeConfig.blockSizeHorizontal * 4.5,
+                    color: Colors.black54
+                        .withOpacity(1 - _animationController.value),
+                  ),
+                  textAlign: TextAlign.left,
+                ),
+              ),
+              Spacer(
+                flex: 1,
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 }
+
+// left: SizeConfig.safeBlockHorizontal * 10,
+// bottom: SizeConfig.blockSizeVertical * 25)

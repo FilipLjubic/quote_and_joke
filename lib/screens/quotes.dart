@@ -27,8 +27,8 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
   // to slide off screen
   int _maxMainSlide = -100;
   // to get to position of last one
-  double _maxSecondarySlideX = SizeConfig.safeBlockHorizontal * 10.8;
-  double _maxSecondarySlideY = SizeConfig.safeBlockVertical * -72.5;
+  double _maxSecondarySlideX = SizeConfig.safeBlockHorizontal * 96.4;
+  double _maxSecondarySlideY = SizeConfig.safeBlockVertical * -33.5;
   double ctrl3 = 0.0;
 
   @override
@@ -195,25 +195,23 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
               builder: (context, _) {
                 double slideX = _maxSecondarySlideX * _animation2.value;
                 double slideY = _maxSecondarySlideY * _animation2.value;
-                double angleY = -(math.pi / 2) * _animation2.value;
+                double angleY = (math.pi / 2) * _animation2.value;
+                //  * _animation2.value;
                 return Transform(
                   transform: Matrix4.identity()
                     ..translate(slideX, slideY)
-                    ..rotateZ(-angleY),
-                  child: UnconstrainedBox(
-                    clipBehavior: Clip.none,
-                    child: Transform.translate(
-                      offset: Offset(SizeConfig.safeBlockVertical * 77.2,
-                          SizeConfig.safeBlockHorizontal * -98.1),
-                      child: Transform.rotate(
-                        angle: -math.pi / 2,
-                        child: MainQuote(
-                          index: _nextIndex,
-                          quotes: quotes,
-                          animationController: _animationController2,
-                          isUnconstrained: true,
-                          color: Colors.black,
-                        ),
+                    ..rotateZ(angleY),
+                  child: Transform.translate(
+                    offset: Offset(SizeConfig.safeBlockVertical * 50,
+                        SizeConfig.safeBlockHorizontal * -35),
+                    child: Transform.rotate(
+                      angle: -math.pi / 2,
+                      child: MainQuote(
+                        index: _nextIndex,
+                        quotes: quotes,
+                        animationController: _animationController2,
+                        isUnconstrained: true,
+                        color: Colors.black,
                       ),
                     ),
                   ),
@@ -260,10 +258,10 @@ class MainQuote extends StatelessWidget {
               ),
               textAlign: TextAlign.left,
             ),
-            if (isUnconstrained)
-              SizedBox(
-                height: SizeConfig.safeBlockVertical * 23.8,
-              ),
+            // if (isUnconstrained)
+            //   SizedBox(
+            //     height: SizeConfig.safeBlockVertical * 23.8,
+            //   ),
             AutoSizeText(
               "KING",
               maxLines: 1,

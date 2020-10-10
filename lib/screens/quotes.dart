@@ -2,6 +2,8 @@ import 'dart:math' as math;
 import 'dart:ui';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:quote_and_joke/locator.dart';
+import 'package:quote_and_joke/services/quotes_service.dart';
 import 'package:quote_and_joke/utils/screen_size_config.dart';
 
 class Quotes extends StatefulWidget {
@@ -10,6 +12,7 @@ class Quotes extends StatefulWidget {
 }
 
 class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
+  List<String> quotes = [];
   AnimationController _animationController;
   AnimationController _animationController2;
   AnimationController _animationController3;
@@ -29,6 +32,8 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    quotes = getIt<QuoteService>().getQuotes();
+
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 350),

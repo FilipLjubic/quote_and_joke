@@ -10,11 +10,6 @@ class Quotes extends StatefulWidget {
 }
 
 class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
-  final List<String> quotes = [
-    "It's so hard to forget pain, but it's even harder to remember sweetness.",
-    'Darkness cannot drive out darkness, only light can do that.',
-    "Even the smallest person can change the course of the future.",
-  ];
   AnimationController _animationController;
   AnimationController _animationController2;
   AnimationController _animationController3;

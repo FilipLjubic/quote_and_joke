@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:quote_and_joke/locator.dart' as locator;
 import 'package:quote_and_joke/screens/home.dart';
 
 void main() async {
@@ -8,6 +9,7 @@ void main() async {
   await SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
   await Firebase.initializeApp();
+  locator.setupLocator();
   return runApp(MyApp());
 }
 

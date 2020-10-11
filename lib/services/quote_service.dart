@@ -19,8 +19,8 @@ class QuoteService with ChangeNotifier {
 
     _quotes.clear();
     _setOffset();
-    final http.Response response =
-        await http.get("https://api.quotable.io/quotes?limit=50&skip=$_offset");
+    final http.Response response = await http.get(
+        "https://api.quotable.io/quotes?limit=50&skip=$_offset&maxLength=93");
 
     if (response.statusCode == 200) {
       final decode = jsonDecode(response.body);
@@ -28,7 +28,8 @@ class QuoteService with ChangeNotifier {
       for (var result in decode['results']) {
         _quotes.add(Quote.fromJson(result));
       }
-      _quotes.forEach((element) => print(element.author));
+      _quotes.forEach(
+          (element) => print("${element.quote.length} ${element.quote}"));
       _changeLoadingState();
     } else {
       _changeLoadingState();
@@ -44,9 +45,7 @@ class QuoteService with ChangeNotifier {
   // to let the api know how many pages to skip
   // each page has 50 quotes, since thats the limit for 1 request
   void _setOffset() {
-    int nextOffset = Random().nextInt(40) * 50; // [0-39] * 50 => [0-1950]
-    if (nextOffset == 1950) nextOffset = 1945;
-
+    int nextOffset = Random().nextInt(25) * 50; // [0-25] * 50 => [0-1250]
     if (nextOffset == _offset) {
       _setOffset();
     }

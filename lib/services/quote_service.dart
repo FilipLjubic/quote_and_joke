@@ -1,16 +1,22 @@
 import 'dart:math';
 
+import 'package:flutter/material.dart';
 import 'package:quote_and_joke/models/quote_model.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-class QuoteService {
-  List<QuoteModel> _quotes = [];
+class QuoteService with ChangeNotifier {
+  List<Quote> _quotes = [];
   int _offset = 0;
+  bool _isLoading = false;
 
-  List<QuoteModel> get quotes => _quotes;
+  List<Quote> get quotes => _quotes;
+
+  bool get isLoading => _isLoading;
 
   Future<void> fetchQuotes() async {
+    _changeLoadingState();
+
     _quotes.clear();
     _setOffset();
     final http.Response response =
@@ -20,11 +26,19 @@ class QuoteService {
       final decode = jsonDecode(response.body);
 
       for (var result in decode['results']) {
-        _quotes.add(QuoteModel.fromJson(result));
+        _quotes.add(Quote.fromJson(result));
       }
-      _quotes.forEach((element) => print(element.authorShort));
       _quotes.forEach((element) => print(element.author));
+      _changeLoadingState();
+    } else {
+      _changeLoadingState();
+      throw ("Error fetching data");
     }
+  }
+
+  void _changeLoadingState() {
+    _isLoading = !_isLoading;
+    notifyListeners();
   }
 
   // to let the api know how many pages to skip

@@ -3,16 +3,16 @@ import 'dart:ui';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:quote_and_joke/locator.dart';
-import 'package:quote_and_joke/services/quotes_service.dart';
+import 'package:quote_and_joke/services/quote_service.dart';
 import 'package:quote_and_joke/utils/screen_size_config.dart';
 
-class Quotes extends StatefulWidget {
+class QuotesScreen extends StatefulWidget {
   @override
-  _QuotesState createState() => _QuotesState();
+  _QuotesScreenState createState() => _QuotesScreenState();
 }
 
-class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
-  List<String> quotes = [];
+class _QuotesScreenState extends State<QuotesScreen>
+    with TickerProviderStateMixin {
   AnimationController _animationController;
   AnimationController _animationController2;
   AnimationController _animationController3;
@@ -61,6 +61,9 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
           }
         }),
       );
+    getIt<QuoteService>().addListener(() {
+      setState(() {});
+    });
   }
 
   @override
@@ -83,8 +86,13 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
       _animationController2.value = 0;
       _animationController3.value = 0;
       //TODO: delete ifs
-      if (_index == quotes.length) _index = 0;
-      if (_nextIndex == quotes.length) _nextIndex = 0;
+      if (_nextIndex == getIt<QuoteService>().quotes.length - 2) {
+        setState(() {
+          _index = 0;
+          _nextIndex = 1;
+          getIt<QuoteService>().fetchQuotes();
+        });
+      }
     });
   }
 
@@ -124,109 +132,113 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: _onTap,
-      onHorizontalDragStart: _onDragStart,
-      onHorizontalDragUpdate: _onDragUpdate,
-      onHorizontalDragEnd: _onDragEnd,
-      behavior: HitTestBehavior.opaque,
-      child: Stack(
-        alignment: Alignment.centerLeft,
-        children: [
-          // text of quote shown at start
-          // fades out depending on whether it's being slided or tapped
-          // if tapped it also scales down a bit to make the other text seem to pop out
-          // in builder is swipe functionality
-          Opacity(
-            opacity: 1 - ctrl3,
-            child: Transform.scale(
-              scale: 1 - (0.3 * ctrl3),
-              child: AnimatedBuilder(
-                animation: _animationController,
-                builder: (context, _) {
-                  double slide = _maxMainSlide * _animationController.value;
-                  double angleY = (math.pi / 2) * _animationController.value;
+    return !getIt<QuoteService>().isLoading
+        ? GestureDetector(
+            onTap: _onTap,
+            onHorizontalDragStart: _onDragStart,
+            onHorizontalDragUpdate: _onDragUpdate,
+            onHorizontalDragEnd: _onDragEnd,
+            behavior: HitTestBehavior.opaque,
+            child: Stack(
+              alignment: Alignment.centerLeft,
+              children: [
+                // text of quote shown at start
+                // fades out depending on whether it's being slided or tapped
+                // if tapped it also scales down a bit to make the other text seem to pop out
+                // in builder is swipe functionality
+                Opacity(
+                  opacity: 1 - ctrl3,
+                  child: Transform.scale(
+                    scale: 1 - (0.3 * ctrl3),
+                    child: AnimatedBuilder(
+                      animation: _animationController,
+                      builder: (context, _) {
+                        double slide =
+                            _maxMainSlide * _animationController.value;
+                        double angleY =
+                            (math.pi / 2) * _animationController.value;
 
-                  return Transform(
-                    transform: Matrix4.identity()
-                      ..translate(slide)
-                      ..rotateZ(angleY),
-                    child: MainQuote(
-                      quotes: quotes,
-                      index: _index,
-                      isUnconstrained: false,
-                      color: Colors.black
-                          .withOpacity(1 - _animationController.value),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ),
-          // quote following the first one, basically is just invisible till it's needed
-          Opacity(
-            opacity: ctrl3,
-            child: Transform.scale(
-              scale: 0.9 + (0.1 * ctrl3),
-              child: MainQuote(
-                quotes: quotes,
-                index: _nextIndex,
-                color: Colors.black.withOpacity(ctrl3),
-                isUnconstrained: false,
-              ),
-            ),
-          ),
-          // blur activated when quote is tapped
-          BackdropFilter(
-            filter: ImageFilter.blur(
-              sigmaX: 2 * math.sin(math.pi * ctrl3).abs(),
-              sigmaY: 2 * math.sin(math.pi * ctrl3).abs(),
-            ),
-            child: Container(
-              color: Colors.transparent,
-            ),
-          ),
-          // next quote that is rendered outside of screen so that when you swipe it comes out flying
-          AnimatedBuilder(
-              animation: _animationController2,
-              builder: (context, _) {
-                double slideX = _maxSecondarySlideX * _animation2.value;
-                double slideY = _maxSecondarySlideY * _animation2.value;
-                double angleY = (math.pi / 2) * _animation2.value;
-                //  * _animation2.value;
-                return Transform(
-                  transform: Matrix4.identity()
-                    ..translate(slideX, slideY)
-                    ..rotateZ(angleY),
-                  child: Transform.translate(
-                    offset: Offset(SizeConfig.safeBlockVertical * 50,
-                        SizeConfig.safeBlockHorizontal * -35),
-                    child: Transform.rotate(
-                      angle: -math.pi / 2,
-                      child: MainQuote(
-                        index: _nextIndex,
-                        quotes: quotes,
-                        isUnconstrained: true,
-                        color: Colors.black.withOpacity(_animation2.value),
-                      ),
+                        return Transform(
+                          transform: Matrix4.identity()
+                            ..translate(slide)
+                            ..rotateZ(angleY),
+                          child: MainQuote(
+                            index: _index,
+                            isUnconstrained: false,
+                            color: Colors.black
+                                .withOpacity(1 - _animationController.value),
+                          ),
+                        );
+                      },
                     ),
                   ),
-                );
-              }),
-        ],
-      ),
-    );
+                ),
+                // quote following the first one, basically is just invisible till it's needed
+                Opacity(
+                  opacity: ctrl3,
+                  child: Transform.scale(
+                    scale: 0.9 + (0.1 * ctrl3),
+                    child: MainQuote(
+                      index: _nextIndex,
+                      color: Colors.black.withOpacity(ctrl3),
+                      isUnconstrained: false,
+                    ),
+                  ),
+                ),
+                // blur activated when quote is tapped
+                BackdropFilter(
+                  filter: ImageFilter.blur(
+                    sigmaX: 2 * math.sin(math.pi * ctrl3).abs(),
+                    sigmaY: 2 * math.sin(math.pi * ctrl3).abs(),
+                  ),
+                  child: Container(
+                    color: Colors.transparent,
+                  ),
+                ),
+                // next quote that is rendered outside of screen so that when you swipe it comes out flying
+                AnimatedBuilder(
+                    animation: _animationController2,
+                    builder: (context, _) {
+                      double slideX = _maxSecondarySlideX * _animation2.value;
+                      double slideY = _maxSecondarySlideY * _animation2.value;
+                      double angleY = (math.pi / 2) * _animation2.value;
+                      //  * _animation2.value;
+                      return Transform(
+                        transform: Matrix4.identity()
+                          ..translate(slideX, slideY)
+                          ..rotateZ(angleY),
+                        child: Transform.translate(
+                          offset: Offset(SizeConfig.safeBlockVertical * 50,
+                              SizeConfig.safeBlockHorizontal * -35),
+                          child: Transform.rotate(
+                            angle: -math.pi / 2,
+                            child: MainQuote(
+                              index: _nextIndex,
+                              isUnconstrained: true,
+                              color:
+                                  Colors.black.withOpacity(_animation2.value),
+                            ),
+                          ),
+                        ),
+                      );
+                    }),
+              ],
+            ),
+          )
+        : Center(
+            child: CircularProgressIndicator(
+              backgroundColor: Colors.orange,
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.orange[200]),
+            ),
+          );
   }
 }
 
 class MainQuote extends StatelessWidget {
   const MainQuote(
-      {@required this.quotes,
-      @required this.index,
+      {@required this.index,
       @required this.isUnconstrained,
       @required this.color});
-  //TODO: Load quotes through get_it
-  final List<String> quotes;
   final int index;
   final bool isUnconstrained;
   final Color color;
@@ -244,7 +256,7 @@ class MainQuote extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             AutoSizeText(
-              quotes[index],
+              getIt<QuoteService>().quotes[index].quote,
               maxLines: 5,
               style: TextStyle(
                 fontSize: SizeConfig.blockSizeHorizontal * 9.5,
@@ -253,7 +265,7 @@ class MainQuote extends StatelessWidget {
               textAlign: TextAlign.left,
             ),
             AutoSizeText(
-              "KING",
+              getIt<QuoteService>().quotes[index].authorShort,
               maxLines: 1,
               style: TextStyle(
                 fontSize: SizeConfig.blockSizeHorizontal * 4.5,

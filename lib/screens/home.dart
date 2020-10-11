@@ -2,7 +2,7 @@ import 'package:after_init/after_init.dart';
 import 'package:flutter/material.dart';
 import 'package:quote_and_joke/locator.dart';
 import 'package:quote_and_joke/screens/bookmarks.dart';
-import 'package:quote_and_joke/services/quotes_service.dart';
+import 'package:quote_and_joke/services/quote_service.dart';
 import 'package:quote_and_joke/utils/screen_size_config.dart';
 import 'package:quote_and_joke/screens/jokes.dart';
 import 'package:quote_and_joke/screens/quotes.dart';
@@ -18,7 +18,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> with AfterInitMixin<Home> {
   final List<Widget> _screens = [
     Today(),
-    Quotes(),
+    QuotesScreen(),
     Jokes(),
     Camera(),
     Bookmarks()

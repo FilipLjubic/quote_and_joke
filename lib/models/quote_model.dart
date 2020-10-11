@@ -1,12 +1,12 @@
-class QuoteModel {
+class Quote {
   String quote;
   String author;
   String authorShort;
 
-  QuoteModel({this.quote, this.author, this.authorShort});
+  Quote({this.quote, this.author, this.authorShort});
 
-  factory QuoteModel.fromJson(Map<String, dynamic> json) {
-    return QuoteModel(
+  factory Quote.fromJson(Map<String, dynamic> json) {
+    return Quote(
         author: json['author'],
         quote: json['content'],
         authorShort: _createShortAuthor(json["author"]));

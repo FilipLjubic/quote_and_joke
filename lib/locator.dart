@@ -5,5 +5,5 @@ GetIt getIt = GetIt.instance;
 
 // get data by getIt<QuoteService>().getQuotes();
 void setupLocator() {
-  getIt.registerSingleton(() => QuoteService());
+  getIt.registerSingleton<QuoteService>(QuoteService());
 }

@@ -32,8 +32,6 @@ class _QuotesState extends State<Quotes> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    quotes = getIt<QuoteService>().getQuotes();
-
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 350),

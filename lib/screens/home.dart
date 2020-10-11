@@ -1,6 +1,8 @@
 import 'package:after_init/after_init.dart';
 import 'package:flutter/material.dart';
+import 'package:quote_and_joke/locator.dart';
 import 'package:quote_and_joke/screens/bookmarks.dart';
+import 'package:quote_and_joke/services/quotes_service.dart';
 import 'package:quote_and_joke/utils/screen_size_config.dart';
 import 'package:quote_and_joke/screens/jokes.dart';
 import 'package:quote_and_joke/screens/quotes.dart';
@@ -28,6 +30,7 @@ class _HomeState extends State<Home> with AfterInitMixin<Home> {
   void initState() {
     super.initState();
     _pageController = PageController();
+    getIt<QuoteService>().fetchQuotes();
   }
 
   // called once after initState, used because I need context to get media query data

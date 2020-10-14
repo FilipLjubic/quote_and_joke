@@ -218,20 +218,23 @@ class _QuotesScreenState extends State<QuotesScreen>
                       double slideY = _maxSecondarySlideY * _animation2.value;
                       double angleY = (math.pi / 2) * _animation2.value;
                       //  * _animation2.value;
-                      return Transform(
-                        transform: Matrix4.identity()
-                          ..translate(slideX, slideY)
-                          ..rotateZ(angleY),
-                        child: Transform.translate(
-                          offset: Offset(SizeConfig.safeBlockVertical * 50,
-                              SizeConfig.safeBlockHorizontal * -35),
-                          child: Transform.rotate(
-                            angle: -math.pi / 2,
-                            child: MainQuote(
-                              index: _nextIndex,
-                              isUnconstrained: true,
-                              color:
-                                  Colors.black.withOpacity(_animation2.value),
+                      return Opacity(
+                        opacity: getIt<QuoteService>().show ? 1 : 0,
+                        child: Transform(
+                          transform: Matrix4.identity()
+                            ..translate(slideX, slideY)
+                            ..rotateZ(angleY),
+                          child: Transform.translate(
+                            offset: Offset(SizeConfig.safeBlockVertical * 50,
+                                SizeConfig.safeBlockHorizontal * -35),
+                            child: Transform.rotate(
+                              angle: -math.pi / 2,
+                              child: MainQuote(
+                                index: _nextIndex,
+                                isUnconstrained: true,
+                                color:
+                                    Colors.black.withOpacity(_animation2.value),
+                              ),
                             ),
                           ),
                         ),

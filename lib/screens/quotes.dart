@@ -62,7 +62,7 @@ class _QuotesScreenState extends State<QuotesScreen>
         }),
       );
     getIt<QuoteService>().addListener(() {
-      setState(() {});
+      if (mounted) setState(() {});
     });
   }
 

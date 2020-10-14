@@ -9,8 +9,11 @@ class QuoteService with ChangeNotifier {
   List<Quote> _quotes = [];
   int _offset = 0;
   bool _isLoading = false;
+  bool _showScreen = false;
 
   List<Quote> get quotes => _quotes;
+
+  bool get show => _showScreen;
 
   bool get isLoading => _isLoading;
 
@@ -35,6 +38,11 @@ class QuoteService with ChangeNotifier {
       _changeLoadingState();
       throw ("Error fetching data");
     }
+  }
+
+  void showScreen(bool state) {
+    _showScreen = state;
+    notifyListeners();
   }
 
   void _changeLoadingState() {

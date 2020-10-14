@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:quote_and_joke/utils/screen_size_config.dart';
 
 // TODO: MAKE RESPONSIVE COLORS OF TEXT AND BUTTONS, AND ICON
+//       REFACTOR
 
 class Today extends StatelessWidget {
   @override

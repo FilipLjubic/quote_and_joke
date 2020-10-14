@@ -141,7 +141,22 @@ class _QuotesScreenState extends State<QuotesScreen>
             behavior: HitTestBehavior.opaque,
             child: Stack(
               alignment: Alignment.centerLeft,
+              overflow: Overflow.clip,
               children: [
+                Opacity(
+                  opacity: getIt<QuoteService>().show ? 1 : 0,
+                  child: Transform.rotate(
+                    angle: -math.pi / 5,
+                    child: Transform.translate(
+                      offset: Offset(SizeConfig.safeBlockHorizontal * 39,
+                          SizeConfig.safeBlockVertical * 5),
+                      child: Container(
+                        color: Colors.blue[300],
+                        height: SizeConfig.screenHeight / 1.3,
+                      ),
+                    ),
+                  ),
+                ),
                 // text of quote shown at start
                 // fades out depending on whether it's being slided or tapped
                 // if tapped it also scales down a bit to make the other text seem to pop out

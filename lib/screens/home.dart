@@ -71,6 +71,10 @@ class _HomeState extends State<Home> with AfterInitMixin<Home> {
       bottomNavigationBar: BottomNavBar(
         currentIndex: _currentIndex,
         onTap: (index) {
+          index == 1
+              ? getIt<QuoteService>().showScreen(true)
+              : getIt<QuoteService>().showScreen(false);
+
           setState(() {
             _currentIndex = index;
           });

@@ -9,23 +9,36 @@ class Today extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            flex: 1,
-            child: TodayHeadline(),
-          ),
-          Expanded(
-            flex: 7,
-            child: TodayCard(),
-          ),
-          Expanded(
-            flex: 2,
-            child: NotificationSettings(),
-          )
-        ],
+      body: SafeArea(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Align(
+                alignment: Alignment.center,
+                child: Text(
+                  "Quote & Joke",
+                  style: TextStyle(
+                      color: Colors.black54,
+                      fontSize: SizeConfig.safeBlockHorizontal * 5),
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 1,
+              child: TodayHeadline(),
+            ),
+            Expanded(
+              flex: 7,
+              child: TodayCard(),
+            ),
+            Expanded(
+              flex: 2,
+              child: NotificationSettings(),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -156,8 +169,7 @@ class TodayHeadline extends StatelessWidget {
         style: TextStyle(
           fontSize: SizeConfig.safeBlockHorizontal * 7,
           color: Colors.black87,
-          fontWeight: FontWeight.bold,
-          letterSpacing: SizeConfig.safeBlockHorizontal * 0.3,
+          letterSpacing: SizeConfig.safeBlockHorizontal * 0.2,
         ),
       ),
     );
@@ -277,7 +289,8 @@ class Save extends StatelessWidget {
             "SAVE",
             style: TextStyle(
                 color: Colors.black45,
-                fontSize: SizeConfig.safeBlockHorizontal * 3),
+                fontSize: SizeConfig.safeBlockHorizontal * 3,
+                letterSpacing: SizeConfig.safeBlockHorizontal * 0.15),
           )
         ],
       ),

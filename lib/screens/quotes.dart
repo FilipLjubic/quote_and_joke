@@ -47,20 +47,21 @@ class _QuotesScreenState extends State<QuotesScreen>
           _nextPage();
         }
       });
+
     _animationController3 = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 400),
     );
-    _animation3 = CurvedAnimation(
-        curve: Curves.easeInOutCubic, parent: _animationController3)
-      ..addListener(
-        () => setState(() {
-          ctrl3 = _animation3.value;
-          if (ctrl3 == 1) {
-            _nextPage();
-          }
-        }),
-      );
+    _animation3 =
+        CurvedAnimation(curve: Curves.decelerate, parent: _animationController3)
+          ..addListener(
+            () => setState(() {
+              ctrl3 = _animation3.value;
+              if (ctrl3 == 1) {
+                _nextPage();
+              }
+            }),
+          );
     getIt<QuoteService>().addListener(() {
       if (mounted) setState(() {});
     });
@@ -143,19 +144,26 @@ class _QuotesScreenState extends State<QuotesScreen>
               alignment: Alignment.centerLeft,
               overflow: Overflow.clip,
               children: [
-                Opacity(
-                  opacity: getIt<QuoteService>().show ? 1 : 0,
-                  child: Transform.rotate(
-                    angle: -math.pi / 5,
-                    child: Transform.translate(
-                      offset: Offset(SizeConfig.safeBlockHorizontal * 39,
-                          SizeConfig.safeBlockVertical * 5),
-                      child: Container(
-                        color: Colors.blue[300],
-                        height: SizeConfig.screenHeight / 1.3,
-                      ),
-                    ),
-                  ),
+                BackgroundContainer(
+                  ctrl3: ctrl3,
+                  angle: -math.pi / 5,
+                  offset: Offset(SizeConfig.safeBlockHorizontal * 39,
+                      SizeConfig.safeBlockVertical * 5),
+                  opacity: 1,
+                ),
+                BackgroundContainer(
+                  ctrl3: ctrl3,
+                  angle: -math.pi / 6.2,
+                  offset: Offset(SizeConfig.safeBlockHorizontal * 41,
+                      SizeConfig.safeBlockVertical * 1),
+                  opacity: 0.5,
+                ),
+                BackgroundContainer(
+                  ctrl3: ctrl3,
+                  angle: -math.pi / 7.6,
+                  offset: Offset(SizeConfig.safeBlockHorizontal * 41,
+                      SizeConfig.safeBlockVertical * -3),
+                  opacity: 0.3,
                 ),
                 // text of quote shown at start
                 // fades out depending on whether it's being slided or tapped
@@ -249,6 +257,53 @@ class _QuotesScreenState extends State<QuotesScreen>
               valueColor: AlwaysStoppedAnimation<Color>(Colors.orange[200]),
             ),
           );
+  }
+}
+
+class BackgroundContainer extends StatefulWidget {
+  const BackgroundContainer({
+    Key key,
+    @required this.ctrl3,
+    @required this.angle,
+    @required this.opacity,
+    @required this.offset,
+  }) : super(key: key);
+
+  final double ctrl3;
+  final double angle;
+  final double opacity;
+  final Offset offset;
+
+  @override
+  _BackgroundContainerState createState() => _BackgroundContainerState();
+}
+
+class _BackgroundContainerState extends State<BackgroundContainer> {
+  @override
+  Widget build(BuildContext context) {
+    return Opacity(
+      opacity: getIt<QuoteService>().show ? widget.opacity : 0,
+      child: Transform.rotate(
+        angle: widget.angle,
+        child: Transform.translate(
+          offset: widget.offset,
+          child: Transform.scale(
+            scale: 1 - 0.1 * math.sin(math.pi * widget.ctrl3).abs(),
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.bottomLeft,
+                  end: Alignment.topRight,
+                  colors: [Color(0xFF6FD9E2), Color(0xFFCDE0BE)],
+                ),
+              ),
+              height: SizeConfig.screenHeight / 1.3,
+              width: SizeConfig.screenWidth * 2,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
 

@@ -49,20 +49,6 @@ class _HomeState extends State<Home> with AfterInitMixin<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Padding(
-          padding: EdgeInsets.only(top: SizeConfig.safeBlockVertical * 2),
-          child: Text(
-            "Quote & Joke",
-            style: TextStyle(
-                color: Colors.black54,
-                fontSize: SizeConfig.safeBlockHorizontal * 5),
-          ),
-        ),
-        centerTitle: true,
-        elevation: 0.0,
-        backgroundColor: Colors.transparent,
-      ),
       body: PageView(
         controller: _pageController,
         children: _screens,

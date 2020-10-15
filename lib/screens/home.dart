@@ -61,9 +61,10 @@ class _HomeState extends State<Home> with AfterInitMixin<Home> {
               ? getIt<QuoteService>().showScreen(true)
               : getIt<QuoteService>().showScreen(false);
 
-          setState(() {
-            _currentIndex = index;
-          });
+          if (mounted)
+            setState(() {
+              _currentIndex = index;
+            });
           _pageController.animateToPage(index,
               duration: const Duration(milliseconds: 600),
               curve: Curves.fastLinearToSlowEaseIn);

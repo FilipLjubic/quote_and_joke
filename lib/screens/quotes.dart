@@ -25,8 +25,8 @@ class _QuotesScreenState extends State<QuotesScreen>
   // to slide off screen
   int _maxMainSlide = -100;
   // to get to position of last one
-  double _maxSecondarySlideX = SizeConfig.safeBlockHorizontal * 96.4;
-  double _maxSecondarySlideY = SizeConfig.safeBlockVertical * -33.5;
+  double _maxSecondarySlideX = SizeConfig.safeBlockHorizontal * 108.9;
+  double _maxSecondarySlideY = SizeConfig.safeBlockVertical * -26.9;
   double ctrl3 = 0.0;
 
   @override
@@ -50,7 +50,7 @@ class _QuotesScreenState extends State<QuotesScreen>
 
     _animationController3 = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 400),
+      duration: const Duration(milliseconds: 500),
     );
     _animation3 =
         CurvedAnimation(curve: Curves.decelerate, parent: _animationController3)
@@ -147,22 +147,29 @@ class _QuotesScreenState extends State<QuotesScreen>
                 BackgroundContainer(
                   ctrl3: ctrl3,
                   angle: -math.pi / 5,
-                  offset: Offset(SizeConfig.safeBlockHorizontal * 39,
-                      SizeConfig.safeBlockVertical * 5),
+                  offset: Offset(SizeConfig.safeBlockHorizontal * 30,
+                      SizeConfig.safeBlockVertical * 10),
                   opacity: 1,
                 ),
                 BackgroundContainer(
                   ctrl3: ctrl3,
                   angle: -math.pi / 6.2,
-                  offset: Offset(SizeConfig.safeBlockHorizontal * 41,
-                      SizeConfig.safeBlockVertical * 1),
+                  offset: Offset(SizeConfig.safeBlockHorizontal * 32,
+                      SizeConfig.safeBlockVertical * 6),
                   opacity: 0.5,
                 ),
                 BackgroundContainer(
                   ctrl3: ctrl3,
                   angle: -math.pi / 7.6,
-                  offset: Offset(SizeConfig.safeBlockHorizontal * 41,
-                      SizeConfig.safeBlockVertical * -3),
+                  offset: Offset(SizeConfig.safeBlockHorizontal * 32,
+                      SizeConfig.safeBlockVertical * 2),
+                  opacity: 0.5,
+                ),
+                BackgroundContainer(
+                  ctrl3: ctrl3,
+                  angle: -math.pi / 10,
+                  offset: Offset(SizeConfig.safeBlockHorizontal * 32,
+                      SizeConfig.safeBlockVertical * -1),
                   opacity: 0.3,
                 ),
                 // text of quote shown at start
@@ -227,7 +234,8 @@ class _QuotesScreenState extends State<QuotesScreen>
                       double angleY = (math.pi / 2) * _animation2.value;
                       //  * _animation2.value;
                       return Opacity(
-                        opacity: getIt<QuoteService>().show ? 1 : 0,
+                        // getIt<QuoteService>().show ? 1 : 0
+                        opacity: 1,
                         child: Transform(
                           transform: Matrix4.identity()
                             ..translate(slideX, slideY)
@@ -240,8 +248,8 @@ class _QuotesScreenState extends State<QuotesScreen>
                               child: MainQuote(
                                 index: _nextIndex,
                                 isUnconstrained: true,
-                                color:
-                                    Colors.black.withOpacity(_animation2.value),
+                                color: Colors.black
+                                    .withOpacity(1), //_animation2.value
                               ),
                             ),
                           ),
@@ -262,12 +270,11 @@ class _QuotesScreenState extends State<QuotesScreen>
 
 class BackgroundContainer extends StatefulWidget {
   const BackgroundContainer({
-    Key key,
     @required this.ctrl3,
     @required this.angle,
     @required this.opacity,
     @required this.offset,
-  }) : super(key: key);
+  });
 
   final double ctrl3;
   final double angle;
@@ -294,7 +301,7 @@ class _BackgroundContainerState extends State<BackgroundContainer> {
                 gradient: LinearGradient(
                   begin: Alignment.bottomLeft,
                   end: Alignment.topRight,
-                  colors: [Color(0xFF6FD9E2), Color(0xFFCDE0BE)],
+                  colors: [Color(0xFF6FD9E2), Color(0xFFDBDFB8)],
                 ),
               ),
               height: SizeConfig.screenHeight / 1.3,

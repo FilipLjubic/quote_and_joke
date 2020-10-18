@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:quote_and_joke/locator.dart';
 import 'package:quote_and_joke/services/quote_service.dart';
 import 'package:quote_and_joke/utils/screen_size_config.dart';
+import 'package:quote_and_joke/widgets/main_quote.dart';
 
 class QuotesScreen extends StatefulWidget {
   @override
@@ -86,7 +87,6 @@ class _QuotesScreenState extends State<QuotesScreen>
       _animationController.value = 0;
       _animationController2.value = 0;
       _animationController3.value = 0;
-      //TODO: delete ifs
       if (_nextIndex == getIt<QuoteService>().quotes.length - 2) {
         setState(() {
           _index = 0;
@@ -176,30 +176,31 @@ class _QuotesScreenState extends State<QuotesScreen>
                 // fades out depending on whether it's being slided or tapped
                 // if tapped it also scales down a bit to make the other text seem to pop out
                 // in builder is swipe functionality
-                Opacity(
-                  opacity: 1 - ctrl3,
-                  child: Transform.scale(
-                    scale: 1 - (0.3 * ctrl3),
-                    child: AnimatedBuilder(
-                      animation: _animationController,
-                      builder: (context, _) {
-                        double slide =
-                            _maxMainSlide * _animationController.value;
-                        double angleY =
-                            (math.pi / 2) * _animationController.value;
+                AnimatedBuilder(
+                  animation: _animationController,
+                  child: MainQuote(
+                    index: _index,
+                  ),
+                  builder: (context, child) => Opacity(
+                    opacity: 1 - ctrl3,
+                    child: Transform.scale(
+                      scale: 1 - (0.3 * ctrl3),
+                      child: AnimatedBuilder(
+                        animation: _animationController,
+                        builder: (context, _) {
+                          double slide =
+                              _maxMainSlide * _animationController.value;
+                          double angleY =
+                              (math.pi / 2) * _animationController.value;
 
-                        return Transform(
-                          transform: Matrix4.identity()
-                            ..translate(slide)
-                            ..rotateZ(angleY),
-                          child: MainQuote(
-                            index: _index,
-                            isUnconstrained: false,
-                            color: Colors.black
-                                .withOpacity(1 - _animationController.value),
-                          ),
-                        );
-                      },
+                          return Transform(
+                            transform: Matrix4.identity()
+                              ..translate(slide)
+                              ..rotateZ(angleY),
+                            child: child,
+                          );
+                        },
+                      ),
                     ),
                   ),
                 ),
@@ -210,8 +211,6 @@ class _QuotesScreenState extends State<QuotesScreen>
                     scale: 0.9 + (0.1 * ctrl3),
                     child: MainQuote(
                       index: _nextIndex,
-                      color: Colors.black.withOpacity(ctrl3),
-                      isUnconstrained: false,
                     ),
                   ),
                 ),
@@ -228,32 +227,28 @@ class _QuotesScreenState extends State<QuotesScreen>
                 // next quote that is rendered outside of screen so that when you swipe it comes out flying
                 AnimatedBuilder(
                     animation: _animationController2,
-                    builder: (context, _) {
+                    child: Transform.translate(
+                      offset: Offset(SizeConfig.safeBlockVertical * 50,
+                          SizeConfig.safeBlockHorizontal * -35),
+                      child: Transform.rotate(
+                        angle: -math.pi / 2,
+                        child: MainQuote(
+                          index: _nextIndex,
+                        ),
+                      ),
+                    ),
+                    builder: (context, child) {
                       double slideX = _maxSecondarySlideX * _animation2.value;
                       double slideY = _maxSecondarySlideY * _animation2.value;
                       double angleY = (math.pi / 2) * _animation2.value;
-                      //  * _animation2.value;
                       return Opacity(
                         // getIt<QuoteService>().show ? 1 : 0
                         opacity: 1,
                         child: Transform(
-                          transform: Matrix4.identity()
-                            ..translate(slideX, slideY)
-                            ..rotateZ(angleY),
-                          child: Transform.translate(
-                            offset: Offset(SizeConfig.safeBlockVertical * 50,
-                                SizeConfig.safeBlockHorizontal * -35),
-                            child: Transform.rotate(
-                              angle: -math.pi / 2,
-                              child: MainQuote(
-                                index: _nextIndex,
-                                isUnconstrained: true,
-                                color: Colors.black
-                                    .withOpacity(1), //_animation2.value
-                              ),
-                            ),
-                          ),
-                        ),
+                            transform: Matrix4.identity()
+                              ..translate(slideX, slideY)
+                              ..rotateZ(angleY),
+                            child: child),
                       );
                     }),
               ],
@@ -308,52 +303,6 @@ class _BackgroundContainerState extends State<BackgroundContainer> {
               width: SizeConfig.screenWidth * 2,
             ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class MainQuote extends StatelessWidget {
-  const MainQuote(
-      {@required this.index,
-      @required this.isUnconstrained,
-      @required this.color});
-  final int index;
-  final bool isUnconstrained;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(
-          left: SizeConfig.safeBlockHorizontal * 10,
-          top: SizeConfig.safeBlockVertical * 12),
-      child: SizedBox(
-        width: SizeConfig.screenWidth * 0.9,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            AutoSizeText(
-              getIt<QuoteService>().quotes[index].quote,
-              maxLines: 5,
-              style: TextStyle(
-                fontSize: SizeConfig.blockSizeHorizontal * 9.5,
-                color: color,
-              ),
-              textAlign: TextAlign.left,
-            ),
-            AutoSizeText(
-              getIt<QuoteService>().quotes[index].authorShort,
-              maxLines: 1,
-              style: TextStyle(
-                fontSize: SizeConfig.blockSizeHorizontal * 4.5,
-                color: color.withOpacity(0.5),
-              ),
-              textAlign: TextAlign.left,
-            ),
-          ],
         ),
       ),
     );

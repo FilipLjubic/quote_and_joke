@@ -142,13 +142,12 @@ class _QuotesScreenState extends State<QuotesScreen>
             behavior: HitTestBehavior.opaque,
             child: Stack(
               alignment: Alignment.centerLeft,
-              overflow: Overflow.clip,
               children: [
                 BackgroundContainer(
                   ctrl3: ctrl3,
                   angle: -math.pi / 5,
                   offset: Offset(SizeConfig.safeBlockHorizontal * 30,
-                      SizeConfig.safeBlockVertical * 10),
+                      SizeConfig.safeBlockVertical * 12),
                   opacity: 1,
                 ),
                 BackgroundContainer(
@@ -242,13 +241,13 @@ class _QuotesScreenState extends State<QuotesScreen>
                       double slideY = _maxSecondarySlideY * _animation2.value;
                       double angleY = (math.pi / 2) * _animation2.value;
                       return Opacity(
-                        // getIt<QuoteService>().show ? 1 : 0
-                        opacity: 1,
+                        opacity: _animation2.value,
                         child: Transform(
-                            transform: Matrix4.identity()
-                              ..translate(slideX, slideY)
-                              ..rotateZ(angleY),
-                            child: child),
+                          transform: Matrix4.identity()
+                            ..translate(slideX, slideY)
+                            ..rotateZ(angleY),
+                          child: child,
+                        ),
                       );
                     }),
               ],

@@ -65,6 +65,7 @@ class _HomeState extends State<Home> with AfterInitMixin<Home> {
             setState(() {
               _currentIndex = index;
             });
+
           _pageController.animateToPage(index,
               duration: const Duration(milliseconds: 600),
               curve: Curves.fastLinearToSlowEaseIn);

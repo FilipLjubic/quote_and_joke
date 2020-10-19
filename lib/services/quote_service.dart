@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 
 class QuoteService with ChangeNotifier {
   List<Quote> _quotes = [];
-  int _offset = 0;
+  int _pageOffset = 0;
   bool _isLoading = false;
   bool _showScreen = false;
 
@@ -23,7 +23,7 @@ class QuoteService with ChangeNotifier {
     _quotes.clear();
     _setOffset();
     final http.Response response = await http.get(
-        "https://api.quotable.io/quotes?limit=50&skip=$_offset&maxLength=93");
+        "https://api.quotable.io/quotes?limit=50&skip=$_pageOffset&maxLength=93");
 
     if (response.statusCode == 200) {
       final decode = jsonDecode(response.body);
@@ -54,9 +54,9 @@ class QuoteService with ChangeNotifier {
   // each page has 50 quotes, since thats the limit for 1 request
   void _setOffset() {
     int nextOffset = Random().nextInt(25) * 50; // [0-25] * 50 => [0-1250]
-    if (nextOffset == _offset) {
+    if (nextOffset == _pageOffset) {
       _setOffset();
     }
-    _offset = nextOffset;
+    _pageOffset = nextOffset;
   }
 }

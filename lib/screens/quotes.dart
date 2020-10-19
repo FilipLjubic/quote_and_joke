@@ -1,6 +1,5 @@
 import 'dart:math' as math;
 import 'dart:ui';
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:quote_and_joke/locator.dart';
 import 'package:quote_and_joke/services/quote_service.dart';
@@ -25,10 +24,10 @@ class _QuotesScreenState extends State<QuotesScreen>
   bool _isSwipe = false;
   // to slide off screen
   int _maxMainSlide = -100;
-  // to get to position of last one
+  // to get to position of main quote
   double _maxSecondarySlideX = SizeConfig.safeBlockHorizontal * 108.9;
   double _maxSecondarySlideY = SizeConfig.safeBlockVertical * -26.9;
-  double ctrl3 = 0.0;
+  bool showFirstMainQuote = true;
 
   @override
   void initState() {
@@ -53,16 +52,14 @@ class _QuotesScreenState extends State<QuotesScreen>
       vsync: this,
       duration: const Duration(milliseconds: 500),
     );
-    _animation3 =
-        CurvedAnimation(curve: Curves.decelerate, parent: _animationController3)
-          ..addListener(
-            () => setState(() {
-              ctrl3 = _animation3.value;
-              if (ctrl3 == 1) {
-                _nextPage();
-              }
-            }),
-          );
+    _animation3 = CurvedAnimation(
+        curve: Curves.decelerate, parent: _animationController3)
+      // would love to remove this part, dont forget if(.value == 1) _nextPage
+      ..addStatusListener(
+        (status) {
+          if (status == AnimationStatus.completed) _nextPage();
+        },
+      );
     getIt<QuoteService>().addListener(() {
       if (mounted) setState(() {});
     });
@@ -78,6 +75,9 @@ class _QuotesScreenState extends State<QuotesScreen>
 
   void _onTap() {
     _animationController3.forward();
+    setState(() {
+      showFirstMainQuote = false;
+    });
   }
 
   void _nextPage() {
@@ -100,6 +100,9 @@ class _QuotesScreenState extends State<QuotesScreen>
   void _onDragStart(DragStartDetails details) {
     _leftDrag =
         _animationController.isDismissed && details.globalPosition.dx > 200;
+    setState(() {
+      showFirstMainQuote = true;
+    });
   }
 
   void _onDragUpdate(DragUpdateDetails details) {
@@ -144,83 +147,97 @@ class _QuotesScreenState extends State<QuotesScreen>
               alignment: Alignment.centerLeft,
               children: [
                 BackgroundContainer(
-                  ctrl3: ctrl3,
+                  animationController: _animationController3,
                   angle: -math.pi / 5,
                   offset: Offset(SizeConfig.safeBlockHorizontal * 30,
                       SizeConfig.safeBlockVertical * 12),
                   opacity: 1,
                 ),
                 BackgroundContainer(
-                  ctrl3: ctrl3,
+                  animationController: _animationController3,
                   angle: -math.pi / 6.2,
                   offset: Offset(SizeConfig.safeBlockHorizontal * 32,
                       SizeConfig.safeBlockVertical * 6),
                   opacity: 0.5,
                 ),
                 BackgroundContainer(
-                  ctrl3: ctrl3,
+                  animationController: _animationController3,
                   angle: -math.pi / 7.6,
                   offset: Offset(SizeConfig.safeBlockHorizontal * 32,
                       SizeConfig.safeBlockVertical * 2),
                   opacity: 0.5,
                 ),
                 BackgroundContainer(
-                  ctrl3: ctrl3,
+                  animationController: _animationController3,
                   angle: -math.pi / 10,
                   offset: Offset(SizeConfig.safeBlockHorizontal * 32,
                       SizeConfig.safeBlockVertical * -1),
                   opacity: 0.3,
                 ),
-                // text of quote shown at start
-                // fades out depending on whether it's being slided or tapped
-                // if tapped it also scales down a bit to make the other text seem to pop out
-                // in builder is swipe functionality
+                // text of quote shown at start (there's 2 at same spot)
+                // this one can be slided
                 AnimatedBuilder(
-                  animation: _animationController,
-                  child: MainQuote(
-                    index: _index,
-                  ),
-                  builder: (context, child) => Opacity(
-                    opacity: 1 - ctrl3,
-                    child: Transform.scale(
-                      scale: 1 - (0.3 * ctrl3),
-                      child: AnimatedBuilder(
-                        animation: _animationController,
-                        builder: (context, _) {
-                          double slide =
-                              _maxMainSlide * _animationController.value;
-                          double angleY =
-                              (math.pi / 2) * _animationController.value;
-
-                          return Transform(
-                            transform: Matrix4.identity()
-                              ..translate(slide)
-                              ..rotateZ(angleY),
-                            child: child,
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                ),
-                // quote following the first one, basically is just invisible till it's needed
-                Opacity(
-                  opacity: ctrl3,
-                  child: Transform.scale(
-                    scale: 0.9 + (0.1 * ctrl3),
+                    animation: _animationController,
                     child: MainQuote(
-                      index: _nextIndex,
+                      index: _index,
+                    ),
+                    // swipe functionality
+                    builder: (_, child) {
+                      double slide = _maxMainSlide * _animationController.value;
+                      double angleY =
+                          (math.pi / 2) * _animationController.value;
+
+                      return Opacity(
+                        opacity: showFirstMainQuote ? 1 : 0,
+                        child: Transform(
+                          transform: Matrix4.identity()
+                            ..translate(slide)
+                            ..rotateZ(angleY),
+                          child: child,
+                        ),
+                      );
+                    }),
+                // same main quote as first, but used when tapped
+                AnimatedBuilder(
+                    animation: _animation3,
+                    child: MainQuote(
+                      index: _index,
+                    ),
+                    builder: (_, child) {
+                      return Opacity(
+                        opacity: showFirstMainQuote ? 0 : 1 - _animation3.value,
+                        child: Transform.scale(
+                          scale: 1 - (0.3 * _animation3.value),
+                          child: child,
+                        ),
+                      );
+                    }),
+
+                // quote following the first one, basically is just invisible till it's needed
+                AnimatedBuilder(
+                  animation: _animation3,
+                  child: MainQuote(
+                    index: _nextIndex,
+                  ),
+                  builder: (_, child) => Opacity(
+                    opacity: _animation3.value,
+                    child: Transform.scale(
+                      scale: 0.9 + (0.1 * _animation3.value),
+                      child: child,
                     ),
                   ),
                 ),
                 // blur activated when quote is tapped
-                BackdropFilter(
-                  filter: ImageFilter.blur(
-                    sigmaX: 2 * math.sin(math.pi * ctrl3).abs(),
-                    sigmaY: 2 * math.sin(math.pi * ctrl3).abs(),
-                  ),
-                  child: Container(
-                    color: Colors.transparent,
+                AnimatedBuilder(
+                  animation: _animation3,
+                  builder: (_, __) => BackdropFilter(
+                    filter: ImageFilter.blur(
+                      sigmaX: 2 * math.sin(math.pi * _animation3.value).abs(),
+                      sigmaY: 2 * math.sin(math.pi * _animation3.value).abs(),
+                    ),
+                    child: Container(
+                      color: Colors.transparent,
+                    ),
                   ),
                 ),
                 // next quote that is rendered outside of screen so that when you swipe it comes out flying
@@ -264,13 +281,13 @@ class _QuotesScreenState extends State<QuotesScreen>
 
 class BackgroundContainer extends StatefulWidget {
   const BackgroundContainer({
-    @required this.ctrl3,
+    @required this.animationController,
     @required this.angle,
     @required this.opacity,
     @required this.offset,
   });
 
-  final double ctrl3;
+  final AnimationController animationController;
   final double angle;
   final double opacity;
   final Offset offset;
@@ -282,24 +299,31 @@ class BackgroundContainer extends StatefulWidget {
 class _BackgroundContainerState extends State<BackgroundContainer> {
   @override
   Widget build(BuildContext context) {
-    return Opacity(
-      opacity: getIt<QuoteService>().show ? widget.opacity : 0,
-      child: Transform.rotate(
-        angle: widget.angle,
-        child: Transform.translate(
-          offset: widget.offset,
-          child: Transform.scale(
-            scale: 1 - 0.1 * math.sin(math.pi * widget.ctrl3).abs(),
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.bottomLeft,
-                  end: Alignment.topRight,
-                  colors: [Color(0xFF6FD9E2), Color(0xFFDBDFB8)],
+    return AnimatedBuilder(
+      animation: widget.animationController,
+      builder: (_, child) => Opacity(
+        opacity: getIt<QuoteService>().show ? widget.opacity : 0,
+        child: Transform.rotate(
+          angle: widget.angle,
+          child: Transform.translate(
+            offset: widget.offset,
+            child: Transform.scale(
+              scale: 1 -
+                  0.1 *
+                      math
+                          .sin(math.pi * widget.animationController.value)
+                          .abs(),
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.bottomLeft,
+                    end: Alignment.topRight,
+                    colors: [Color(0xFF6FD9E2), Color(0xFFDBDFB8)],
+                  ),
                 ),
+                height: SizeConfig.screenHeight / 1.3,
+                width: SizeConfig.screenWidth * 2,
               ),
-              height: SizeConfig.screenHeight / 1.3,
-              width: SizeConfig.screenWidth * 2,
             ),
           ),
         ),

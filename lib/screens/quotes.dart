@@ -18,6 +18,10 @@ class _QuotesScreenState extends State<QuotesScreen>
   AnimationController _animationController3;
   Animation _animation2;
   Animation _animation3;
+  Animation _animationContainer1;
+  Animation _animationContainer2;
+  Animation _animationContainer3;
+  Animation _animationContainer4;
   int _index = 0;
   int _nextIndex = 1;
   bool _leftDrag = false;
@@ -32,6 +36,13 @@ class _QuotesScreenState extends State<QuotesScreen>
   @override
   void initState() {
     super.initState();
+    initializeAnimationControllers();
+    getIt<QuoteService>().addListener(() {
+      if (mounted) setState(() {});
+    });
+  }
+
+  void initializeAnimationControllers() {
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 350),
@@ -50,19 +61,38 @@ class _QuotesScreenState extends State<QuotesScreen>
 
     _animationController3 = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 800),
     );
-    _animation3 = CurvedAnimation(
-        curve: Curves.decelerate, parent: _animationController3)
+    _animation3 = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+          curve: Interval(0.0, 0.80, curve: Curves.ease),
+          parent: _animationController3),
       // would love to remove this part, dont forget if(.value == 1) _nextPage
-      ..addStatusListener(
+    )..addStatusListener(
         (status) {
           if (status == AnimationStatus.completed) _nextPage();
         },
       );
-    getIt<QuoteService>().addListener(() {
-      if (mounted) setState(() {});
-    });
+    _animationContainer1 = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+          curve: Interval(0.0, 0.80, curve: Curves.decelerate),
+          parent: _animationController3),
+    );
+    _animationContainer2 = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+          curve: Interval(0.1, 0.85, curve: Curves.decelerate),
+          parent: _animationController3),
+    );
+    _animationContainer3 = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+          curve: Interval(0.15, 0.9, curve: Curves.decelerate),
+          parent: _animationController3),
+    );
+    _animationContainer4 = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+          curve: Interval(0.2, 1, curve: Curves.decelerate),
+          parent: _animationController3),
+    );
   }
 
   @override
@@ -147,28 +177,28 @@ class _QuotesScreenState extends State<QuotesScreen>
               alignment: Alignment.centerLeft,
               children: [
                 BackgroundContainer(
-                  animationController: _animationController3,
+                  animationController: _animationContainer1,
                   angle: -math.pi / 5,
                   offset: Offset(SizeConfig.safeBlockHorizontal * 30,
                       SizeConfig.safeBlockVertical * 12),
                   opacity: 1,
                 ),
                 BackgroundContainer(
-                  animationController: _animationController3,
+                  animationController: _animationContainer2,
                   angle: -math.pi / 6.2,
                   offset: Offset(SizeConfig.safeBlockHorizontal * 32,
                       SizeConfig.safeBlockVertical * 6),
                   opacity: 0.5,
                 ),
                 BackgroundContainer(
-                  animationController: _animationController3,
+                  animationController: _animationContainer3,
                   angle: -math.pi / 7.6,
                   offset: Offset(SizeConfig.safeBlockHorizontal * 32,
                       SizeConfig.safeBlockVertical * 2),
                   opacity: 0.5,
                 ),
                 BackgroundContainer(
-                  animationController: _animationController3,
+                  animationController: _animationContainer4,
                   angle: -math.pi / 10,
                   offset: Offset(SizeConfig.safeBlockHorizontal * 32,
                       SizeConfig.safeBlockVertical * -1),
@@ -270,11 +300,25 @@ class _QuotesScreenState extends State<QuotesScreen>
               ],
             ),
           )
-        : Center(
-            child: CircularProgressIndicator(
-              backgroundColor: Colors.orange,
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.orange[200]),
-            ),
+        // replace one day with animation of containers swirling
+        : Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                "Loading more quotes",
+                style: TextStyle(
+                    color: Colors.black45,
+                    fontSize: SizeConfig.safeBlockHorizontal * 8),
+              ),
+              SizedBox(
+                height: SizeConfig.safeBlockVertical * 5,
+              ),
+              CircularProgressIndicator(
+                backgroundColor: Colors.orange,
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.orange[200]),
+              ),
+            ],
           );
   }
 }
@@ -287,7 +331,7 @@ class BackgroundContainer extends StatefulWidget {
     @required this.offset,
   });
 
-  final AnimationController animationController;
+  final Animation animationController;
   final double angle;
   final double opacity;
   final Offset offset;

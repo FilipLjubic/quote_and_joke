@@ -16,6 +16,7 @@ class _QuotesScreenState extends State<QuotesScreen>
   AnimationController _animationController;
   AnimationController _animationController2;
   AnimationController _animationController3;
+  Animation _animation1;
   Animation _animation2;
   Animation _animation3;
   Animation _animationContainerTap1;
@@ -31,7 +32,6 @@ class _QuotesScreenState extends State<QuotesScreen>
   // to get to position of main quote
   double _maxSecondarySlideX = SizeConfig.safeBlockHorizontal * 108.9;
   double _maxSecondarySlideY = SizeConfig.safeBlockVertical * -26.9;
-  bool showFirstMainQuote = true;
 
   @override
   void initState() {
@@ -47,7 +47,11 @@ class _QuotesScreenState extends State<QuotesScreen>
       vsync: this,
       duration: const Duration(milliseconds: 400),
     );
-    _animationContainerDrag1 = Tween<double>(begin: 0.0, end: 0.0).animate(
+    _animation1 = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+          curve: Interval(0.0, 0.875), parent: _animationController),
+    );
+    _animationContainerDrag1 = Tween<double>(begin: 0.0, end: 1.0).animate(
         CurvedAnimation(
             parent: _animationController, curve: Interval(0.0, 0.875)));
     _animationController2 = AnimationController(
@@ -108,9 +112,8 @@ class _QuotesScreenState extends State<QuotesScreen>
 
   void _onTap() {
     _animationController3.forward();
-    setState(() {
-      showFirstMainQuote = false;
-    });
+
+    getIt<QuoteService>().setDrag(false);
   }
 
   void _nextPage() {
@@ -131,9 +134,7 @@ class _QuotesScreenState extends State<QuotesScreen>
   void _onDragStart(DragStartDetails details) {
     _leftDrag =
         _animationController.isDismissed && details.globalPosition.dx > 200;
-    setState(() {
-      showFirstMainQuote = true;
-    });
+    getIt<QuoteService>().setDrag(true);
   }
 
   void _onDragUpdate(DragUpdateDetails details) {
@@ -182,44 +183,43 @@ class _QuotesScreenState extends State<QuotesScreen>
                   angle: -math.pi / 5,
                   offset: Offset(SizeConfig.safeBlockHorizontal * 31,
                       SizeConfig.safeBlockVertical * 10),
-                  opacity: 1,
+                  opacity: getIt<QuoteService>().isDrag ? 0 : 1,
                 ),
                 BackgroundContainer(
                   animationController: _animationContainerTap2,
                   angle: -math.pi / 6.2,
                   offset: Offset(SizeConfig.safeBlockHorizontal * 32,
                       SizeConfig.safeBlockVertical * 6),
-                  opacity: 0.5,
+                  opacity: getIt<QuoteService>().isDrag ? 0 : 0.6,
                 ),
                 BackgroundContainer(
                   animationController: _animationContainerTap3,
                   angle: -math.pi / 7.6,
                   offset: Offset(SizeConfig.safeBlockHorizontal * 31,
                       SizeConfig.safeBlockVertical * 2),
-                  opacity: 0.5,
+                  opacity: getIt<QuoteService>().isDrag ? 0 : 0.5,
                 ),
                 BackgroundContainer(
                   animationController: _animationContainerTap4,
                   angle: -math.pi / 10,
                   offset: Offset(SizeConfig.safeBlockHorizontal * 30,
                       SizeConfig.safeBlockVertical * -1),
-                  opacity: 0.3,
+                  opacity: getIt<QuoteService>().isDrag ? 0 : 0.4,
                 ),
                 // text of quote shown at start (there's 2 at same spot)
                 // this one can be slided
                 AnimatedBuilder(
-                    animation: _animationController,
+                    animation: _animation1,
                     child: MainQuote(
                       index: _index,
                     ),
                     // swipe functionality
                     builder: (_, child) {
-                      double slide = _maxMainSlide * _animationController.value;
-                      double angleY =
-                          (math.pi / 2) * _animationController.value;
+                      double slide = _maxMainSlide * _animation1.value;
+                      double angleY = (math.pi / 2) * _animation1.value;
 
                       return Opacity(
-                        opacity: showFirstMainQuote ? 1 : 0,
+                        opacity: getIt<QuoteService>().isDrag ? 1 : 0,
                         child: Transform(
                           transform: Matrix4.identity()
                             ..translate(slide)
@@ -236,7 +236,9 @@ class _QuotesScreenState extends State<QuotesScreen>
                     ),
                     builder: (_, child) {
                       return Opacity(
-                        opacity: showFirstMainQuote ? 0 : 1 - _animation3.value,
+                        opacity: getIt<QuoteService>().isDrag
+                            ? 0
+                            : 1 - _animation3.value,
                         child: Transform.scale(
                           scale: 1 - (0.2 * _animation3.value),
                           child: child,
@@ -371,6 +373,65 @@ class _BackgroundContainerState extends State<BackgroundContainer> {
                           .abs(),
               child: child,
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class BackgroundContainerDrag extends StatefulWidget {
+  const BackgroundContainerDrag({
+    @required this.animationController,
+    @required this.angle,
+    @required this.angleOffset,
+    @required this.offsetOffset,
+    @required this.opacity,
+    @required this.opacityOffset,
+    @required this.offset,
+  });
+
+  final Animation animationController;
+  final double angle;
+  final double angleOffset;
+  final double opacity;
+  final double opacityOffset;
+  final Offset offset;
+  final Offset offsetOffset;
+
+  @override
+  _BackgroundContainerDragState createState() =>
+      _BackgroundContainerDragState();
+}
+
+class _BackgroundContainerDragState extends State<BackgroundContainerDrag> {
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: widget.animationController,
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.bottomLeft,
+            end: Alignment.topRight,
+            colors: [Color(0xFF6FD9E2), Color(0xFFDBDFB8)],
+          ),
+        ),
+        height: SizeConfig.screenHeight / 1.3,
+        width: SizeConfig.screenWidth * 2,
+      ),
+      builder: (_, child) => Opacity(
+        opacity: getIt<QuoteService>().show
+            ? widget.opacity -
+                widget.opacityOffset * widget.animationController.value
+            : 0,
+        child: Transform.rotate(
+          angle: widget.angle +
+              widget.angleOffset * widget.animationController.value,
+          child: Transform.translate(
+            offset: widget.offset +
+                widget.offsetOffset * widget.animationController.value,
+            child: child,
           ),
         ),
       ),

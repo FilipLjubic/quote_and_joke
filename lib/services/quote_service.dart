@@ -8,14 +8,24 @@ import 'package:http/http.dart' as http;
 class QuoteService with ChangeNotifier {
   List<Quote> _quotes = [];
   int _pageOffset = 0;
+  //TODO: Napraviti VisibilityService s ova 3 dole atributa
   bool _isLoading = false;
+  // hide if screen is being changed so there is no overlap
   bool _showScreen = false;
+  bool _isDrag = true;
 
   List<Quote> get quotes => _quotes;
 
+  bool get isLoading => _isLoading;
+
   bool get show => _showScreen;
 
-  bool get isLoading => _isLoading;
+  bool get isDrag => _isDrag;
+
+  void setDrag(bool drag) {
+    _isDrag = drag;
+    notifyListeners();
+  }
 
   Future<void> fetchQuotes() async {
     _changeLoadingState();

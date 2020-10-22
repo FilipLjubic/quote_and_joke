@@ -16,7 +16,7 @@ class BottomNavBar extends StatelessWidget {
       elevation: 7.0,
       unselectedItemColor: Colors.black38,
       showUnselectedLabels: false,
-      selectedItemColor: Colors.orange,
+      selectedItemColor: Theme.of(context).primaryColor,
       items: [
         BottomNavigationBarItem(
           icon: Icon(Icons.home),

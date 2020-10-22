@@ -118,22 +118,22 @@ class _QuotesScreenState extends State<QuotesScreen>
 
     _animationContainerTap1 = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
-          curve: Interval(0.0, 0.75, curve: Curves.easeOutCubic),
+          curve: Interval(0.0, 0.75, curve: Curves.easeOut),
           parent: _animationController3),
     );
     _animationContainerTap2 = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
-          curve: Interval(0.05, 0.8, curve: Curves.easeOutCubic),
+          curve: Interval(0.05, 0.8, curve: Curves.easeOut),
           parent: _animationController3),
     );
     _animationContainerTap3 = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
-          curve: Interval(0.08, 0.9, curve: Curves.easeOutCubic),
+          curve: Interval(0.08, 0.9, curve: Curves.easeOut),
           parent: _animationController3),
     );
     _animationContainerTap4 = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
-          curve: Interval(0.12, 1, curve: Curves.easeOutCubic),
+          curve: Interval(0.12, 1, curve: Curves.easeOut),
           parent: _animationController3),
     )..addStatusListener((status) {
         if (status == AnimationStatus.completed) _nextPage();
@@ -469,8 +469,9 @@ class _QuotesScreenState extends State<QuotesScreen>
                 height: SizeConfig.safeBlockVertical * 5,
               ),
               CircularProgressIndicator(
-                backgroundColor: Colors.orange,
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.orange[200]),
+                backgroundColor: Theme.of(context).primaryColor,
+                valueColor: AlwaysStoppedAnimation<Color>(
+                    Theme.of(context).accentColor),
               ),
             ],
           );

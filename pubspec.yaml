@@ -1,7 +1,7 @@
 name: quote_and_joke
 description: A new Flutter project.
 
-publish_to: 'none' 
+publish_to: 'none'
 
 version: 1.0.0+1
 
@@ -18,6 +18,7 @@ dependencies:
   firebase_ml_vision: ^0.9.6+2
   get_it: ^5.0.1
   image_picker: ^0.6.7+11
+  like_button: ^1.0.3
 
 dev_dependencies:
   flutter_test:
@@ -35,4 +36,3 @@ flutter:
           style: italic
         - asset: fonts/Montserrat-Bold.ttf
           weight: 700
-  

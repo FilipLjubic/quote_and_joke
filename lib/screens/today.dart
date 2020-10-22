@@ -1,5 +1,9 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:like_button/like_button.dart';
+import 'package:quote_and_joke/locator.dart';
+import 'package:quote_and_joke/models/quote_model.dart';
+import 'package:quote_and_joke/services/quote_service.dart';
 import 'package:quote_and_joke/utils/screen_size_config.dart';
 
 // TODO: MAKE RESPONSIVE COLORS OF TEXT AND BUTTONS, AND ICON
@@ -10,33 +14,94 @@ class Today extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Stack(
           children: [
-            Expanded(
-              child: Align(
-                alignment: Alignment.center,
-                child: Text(
-                  "Quote & Joke",
-                  style: TextStyle(
-                      color: Colors.black54,
-                      fontSize: SizeConfig.safeBlockHorizontal * 5),
+            Positioned(
+              top: -SizeConfig.blockSizeVertical * 13,
+              right: -SizeConfig.blockSizeHorizontal * 30,
+              child: Container(
+                height: SizeConfig.blockSizeVertical * 50,
+                width: SizeConfig.blockSizeHorizontal * 70,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
+                    colors: [
+                      Theme.of(context).primaryColor.withOpacity(0.8),
+                      Theme.of(context).accentColor.withOpacity(0.8),
+                    ],
+                  ),
                 ),
               ),
             ),
-            Expanded(
-              flex: 1,
-              child: TodayHeadline(),
+            Positioned(
+              left: -SizeConfig.blockSizeHorizontal * 25,
+              bottom: SizeConfig.blockSizeHorizontal * 20,
+              child: Container(
+                height: SizeConfig.blockSizeVertical * 25,
+                width: SizeConfig.blockSizeHorizontal * 70,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Theme.of(context).primaryColor.withOpacity(0.8),
+                      Theme.of(context).accentColor.withOpacity(0.8),
+                    ],
+                  ),
+                ),
+              ),
             ),
-            Expanded(
-              flex: 7,
-              child: TodayCard(),
+            Positioned(
+              right: -SizeConfig.blockSizeHorizontal * 5,
+              bottom: SizeConfig.blockSizeHorizontal * 20,
+              child: Container(
+                height: SizeConfig.blockSizeVertical * 25,
+                width: SizeConfig.blockSizeHorizontal * 35,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    begin: Alignment.bottomRight,
+                    end: Alignment.topRight,
+                    colors: [
+                      Theme.of(context).primaryColor.withOpacity(0.8),
+                      Theme.of(context).accentColor.withOpacity(0.8),
+                    ],
+                  ),
+                ),
+              ),
             ),
-            Expanded(
-              flex: 2,
-              child: NotificationSettings(),
-            )
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      "Quote & Joke",
+                      style: TextStyle(
+                          color: Colors.black54,
+                          fontSize: SizeConfig.safeBlockHorizontal * 5),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: TodayHeadline(),
+                ),
+                Expanded(
+                  flex: 7,
+                  child: TodayCard(),
+                ),
+                Expanded(
+                  flex: 2,
+                  child: NotificationSettings(),
+                ),
+              ],
+            ),
           ],
         ),
       ),
@@ -54,7 +119,6 @@ class NotificationSettings extends StatelessWidget {
         children: [
           Icon(
             Icons.notifications_active,
-            color: Colors.orange,
             size: SizeConfig.safeBlockHorizontal * 6,
           ),
           Text(
@@ -82,7 +146,7 @@ class SettingsDropdowns extends StatelessWidget {
       child: Row(
         children: [
           FrequencyDropdown(
-            items: ['Everyday', 'Every monday', 'Never'],
+            items: ['Every day', 'Every monday', 'Never'],
           ),
           FrequencyDropdown(items: [
             '8:00 AM',
@@ -132,7 +196,7 @@ class _FrequencyDropdownState extends State<FrequencyDropdown> {
           value: _value,
           icon: Icon(
             Icons.keyboard_arrow_down,
-            color: Colors.orange,
+            color: Theme.of(context).accentColor,
           ),
           underline: Container(
             height: 2.0,
@@ -189,7 +253,7 @@ class TodayCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(flex: 5, child: TodayQuote()),
-            Expanded(flex: 1, child: TodayChoice()),
+            Expanded(flex: 1, child: TodayButtons()),
           ],
         ),
       ),
@@ -197,7 +261,14 @@ class TodayCard extends StatelessWidget {
   }
 }
 
-class TodayChoice extends StatelessWidget {
+class TodayButtons extends StatefulWidget {
+  @override
+  _TodayButtonsState createState() => _TodayButtonsState();
+}
+
+class _TodayButtonsState extends State<TodayButtons> {
+  bool _isFirstSelected = true;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -209,8 +280,9 @@ class TodayChoice extends StatelessWidget {
         children: [
           Expanded(
             child: RaisedButton(
-                // change to orange[200] if not selected
-                color: Colors.orange,
+                color: _isFirstSelected
+                    ? Theme.of(context).primaryColor
+                    : Theme.of(context).accentColor,
                 elevation: 1.0,
                 child: Text(
                   "Today's Quote",
@@ -218,15 +290,20 @@ class TodayChoice extends StatelessWidget {
                     fontSize: SizeConfig.safeBlockHorizontal * 4,
                   ),
                 ),
-                onPressed: () => print("todays quote")),
+                onPressed: () {
+                  setState(() {
+                    _isFirstSelected = !_isFirstSelected;
+                  });
+                }),
           ),
           SizedBox(
             width: SizeConfig.safeBlockHorizontal,
           ),
           Expanded(
             child: RaisedButton(
-                // change to orange if selected
-                color: Colors.orange[200],
+                color: !_isFirstSelected
+                    ? Theme.of(context).primaryColor
+                    : Theme.of(context).accentColor,
                 elevation: 1.0,
                 child: Text(
                   "Today's Joke",
@@ -234,7 +311,11 @@ class TodayChoice extends StatelessWidget {
                     fontSize: SizeConfig.safeBlockHorizontal * 4,
                   ),
                 ),
-                onPressed: () => print("todays joke")),
+                onPressed: () {
+                  setState(() {
+                    _isFirstSelected = !_isFirstSelected;
+                  });
+                }),
           ),
         ],
       ),
@@ -254,11 +335,7 @@ class TodayQuote extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            QuoteText(
-              author: "W. Clement Stone",
-              quote:
-                  "\"Always aim for the moon, even if you miss, you'll land among the stars.\"",
-            ),
+            QuoteText(),
             Save(),
           ],
         ),
@@ -267,29 +344,44 @@ class TodayQuote extends StatelessWidget {
   }
 }
 
-class Save extends StatelessWidget {
+class Save extends StatefulWidget {
+  @override
+  _SaveState createState() => _SaveState();
+}
+
+class _SaveState extends State<Save> {
+  bool _save = false;
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.only(
-          bottom: SizeConfig.safeBlockVertical,
-          left: SizeConfig.safeBlockHorizontal),
+          bottom: SizeConfig.safeBlockVertical * 2,
+          left: SizeConfig.safeBlockHorizontal * 1.5),
       child: Row(
         children: [
-          Icon(
-            // if is clicked change to bookmark
-            Icons.favorite_border,
+          LikeButton(
             size: SizeConfig.blockSizeVertical * 3.5,
-            color: Colors.orange,
-          ),
-          SizedBox(
-            width: SizeConfig.safeBlockHorizontal,
+            bubblesColor: BubblesColor(
+              dotPrimaryColor: Theme.of(context).accentColor,
+              dotSecondaryColor: Theme.of(context).primaryColor,
+              dotThirdColor: Theme.of(context).disabledColor,
+            ),
+            circleColor: CircleColor(
+              start: Theme.of(context).accentColor,
+              end: Theme.of(context).primaryColor,
+            ),
+            likeBuilder: (bool isLiked) {
+              return isLiked
+                  ? Icon(Icons.favorite, color: Theme.of(context).primaryColor)
+                  : Icon(Icons.favorite_border,
+                      color: Theme.of(context).accentColor);
+            },
           ),
           Text(
             "SAVE",
             style: TextStyle(
                 color: Colors.black45,
-                fontSize: SizeConfig.safeBlockHorizontal * 3,
+                fontSize: SizeConfig.safeBlockHorizontal * 3.2,
                 letterSpacing: SizeConfig.safeBlockHorizontal * 0.15),
           )
         ],
@@ -299,45 +391,46 @@ class Save extends StatelessWidget {
 }
 
 class QuoteText extends StatelessWidget {
-  QuoteText({this.quote, this.author});
-
-  final String quote;
-  final String author;
-
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.fromLTRB(
-          SizeConfig.safeBlockVertical * 5,
-          SizeConfig.safeBlockVertical * 5,
-          SizeConfig.safeBlockVertical * 5,
-          0),
-      child: Column(
-        children: [
-          AutoSizeText(
-            quote,
-            style: TextStyle(
-                fontSize: SizeConfig.safeBlockHorizontal * 6,
-                color: Colors.black87),
-            maxLines: 4,
-          ),
-          SizedBox(
-            height: SizeConfig.safeBlockVertical * 2,
-          ),
-          Row(
-            children: [
-              CircleAvatar(),
-              SizedBox(
-                width: SizeConfig.safeBlockVertical,
-              ),
-              Text(
-                author,
-                style: TextStyle(color: Colors.black45),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
+    return FutureBuilder(
+        future: getIt<QuoteService>().generateQOD(),
+        builder: (_, AsyncSnapshot<Quote> snapshot) {
+          return snapshot.hasData
+              ? Container(
+                  padding: EdgeInsets.fromLTRB(
+                      SizeConfig.safeBlockVertical * 5,
+                      SizeConfig.safeBlockVertical * 5,
+                      SizeConfig.safeBlockVertical * 5,
+                      0),
+                  child: Column(
+                    children: [
+                      AutoSizeText(
+                        snapshot.data.quote,
+                        style: TextStyle(
+                            fontSize: SizeConfig.safeBlockHorizontal * 6,
+                            color: Colors.black87),
+                        maxLines: 6,
+                      ),
+                      SizedBox(
+                        height: SizeConfig.safeBlockVertical * 2,
+                      ),
+                      Text(
+                        snapshot.data.author,
+                        style: TextStyle(color: Colors.black45),
+                      ),
+                    ],
+                  ),
+                )
+              : Padding(
+                  padding:
+                      EdgeInsets.only(top: SizeConfig.safeBlockVertical * 15),
+                  child: CircularProgressIndicator(
+                    backgroundColor: Theme.of(context).primaryColor,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                        Theme.of(context).accentColor),
+                  ),
+                );
+        });
   }
 }

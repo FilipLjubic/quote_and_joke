@@ -46,6 +46,22 @@ class _HomeState extends State<Home> with AfterInitMixin<Home> {
     super.dispose();
   }
 
+  void _onTap(int index) {
+    index == 1
+        ? getIt<QuoteService>().showScreen(true)
+        : Future.delayed(const Duration(milliseconds: 20),
+            () => getIt<QuoteService>().showScreen(false));
+
+    if (mounted)
+      setState(() {
+        _currentIndex = index;
+      });
+
+    _pageController.animateToPage(index,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.fastLinearToSlowEaseIn);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,20 +72,7 @@ class _HomeState extends State<Home> with AfterInitMixin<Home> {
       ),
       bottomNavigationBar: BottomNavBar(
         currentIndex: _currentIndex,
-        onTap: (index) {
-          index == 1
-              ? getIt<QuoteService>().showScreen(true)
-              : getIt<QuoteService>().showScreen(false);
-
-          if (mounted)
-            setState(() {
-              _currentIndex = index;
-            });
-
-          _pageController.animateToPage(index,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.fastLinearToSlowEaseIn);
-        },
+        onTap: (index) => _onTap(index),
       ),
     );
   }

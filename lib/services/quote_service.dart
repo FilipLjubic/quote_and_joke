@@ -22,6 +22,16 @@ class QuoteService with ChangeNotifier {
 
   bool get isDrag => _isDrag;
 
+  void _changeLoadingState() {
+    _isLoading = !_isLoading;
+    notifyListeners();
+  }
+
+  void showScreen(bool state) {
+    _showScreen = state;
+    notifyListeners();
+  }
+
   void setDrag(bool drag) {
     _isDrag = drag;
     notifyListeners();
@@ -49,14 +59,32 @@ class QuoteService with ChangeNotifier {
     }
   }
 
-  void showScreen(bool state) {
-    _showScreen = state;
-    notifyListeners();
-  }
+  // save generated quote into PreferredSettings
+  Future<Quote> generateQOD() async {
+    _changeLoadingState();
 
-  void _changeLoadingState() {
-    _isLoading = !_isLoading;
-    notifyListeners();
+    final http.Response response =
+        await http.get("https://quotes.rest/qod.json");
+
+    if (response.statusCode == 200) {
+      final decode = jsonDecode(response.body);
+
+      var quote = decode['contents']['quotes'][0]['quote'];
+      var author = decode['contents']['quotes'][0]['author'];
+      _changeLoadingState();
+      return Quote(
+          quote: quote,
+          author: author,
+          authorShort: Quote.createShortAuthor(author));
+    } else {
+      _changeLoadingState();
+      // replace with throw("Error fetching data") later
+      return Quote(
+          quote:
+              "When you recover or discover something that nourishes your soul and brings joy, care enough about yourself to make room for it in your life.",
+          author: "Jean Shinoda Bolen",
+          authorShort: "Bolen");
+    }
   }
 
   // to let the api know how many pages to skip

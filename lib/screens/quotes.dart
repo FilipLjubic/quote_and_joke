@@ -19,6 +19,8 @@ class _QuotesScreenState extends State<QuotesScreen>
   Animation _animation1;
   Animation _animation2;
   Animation _animation3;
+  Animation _animation3pt1;
+  Animation _animation3pt2;
   Animation _animationContainerTap1;
   Animation _animationContainerTap2;
   Animation _animationContainerTap3;
@@ -55,6 +57,7 @@ class _QuotesScreenState extends State<QuotesScreen>
       CurvedAnimation(
           curve: Interval(0.0, 0.875), parent: _animationController),
     );
+
     _animationContainerDrag1 = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _animationController,
@@ -94,17 +97,25 @@ class _QuotesScreenState extends State<QuotesScreen>
 
     _animationController3 = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1000),
+      duration: const Duration(milliseconds: 900),
     );
     _animation3 = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
-          curve: Interval(0.0, 0.75, curve: Curves.easeOut),
+          curve: Interval(0.0, 0.8, curve: Curves.easeOut),
           parent: _animationController3),
-    )..addStatusListener(
-        (status) {
-          if (status == AnimationStatus.completed) _nextPage();
-        },
-      );
+    );
+
+    _animation3pt1 = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+          curve: Interval(0.0, 0.375, curve: Curves.easeOut),
+          parent: _animationController3),
+    );
+    _animation3pt2 = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+          curve: Interval(0.2, 0.75, curve: Curves.easeOut),
+          parent: _animationController3),
+    );
+
     _animationContainerTap1 = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
           curve: Interval(0.0, 0.75, curve: Curves.easeOutCubic),
@@ -124,7 +135,9 @@ class _QuotesScreenState extends State<QuotesScreen>
       CurvedAnimation(
           curve: Interval(0.12, 1, curve: Curves.easeOutCubic),
           parent: _animationController3),
-    );
+    )..addStatusListener((status) {
+        if (status == AnimationStatus.completed) _nextPage();
+      });
   }
 
   @override
@@ -136,11 +149,13 @@ class _QuotesScreenState extends State<QuotesScreen>
   }
 
   void _onTap() {
-    _animationController3.forward();
-    setState(() {
-      _inAnimation = true;
-    });
-    getIt<QuoteService>().setDrag(false);
+    if (!_inAnimation) {
+      _animationController3.forward();
+      setState(() {
+        _inAnimation = true;
+      });
+      getIt<QuoteService>().setDrag(false);
+    }
   }
 
   void _nextPage() {
@@ -149,11 +164,11 @@ class _QuotesScreenState extends State<QuotesScreen>
       _animationController.value = 0;
       _animationController2.value = 0;
       _animationController3.value = 0;
-      _inAnimation = false;
       if (_index + 1 == getIt<QuoteService>().quotes.length - 2) {
         _index = 0;
         getIt<QuoteService>().fetchQuotes();
       }
+      _inAnimation = false;
     });
   }
 
@@ -188,6 +203,9 @@ class _QuotesScreenState extends State<QuotesScreen>
     if (!isDismissedOrSwiped) {
       _animationController.reverse();
     } else {
+      setState(() {
+        _inAnimation = true;
+      });
       _animationController.forward();
       _animationController2.forward();
       _isSwipe = false;
@@ -332,7 +350,6 @@ class _QuotesScreenState extends State<QuotesScreen>
                       SizeConfig.safeBlockVertical * 2),
                   opacity: getIt<QuoteService>().isDrag ? 0 : 0.5,
                 ),
-
                 BackgroundContainer(
                   animationController: _animationContainerTap4,
                   angle: -math.pi / 10,
@@ -364,7 +381,7 @@ class _QuotesScreenState extends State<QuotesScreen>
                     }),
                 // same main quote as first, but used when tapped
                 AnimatedBuilder(
-                    animation: _animation3,
+                    animation: _animation3pt1,
                     child: MainQuote(
                       index: _index,
                     ),
@@ -372,24 +389,24 @@ class _QuotesScreenState extends State<QuotesScreen>
                       return Opacity(
                         opacity: getIt<QuoteService>().isDrag
                             ? 0
-                            : 1 - _animation3.value,
+                            : 1 - _animation3pt1.value,
                         child: Transform.scale(
-                          scale: 1 - (0.2 * _animation3.value),
+                          scale: 1 - (0.25 * _animation3pt1.value),
                           child: child,
                         ),
                       );
                     }),
 
-                // quote following the first one, basically is just invisible till it's needed
+                // quote that's after the first one, basically is just invisible till it's needed
                 AnimatedBuilder(
-                  animation: _animation3,
+                  animation: _animation3pt2,
                   child: MainQuote(
                     index: _index + 1,
                   ),
                   builder: (_, child) => Opacity(
-                    opacity: _animation3.value,
+                    opacity: _animation3pt2.value,
                     child: Transform.scale(
-                      scale: 0.9 + (0.1 * _animation3.value),
+                      scale: 0.75 + (0.25 * _animation3pt2.value),
                       child: child,
                     ),
                   ),
@@ -399,8 +416,8 @@ class _QuotesScreenState extends State<QuotesScreen>
                   animation: _animation3,
                   builder: (_, __) => BackdropFilter(
                     filter: ImageFilter.blur(
-                      sigmaX: 1.5 * math.sin(math.pi * _animation3.value),
-                      sigmaY: 1.5 * math.sin(math.pi * _animation3.value),
+                      sigmaX: 3 * math.sin(math.pi * _animation3.value),
+                      sigmaY: 3 * math.sin(math.pi * _animation3.value),
                     ),
                     child: Container(
                       color: Colors.transparent,

@@ -15,12 +15,12 @@ class MainQuote extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(
-          left: SizeConfig.safeBlockHorizontal * 10,
+          left: SizeConfig.safeBlockHorizontal * 5,
           top: SizeConfig.safeBlockVertical * 12),
       child: SizedBox(
         width: SizeConfig.screenWidth * 0.9,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             AutoSizeText(

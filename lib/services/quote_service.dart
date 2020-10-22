@@ -12,7 +12,7 @@ class QuoteService with ChangeNotifier {
   bool _isLoading = false;
   // hide if screen is being changed so there is no overlap
   bool _showScreen = false;
-  bool _isDrag = true;
+  bool _isDrag = false;
 
   List<Quote> get quotes => _quotes;
 
@@ -41,8 +41,7 @@ class QuoteService with ChangeNotifier {
       for (var result in decode['results']) {
         _quotes.add(Quote.fromJson(result));
       }
-      _quotes.forEach(
-          (element) => print("${element.quote.length} ${element.quote}"));
+
       _changeLoadingState();
     } else {
       _changeLoadingState();

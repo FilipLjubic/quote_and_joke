@@ -24,14 +24,17 @@ class _QuotesScreenState extends State<QuotesScreen>
   Animation _animationContainerTap3;
   Animation _animationContainerTap4;
   Animation _animationContainerDrag1;
+  Animation _animationContainerDrag2;
+  Animation _animationContainerDrag3;
+  Animation _animationContainerDrag4;
   int _index = 0;
   bool _leftDrag = false;
   bool _isSwipe = false;
   // to slide off screen
   int _maxMainSlide = -100;
   // to get to position of main quote
-  double _maxSecondarySlideX = SizeConfig.safeBlockHorizontal * 108.9;
-  double _maxSecondarySlideY = SizeConfig.safeBlockVertical * -26.9;
+  double _maxSecondarySlideX = SizeConfig.safeBlockHorizontal * 106.4;
+  double _maxSecondarySlideY = SizeConfig.safeBlockVertical * -25.6;
 
   @override
   void initState() {
@@ -45,15 +48,37 @@ class _QuotesScreenState extends State<QuotesScreen>
   void initializeAnimationControllers() {
     _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 400),
+      duration: const Duration(milliseconds: 700),
     );
     _animation1 = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
           curve: Interval(0.0, 0.875), parent: _animationController),
     );
     _animationContainerDrag1 = Tween<double>(begin: 0.0, end: 1.0).animate(
-        CurvedAnimation(
-            parent: _animationController, curve: Interval(0.0, 0.875)));
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Interval(0.0, 0.875, curve: Curves.easeOut),
+      ),
+    );
+    _animationContainerDrag2 = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Interval(0.05, 0.93, curve: Curves.easeOut),
+      ),
+    );
+    _animationContainerDrag3 = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Interval(0.07, 0.96, curve: Curves.easeOut),
+      ),
+    );
+    _animationContainerDrag4 = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Interval(0.09, 0.98, curve: Curves.easeOut),
+      ),
+    );
+
     _animationController2 = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 250),
@@ -131,6 +156,7 @@ class _QuotesScreenState extends State<QuotesScreen>
     });
   }
 
+  //TODO: FIXATI AKO SI U JEDNOJ ANIMACIJI DA NE MOZES TRIGGERAT DRUGU
   void _onDragStart(DragStartDetails details) {
     _leftDrag =
         _animationController.isDismissed && details.globalPosition.dx > 200;
@@ -178,6 +204,112 @@ class _QuotesScreenState extends State<QuotesScreen>
             child: Stack(
               alignment: Alignment.centerLeft,
               children: [
+                // Drag containers are shown when text is being slided, otherwise they're hidden
+                // this one had to be done manually because it has different function for translation
+                AnimatedBuilder(
+                    animation: _animationContainerDrag1,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.bottomLeft,
+                          end: Alignment.topRight,
+                          colors: [Color(0xFF6FD9E2), Color(0xFFDBDFB8)],
+                        ),
+                      ),
+                      height: SizeConfig.screenHeight / 1.3,
+                      width: SizeConfig.screenWidth * 2,
+                    ),
+                    builder: (_, child) {
+                      double opacity = getIt<QuoteService>().isDrag ? 1 : 0;
+                      double angleOffset = (math.pi / 5 - math.pi / 6.2) / 2;
+                      double returnEffect =
+                          math.sin(_animationContainerDrag1.value * math.pi);
+                      return Opacity(
+                        opacity: getIt<QuoteService>().show ? opacity : 0,
+                        child: Transform.rotate(
+                          angle: -math.pi / 5 + angleOffset * returnEffect,
+                          child: Transform.translate(
+                            offset: Offset(SizeConfig.safeBlockHorizontal * 31,
+                                    SizeConfig.safeBlockVertical * 10) +
+                                Offset(SizeConfig.safeBlockHorizontal * 0.5,
+                                        SizeConfig.safeBlockVertical * -2) *
+                                    returnEffect,
+                            child: child,
+                          ),
+                        ),
+                      );
+                    }),
+                // this one is hidden until the first container gets to half its needed distance
+                // has the effect of being summoned out of nowhere
+                AnimatedBuilder(
+                    animation: _animationContainerDrag1,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.bottomLeft,
+                          end: Alignment.topRight,
+                          colors: [Color(0xFF6FD9E2), Color(0xFFDBDFB8)],
+                        ),
+                      ),
+                      height: SizeConfig.screenHeight / 1.3,
+                      width: SizeConfig.screenWidth * 2,
+                    ),
+                    builder: (_, child) {
+                      double opacity = getIt<QuoteService>().isDrag &&
+                              _animationContainerDrag1.value >= 0.5
+                          ? _animationContainerDrag1.value * 0.6
+                          : 0;
+                      double angleOffset = math.pi / 5 - math.pi / 6.2;
+
+                      return Opacity(
+                        opacity: getIt<QuoteService>().show ? opacity : 0,
+                        child: Transform.rotate(
+                          angle: -math.pi / 5 +
+                              angleOffset * _animationContainerDrag1.value,
+                          child: Transform.translate(
+                            offset: Offset(SizeConfig.safeBlockHorizontal * 31,
+                                    SizeConfig.safeBlockVertical * 10) +
+                                Offset(SizeConfig.safeBlockHorizontal * 1,
+                                        SizeConfig.safeBlockVertical * -4) *
+                                    _animationContainerDrag1.value,
+                            child: child,
+                          ),
+                        ),
+                      );
+                    }),
+                BackgroundContainerDrag(
+                  animationController: _animationContainerDrag2,
+                  angle: -math.pi / 6.2,
+                  angleEnd: -math.pi / 7.6,
+                  offset: Offset(SizeConfig.safeBlockHorizontal * 32,
+                      SizeConfig.safeBlockVertical * 6),
+                  translation: Offset(SizeConfig.safeBlockHorizontal * -1,
+                      SizeConfig.safeBlockVertical * -4),
+                  opacity: getIt<QuoteService>().isDrag ? 0.6 : 0,
+                  opacityReduction: 0.1,
+                ),
+                BackgroundContainerDrag(
+                  animationController: _animationContainerDrag3,
+                  angle: -math.pi / 7.6,
+                  angleEnd: -math.pi / 10,
+                  offset: Offset(SizeConfig.safeBlockHorizontal * 31,
+                      SizeConfig.safeBlockVertical * 2),
+                  translation: Offset(SizeConfig.safeBlockHorizontal * -1,
+                      SizeConfig.safeBlockVertical * -3),
+                  opacity: getIt<QuoteService>().isDrag ? 0.5 : 0,
+                  opacityReduction: 0.1,
+                ),
+                BackgroundContainerDrag(
+                  animationController: _animationContainerDrag4,
+                  angle: -math.pi / 10,
+                  angleEnd: -math.pi / 13,
+                  offset: Offset(SizeConfig.safeBlockHorizontal * 30,
+                      SizeConfig.safeBlockVertical * -1),
+                  translation: Offset(SizeConfig.safeBlockHorizontal * -2,
+                      SizeConfig.safeBlockVertical * -4),
+                  opacity: getIt<QuoteService>().isDrag ? 0.4 : 0,
+                  opacityReduction: 0.4,
+                ),
                 BackgroundContainer(
                   animationController: _animationContainerTap1,
                   angle: -math.pi / 5,
@@ -199,6 +331,7 @@ class _QuotesScreenState extends State<QuotesScreen>
                       SizeConfig.safeBlockVertical * 2),
                   opacity: getIt<QuoteService>().isDrag ? 0 : 0.5,
                 ),
+
                 BackgroundContainer(
                   animationController: _animationContainerTap4,
                   angle: -math.pi / 10,
@@ -265,8 +398,8 @@ class _QuotesScreenState extends State<QuotesScreen>
                   animation: _animation3,
                   builder: (_, __) => BackdropFilter(
                     filter: ImageFilter.blur(
-                      sigmaX: 3 * math.sin(math.pi * _animation3.value).abs(),
-                      sigmaY: 3 * math.sin(math.pi * _animation3.value).abs(),
+                      sigmaX: 1.5 * math.sin(math.pi * _animation3.value),
+                      sigmaY: 1.5 * math.sin(math.pi * _animation3.value),
                     ),
                     child: Container(
                       color: Colors.transparent,
@@ -367,10 +500,7 @@ class _BackgroundContainerState extends State<BackgroundContainer> {
             offset: widget.offset,
             child: Transform.scale(
               scale: 1 -
-                  0.15 *
-                      math
-                          .sin(math.pi * widget.animationController.value)
-                          .abs(),
+                  0.15 * math.sin(math.pi * widget.animationController.value),
               child: child,
             ),
           ),
@@ -384,20 +514,20 @@ class BackgroundContainerDrag extends StatefulWidget {
   const BackgroundContainerDrag({
     @required this.animationController,
     @required this.angle,
-    @required this.angleOffset,
-    @required this.offsetOffset,
+    @required this.angleEnd,
     @required this.opacity,
-    @required this.opacityOffset,
+    @required this.opacityReduction,
     @required this.offset,
+    @required this.translation,
   });
 
   final Animation animationController;
   final double angle;
-  final double angleOffset;
+  final double angleEnd;
   final double opacity;
-  final double opacityOffset;
+  final double opacityReduction;
   final Offset offset;
-  final Offset offsetOffset;
+  final Offset translation;
 
   @override
   _BackgroundContainerDragState createState() =>
@@ -405,6 +535,14 @@ class BackgroundContainerDrag extends StatefulWidget {
 }
 
 class _BackgroundContainerDragState extends State<BackgroundContainerDrag> {
+  double angleOffset;
+
+  @override
+  void initState() {
+    super.initState();
+    angleOffset = -widget.angle + widget.angleEnd;
+  }
+
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
@@ -423,14 +561,13 @@ class _BackgroundContainerDragState extends State<BackgroundContainerDrag> {
       builder: (_, child) => Opacity(
         opacity: getIt<QuoteService>().show
             ? widget.opacity -
-                widget.opacityOffset * widget.animationController.value
+                widget.opacityReduction * widget.animationController.value
             : 0,
         child: Transform.rotate(
-          angle: widget.angle +
-              widget.angleOffset * widget.animationController.value,
+          angle: widget.angle + angleOffset * widget.animationController.value,
           child: Transform.translate(
             offset: widget.offset +
-                widget.offsetOffset * widget.animationController.value,
+                widget.translation * widget.animationController.value,
             child: child,
           ),
         ),

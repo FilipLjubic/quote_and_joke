@@ -20,23 +20,23 @@ class BottomNavBar extends StatelessWidget {
       items: [
         BottomNavigationBarItem(
           icon: Icon(Icons.home),
-          title: Text("Today"),
+          label: "Today",
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.format_quote),
-          title: Text("Quotes"),
+          label: "Quotes",
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.tag_faces),
-          title: Text("Jokes"),
+          label: "Jokes",
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.add),
-          title: Text("Add"),
+          label: "Add",
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.collections_bookmark),
-          title: Text("Bookmarks"),
+          label: "Bookmarks",
         )
       ],
       onTap: onTap,

@@ -213,10 +213,9 @@ class _QuotesScreenState extends State<QuotesScreen>
                     child: Container(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          begin: Alignment.bottomLeft,
-                          end: Alignment.topRight,
-                          colors: [Color(0xFF6FD9E2), Color(0xFFDBDFB8)],
-                        ),
+                            begin: Alignment.bottomLeft,
+                            end: Alignment.topRight,
+                            colors: [Color(0xFF6FD9E2), Color(0xFFDBDFB8)]),
                       ),
                       height: SizeConfig.screenHeight / 1.3,
                       width: SizeConfig.screenWidth * 2,

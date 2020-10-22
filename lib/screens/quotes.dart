@@ -30,6 +30,7 @@ class _QuotesScreenState extends State<QuotesScreen>
   int _index = 0;
   bool _leftDrag = false;
   bool _isSwipe = false;
+  bool _inAnimation = false;
   // to slide off screen
   int _maxMainSlide = -100;
   // to get to position of main quote
@@ -48,7 +49,7 @@ class _QuotesScreenState extends State<QuotesScreen>
   void initializeAnimationControllers() {
     _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 700),
+      duration: const Duration(milliseconds: 600),
     );
     _animation1 = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
@@ -75,18 +76,18 @@ class _QuotesScreenState extends State<QuotesScreen>
     _animationContainerDrag4 = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _animationController,
-        curve: Interval(0.09, 0.98, curve: Curves.easeOut),
+        curve: Interval(0.1, 1.0, curve: Curves.easeOut),
       ),
     );
 
     _animationController2 = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 250),
+      duration: const Duration(milliseconds: 450),
     );
     _animation2 = CurvedAnimation(
         curve: Curves.easeOutCubic, parent: _animationController2)
-      ..addListener(() {
-        if (_animation2.value == 1) {
+      ..addStatusListener((status) {
+        if (status == AnimationStatus.completed) {
           _nextPage();
         }
       });
@@ -99,7 +100,6 @@ class _QuotesScreenState extends State<QuotesScreen>
       CurvedAnimation(
           curve: Interval(0.0, 0.75, curve: Curves.easeOut),
           parent: _animationController3),
-      // would love to remove this part, dont forget if(.value == 1) _nextPage
     )..addStatusListener(
         (status) {
           if (status == AnimationStatus.completed) _nextPage();
@@ -117,12 +117,12 @@ class _QuotesScreenState extends State<QuotesScreen>
     );
     _animationContainerTap3 = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
-          curve: Interval(0.1, 0.9, curve: Curves.easeOutCubic),
+          curve: Interval(0.08, 0.9, curve: Curves.easeOutCubic),
           parent: _animationController3),
     );
     _animationContainerTap4 = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
-          curve: Interval(0.15, 1, curve: Curves.easeOutCubic),
+          curve: Interval(0.12, 1, curve: Curves.easeOutCubic),
           parent: _animationController3),
     );
   }
@@ -137,7 +137,9 @@ class _QuotesScreenState extends State<QuotesScreen>
 
   void _onTap() {
     _animationController3.forward();
-
+    setState(() {
+      _inAnimation = true;
+    });
     getIt<QuoteService>().setDrag(false);
   }
 
@@ -147,24 +149,24 @@ class _QuotesScreenState extends State<QuotesScreen>
       _animationController.value = 0;
       _animationController2.value = 0;
       _animationController3.value = 0;
+      _inAnimation = false;
       if (_index + 1 == getIt<QuoteService>().quotes.length - 2) {
-        setState(() {
-          _index = 0;
-          getIt<QuoteService>().fetchQuotes();
-        });
+        _index = 0;
+        getIt<QuoteService>().fetchQuotes();
       }
     });
   }
 
-  //TODO: FIXATI AKO SI U JEDNOJ ANIMACIJI DA NE MOZES TRIGGERAT DRUGU
   void _onDragStart(DragStartDetails details) {
-    _leftDrag =
-        _animationController.isDismissed && details.globalPosition.dx > 200;
-    getIt<QuoteService>().setDrag(true);
+    if (!_inAnimation) {
+      _leftDrag =
+          _animationController.isDismissed && details.globalPosition.dx > 200;
+      getIt<QuoteService>().setDrag(true);
+    }
   }
 
   void _onDragUpdate(DragUpdateDetails details) {
-    if (_leftDrag) {
+    if (_leftDrag && !_inAnimation) {
       if (details.primaryDelta < -11) {
         _isSwipe = true;
       } else {
@@ -181,7 +183,7 @@ class _QuotesScreenState extends State<QuotesScreen>
     if (_animationController.isDismissed || _animationController.isCompleted) {
       return;
     }
-    // if quote is over "half" screen
+    // if quote is over "half" of screen
     bool isDismissedOrSwiped = _animationController.value > 0.25 || _isSwipe;
     if (!isDismissedOrSwiped) {
       _animationController.reverse();

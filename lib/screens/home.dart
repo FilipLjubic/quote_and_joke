@@ -23,6 +23,7 @@ class _HomeState extends State<Home> with AfterInitMixin<Home> {
     Camera(),
     Bookmarks()
   ];
+  Future<bool> _loadData;
   int _currentIndex = 0;
   PageController _pageController;
 
@@ -31,6 +32,12 @@ class _HomeState extends State<Home> with AfterInitMixin<Home> {
     super.initState();
     _pageController = PageController();
     getIt<QuoteService>().fetchQuotes();
+    _loadData = _fetchData();
+  }
+
+  Future<bool> _fetchData() async {
+    await getIt<QuoteService>().generateQOD();
+    return true;
   }
 
   // called once after initState, used because I need context to get media query data
@@ -65,11 +72,23 @@ class _HomeState extends State<Home> with AfterInitMixin<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PageView(
-        controller: _pageController,
-        children: _screens,
-        physics: NeverScrollableScrollPhysics(),
-      ),
+      body: FutureBuilder(
+          future: _loadData,
+          builder: (_, snapshot) {
+            return snapshot.hasData
+                ? PageView(
+                    controller: _pageController,
+                    children: _screens,
+                    physics: NeverScrollableScrollPhysics(),
+                  )
+                : Center(
+                    child: CircularProgressIndicator(
+                      backgroundColor: Theme.of(context).primaryColor,
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                          Theme.of(context).accentColor),
+                    ),
+                  );
+          }),
       bottomNavigationBar: BottomNavBar(
         currentIndex: _currentIndex,
         onTap: (index) => _onTap(index),

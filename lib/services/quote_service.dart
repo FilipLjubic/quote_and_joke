@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 
 class QuoteService with ChangeNotifier {
   List<Quote> _quotes = [];
+  Quote qod;
   int _pageOffset = 0;
   //TODO: Napraviti VisibilityService s ova 3 dole atributa
   bool _isLoading = false;
@@ -60,9 +61,7 @@ class QuoteService with ChangeNotifier {
   }
 
   // save generated quote into PreferredSettings
-  Future<Quote> generateQOD() async {
-    _changeLoadingState();
-
+  Future<void> generateQOD() async {
     final http.Response response =
         await http.get("https://quotes.rest/qod.json");
 
@@ -71,15 +70,13 @@ class QuoteService with ChangeNotifier {
 
       var quote = decode['contents']['quotes'][0]['quote'];
       var author = decode['contents']['quotes'][0]['author'];
-      _changeLoadingState();
-      return Quote(
+      qod = Quote(
           quote: quote,
           author: author,
           authorShort: Quote.createShortAuthor(author));
     } else {
-      _changeLoadingState();
       // replace with throw("Error fetching data") later
-      return Quote(
+      qod = Quote(
           quote:
               "When you recover or discover something that nourishes your soul and brings joy, care enough about yourself to make room for it in your life.",
           author: "Jean Shinoda Bolen",

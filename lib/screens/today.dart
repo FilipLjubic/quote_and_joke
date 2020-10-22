@@ -5,9 +5,7 @@ import 'package:quote_and_joke/locator.dart';
 import 'package:quote_and_joke/models/quote_model.dart';
 import 'package:quote_and_joke/services/quote_service.dart';
 import 'package:quote_and_joke/utils/screen_size_config.dart';
-
-// TODO: MAKE RESPONSIVE COLORS OF TEXT AND BUTTONS, AND ICON
-//       REFACTOR
+import 'package:async/async.dart';
 
 class Today extends StatelessWidget {
   @override
@@ -350,7 +348,6 @@ class Save extends StatefulWidget {
 }
 
 class _SaveState extends State<Save> {
-  bool _save = false;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -393,44 +390,30 @@ class _SaveState extends State<Save> {
 class QuoteText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: getIt<QuoteService>().generateQOD(),
-        builder: (_, AsyncSnapshot<Quote> snapshot) {
-          return snapshot.hasData
-              ? Container(
-                  padding: EdgeInsets.fromLTRB(
-                      SizeConfig.safeBlockVertical * 5,
-                      SizeConfig.safeBlockVertical * 5,
-                      SizeConfig.safeBlockVertical * 5,
-                      0),
-                  child: Column(
-                    children: [
-                      AutoSizeText(
-                        snapshot.data.quote,
-                        style: TextStyle(
-                            fontSize: SizeConfig.safeBlockHorizontal * 6,
-                            color: Colors.black87),
-                        maxLines: 6,
-                      ),
-                      SizedBox(
-                        height: SizeConfig.safeBlockVertical * 2,
-                      ),
-                      Text(
-                        snapshot.data.author,
-                        style: TextStyle(color: Colors.black45),
-                      ),
-                    ],
-                  ),
-                )
-              : Padding(
-                  padding:
-                      EdgeInsets.only(top: SizeConfig.safeBlockVertical * 15),
-                  child: CircularProgressIndicator(
-                    backgroundColor: Theme.of(context).primaryColor,
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                        Theme.of(context).accentColor),
-                  ),
-                );
-        });
+    return Container(
+      padding: EdgeInsets.fromLTRB(
+          SizeConfig.safeBlockVertical * 5,
+          SizeConfig.safeBlockVertical * 5,
+          SizeConfig.safeBlockVertical * 5,
+          0),
+      child: Column(
+        children: [
+          AutoSizeText(
+            getIt<QuoteService>().qod.quote,
+            style: TextStyle(
+                fontSize: SizeConfig.safeBlockHorizontal * 6,
+                color: Colors.black87),
+            maxLines: 6,
+          ),
+          SizedBox(
+            height: SizeConfig.safeBlockVertical * 2,
+          ),
+          Text(
+            getIt<QuoteService>().qod.author,
+            style: TextStyle(color: Colors.black45),
+          ),
+        ],
+      ),
+    );
   }
 }

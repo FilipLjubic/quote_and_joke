@@ -49,7 +49,7 @@ class _QuotesScreenState extends State<QuotesScreen>
   void initializeAnimationControllers() {
     _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 600),
+      duration: const Duration(milliseconds: 700),
     );
     _animation1 = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(

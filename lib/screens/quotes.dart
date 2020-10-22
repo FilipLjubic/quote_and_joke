@@ -18,12 +18,12 @@ class _QuotesScreenState extends State<QuotesScreen>
   AnimationController _animationController3;
   Animation _animation2;
   Animation _animation3;
-  Animation _animationContainer1;
-  Animation _animationContainer2;
-  Animation _animationContainer3;
-  Animation _animationContainer4;
+  Animation _animationContainerTap1;
+  Animation _animationContainerTap2;
+  Animation _animationContainerTap3;
+  Animation _animationContainerTap4;
+  Animation _animationContainerDrag1;
   int _index = 0;
-  int _nextIndex = 1;
   bool _leftDrag = false;
   bool _isSwipe = false;
   // to slide off screen
@@ -45,8 +45,11 @@ class _QuotesScreenState extends State<QuotesScreen>
   void initializeAnimationControllers() {
     _animationController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 350),
+      duration: const Duration(milliseconds: 400),
     );
+    _animationContainerDrag1 = Tween<double>(begin: 0.0, end: 0.0).animate(
+        CurvedAnimation(
+            parent: _animationController, curve: Interval(0.0, 0.875)));
     _animationController2 = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 250),
@@ -61,11 +64,11 @@ class _QuotesScreenState extends State<QuotesScreen>
 
     _animationController3 = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 800),
+      duration: const Duration(milliseconds: 1000),
     );
     _animation3 = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
-          curve: Interval(0.0, 0.80, curve: Curves.ease),
+          curve: Interval(0.0, 0.75, curve: Curves.easeOut),
           parent: _animationController3),
       // would love to remove this part, dont forget if(.value == 1) _nextPage
     )..addStatusListener(
@@ -73,24 +76,24 @@ class _QuotesScreenState extends State<QuotesScreen>
           if (status == AnimationStatus.completed) _nextPage();
         },
       );
-    _animationContainer1 = Tween<double>(begin: 0.0, end: 1.0).animate(
+    _animationContainerTap1 = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
-          curve: Interval(0.0, 0.80, curve: Curves.decelerate),
+          curve: Interval(0.0, 0.75, curve: Curves.easeOutCubic),
           parent: _animationController3),
     );
-    _animationContainer2 = Tween<double>(begin: 0.0, end: 1.0).animate(
+    _animationContainerTap2 = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
-          curve: Interval(0.1, 0.85, curve: Curves.decelerate),
+          curve: Interval(0.05, 0.8, curve: Curves.easeOutCubic),
           parent: _animationController3),
     );
-    _animationContainer3 = Tween<double>(begin: 0.0, end: 1.0).animate(
+    _animationContainerTap3 = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
-          curve: Interval(0.15, 0.9, curve: Curves.decelerate),
+          curve: Interval(0.1, 0.9, curve: Curves.easeOutCubic),
           parent: _animationController3),
     );
-    _animationContainer4 = Tween<double>(begin: 0.0, end: 1.0).animate(
+    _animationContainerTap4 = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
-          curve: Interval(0.2, 1, curve: Curves.decelerate),
+          curve: Interval(0.15, 1, curve: Curves.easeOutCubic),
           parent: _animationController3),
     );
   }
@@ -113,14 +116,12 @@ class _QuotesScreenState extends State<QuotesScreen>
   void _nextPage() {
     setState(() {
       _index++;
-      _nextIndex++;
       _animationController.value = 0;
       _animationController2.value = 0;
       _animationController3.value = 0;
-      if (_nextIndex == getIt<QuoteService>().quotes.length - 2) {
+      if (_index + 1 == getIt<QuoteService>().quotes.length - 2) {
         setState(() {
           _index = 0;
-          _nextIndex = 1;
           getIt<QuoteService>().fetchQuotes();
         });
       }
@@ -177,30 +178,30 @@ class _QuotesScreenState extends State<QuotesScreen>
               alignment: Alignment.centerLeft,
               children: [
                 BackgroundContainer(
-                  animationController: _animationContainer1,
+                  animationController: _animationContainerTap1,
                   angle: -math.pi / 5,
-                  offset: Offset(SizeConfig.safeBlockHorizontal * 30,
-                      SizeConfig.safeBlockVertical * 12),
+                  offset: Offset(SizeConfig.safeBlockHorizontal * 31,
+                      SizeConfig.safeBlockVertical * 10),
                   opacity: 1,
                 ),
                 BackgroundContainer(
-                  animationController: _animationContainer2,
+                  animationController: _animationContainerTap2,
                   angle: -math.pi / 6.2,
                   offset: Offset(SizeConfig.safeBlockHorizontal * 32,
                       SizeConfig.safeBlockVertical * 6),
                   opacity: 0.5,
                 ),
                 BackgroundContainer(
-                  animationController: _animationContainer3,
+                  animationController: _animationContainerTap3,
                   angle: -math.pi / 7.6,
-                  offset: Offset(SizeConfig.safeBlockHorizontal * 32,
+                  offset: Offset(SizeConfig.safeBlockHorizontal * 31,
                       SizeConfig.safeBlockVertical * 2),
                   opacity: 0.5,
                 ),
                 BackgroundContainer(
-                  animationController: _animationContainer4,
+                  animationController: _animationContainerTap4,
                   angle: -math.pi / 10,
-                  offset: Offset(SizeConfig.safeBlockHorizontal * 32,
+                  offset: Offset(SizeConfig.safeBlockHorizontal * 30,
                       SizeConfig.safeBlockVertical * -1),
                   opacity: 0.3,
                 ),
@@ -237,7 +238,7 @@ class _QuotesScreenState extends State<QuotesScreen>
                       return Opacity(
                         opacity: showFirstMainQuote ? 0 : 1 - _animation3.value,
                         child: Transform.scale(
-                          scale: 1 - (0.3 * _animation3.value),
+                          scale: 1 - (0.2 * _animation3.value),
                           child: child,
                         ),
                       );
@@ -247,7 +248,7 @@ class _QuotesScreenState extends State<QuotesScreen>
                 AnimatedBuilder(
                   animation: _animation3,
                   child: MainQuote(
-                    index: _nextIndex,
+                    index: _index + 1,
                   ),
                   builder: (_, child) => Opacity(
                     opacity: _animation3.value,
@@ -262,8 +263,8 @@ class _QuotesScreenState extends State<QuotesScreen>
                   animation: _animation3,
                   builder: (_, __) => BackdropFilter(
                     filter: ImageFilter.blur(
-                      sigmaX: 2 * math.sin(math.pi * _animation3.value).abs(),
-                      sigmaY: 2 * math.sin(math.pi * _animation3.value).abs(),
+                      sigmaX: 3 * math.sin(math.pi * _animation3.value).abs(),
+                      sigmaY: 3 * math.sin(math.pi * _animation3.value).abs(),
                     ),
                     child: Container(
                       color: Colors.transparent,
@@ -279,7 +280,7 @@ class _QuotesScreenState extends State<QuotesScreen>
                       child: Transform.rotate(
                         angle: -math.pi / 2,
                         child: MainQuote(
-                          index: _nextIndex,
+                          index: _index + 1,
                         ),
                       ),
                     ),
@@ -345,6 +346,17 @@ class _BackgroundContainerState extends State<BackgroundContainer> {
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: widget.animationController,
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.bottomLeft,
+            end: Alignment.topRight,
+            colors: [Color(0xFF6FD9E2), Color(0xFFDBDFB8)],
+          ),
+        ),
+        height: SizeConfig.screenHeight / 1.3,
+        width: SizeConfig.screenWidth * 2,
+      ),
       builder: (_, child) => Opacity(
         opacity: getIt<QuoteService>().show ? widget.opacity : 0,
         child: Transform.rotate(
@@ -353,21 +365,11 @@ class _BackgroundContainerState extends State<BackgroundContainer> {
             offset: widget.offset,
             child: Transform.scale(
               scale: 1 -
-                  0.1 *
+                  0.15 *
                       math
                           .sin(math.pi * widget.animationController.value)
                           .abs(),
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.bottomLeft,
-                    end: Alignment.topRight,
-                    colors: [Color(0xFF6FD9E2), Color(0xFFDBDFB8)],
-                  ),
-                ),
-                height: SizeConfig.screenHeight / 1.3,
-                width: SizeConfig.screenWidth * 2,
-              ),
+              child: child,
             ),
           ),
         ),

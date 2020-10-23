@@ -30,7 +30,8 @@ class _QuotesScreenState extends State<QuotesScreen>
   Animation _animationContainerDrag2;
   Animation _animationContainerDrag3;
   Animation _animationContainerDrag4;
-  int _index = 0;
+  QuoteService quoteService = getIt<QuoteService>();
+  VisibilityService visibilityService = getIt<VisibilityService>();
   bool _leftDrag = false;
   bool _isSwipe = false;
   bool _inAnimation = false;
@@ -44,11 +45,11 @@ class _QuotesScreenState extends State<QuotesScreen>
   void initState() {
     super.initState();
     initializeAnimationControllers();
-    getIt<QuoteService>().addListener(() {
+    quoteService.addListener(() {
       if (mounted) setState(() {});
     });
 
-    getIt<VisibilityService>().addListener(() {
+    visibilityService.addListener(() {
       if (mounted) setState(() {});
     });
   }
@@ -159,19 +160,19 @@ class _QuotesScreenState extends State<QuotesScreen>
       setState(() {
         _inAnimation = true;
       });
-      getIt<VisibilityService>().setDrag(false);
+      visibilityService.setDrag(false);
     }
   }
 
   void _nextPage() {
     setState(() {
-      _index++;
+      visibilityService.increaseIndex();
       _animationController.value = 0;
       _animationController2.value = 0;
       _animationController3.value = 0;
-      if (_index + 1 == getIt<QuoteService>().quotes.length - 2) {
-        _index = 0;
-        getIt<QuoteService>().fetchQuotes();
+      if (visibilityService.quoteIndex + 1 == quoteService.quotes.length - 2) {
+        visibilityService.resetIndex();
+        quoteService.fetchQuotes();
       }
       _inAnimation = false;
     });
@@ -181,7 +182,7 @@ class _QuotesScreenState extends State<QuotesScreen>
     if (!_inAnimation) {
       _leftDrag =
           _animationController.isDismissed && details.globalPosition.dx > 200;
-      getIt<VisibilityService>().setDrag(true);
+      visibilityService.setDrag(true);
     }
   }
 
@@ -219,7 +220,7 @@ class _QuotesScreenState extends State<QuotesScreen>
 
   @override
   Widget build(BuildContext context) {
-    return !getIt<VisibilityService>().isLoading
+    return !visibilityService.isLoading
         ? GestureDetector(
             onTap: _onTap,
             onHorizontalDragStart: _onDragStart,
@@ -244,13 +245,12 @@ class _QuotesScreenState extends State<QuotesScreen>
                       width: SizeConfig.screenWidth * 2,
                     ),
                     builder: (_, child) {
-                      double opacity =
-                          getIt<VisibilityService>().isDrag ? 1 : 0;
+                      double opacity = visibilityService.isDrag ? 1 : 0;
                       double angleOffset = (math.pi / 5 - math.pi / 6.2) / 2;
                       double returnEffect =
                           math.sin(_animationContainerDrag1.value * math.pi);
                       return Opacity(
-                        opacity: getIt<VisibilityService>().show ? opacity : 0,
+                        opacity: visibilityService.show ? opacity : 0,
                         child: Transform.rotate(
                           angle: -math.pi / 5 + angleOffset * returnEffect,
                           child: Transform.translate(
@@ -280,14 +280,14 @@ class _QuotesScreenState extends State<QuotesScreen>
                       width: SizeConfig.screenWidth * 2,
                     ),
                     builder: (_, child) {
-                      double opacity = getIt<VisibilityService>().isDrag &&
+                      double opacity = visibilityService.isDrag &&
                               _animationContainerDrag1.value >= 0.5
                           ? _animationContainerDrag1.value * 0.6
                           : 0;
                       double angleOffset = math.pi / 5 - math.pi / 6.2;
 
                       return Opacity(
-                        opacity: getIt<VisibilityService>().show ? opacity : 0,
+                        opacity: visibilityService.show ? opacity : 0,
                         child: Transform.rotate(
                           angle: -math.pi / 5 +
                               angleOffset * _animationContainerDrag1.value,
@@ -310,7 +310,7 @@ class _QuotesScreenState extends State<QuotesScreen>
                       SizeConfig.safeBlockVertical * 6),
                   translation: Offset(SizeConfig.safeBlockHorizontal * -1,
                       SizeConfig.safeBlockVertical * -4),
-                  opacity: getIt<VisibilityService>().isDrag ? 0.6 : 0,
+                  opacity: visibilityService.isDrag ? 0.6 : 0,
                   opacityReduction: 0.1,
                 ),
                 BackgroundContainerDrag(
@@ -321,7 +321,7 @@ class _QuotesScreenState extends State<QuotesScreen>
                       SizeConfig.safeBlockVertical * 2),
                   translation: Offset(SizeConfig.safeBlockHorizontal * -1,
                       SizeConfig.safeBlockVertical * -3),
-                  opacity: getIt<VisibilityService>().isDrag ? 0.5 : 0,
+                  opacity: visibilityService.isDrag ? 0.5 : 0,
                   opacityReduction: 0.1,
                 ),
                 BackgroundContainerDrag(
@@ -332,7 +332,7 @@ class _QuotesScreenState extends State<QuotesScreen>
                       SizeConfig.safeBlockVertical * -1),
                   translation: Offset(SizeConfig.safeBlockHorizontal * -2,
                       SizeConfig.safeBlockVertical * -4),
-                  opacity: getIt<VisibilityService>().isDrag ? 0.4 : 0,
+                  opacity: visibilityService.isDrag ? 0.4 : 0,
                   opacityReduction: 0.4,
                 ),
                 BackgroundContainer(
@@ -340,35 +340,35 @@ class _QuotesScreenState extends State<QuotesScreen>
                   angle: -math.pi / 5,
                   offset: Offset(SizeConfig.safeBlockHorizontal * 31,
                       SizeConfig.safeBlockVertical * 10),
-                  opacity: getIt<VisibilityService>().isDrag ? 0 : 1,
+                  opacity: visibilityService.isDrag ? 0 : 1,
                 ),
                 BackgroundContainer(
                   animationController: _animationContainerTap2,
                   angle: -math.pi / 6.2,
                   offset: Offset(SizeConfig.safeBlockHorizontal * 32,
                       SizeConfig.safeBlockVertical * 6),
-                  opacity: getIt<VisibilityService>().isDrag ? 0 : 0.6,
+                  opacity: visibilityService.isDrag ? 0 : 0.6,
                 ),
                 BackgroundContainer(
                   animationController: _animationContainerTap3,
                   angle: -math.pi / 7.6,
                   offset: Offset(SizeConfig.safeBlockHorizontal * 31,
                       SizeConfig.safeBlockVertical * 2),
-                  opacity: getIt<VisibilityService>().isDrag ? 0 : 0.5,
+                  opacity: visibilityService.isDrag ? 0 : 0.5,
                 ),
                 BackgroundContainer(
                   animationController: _animationContainerTap4,
                   angle: -math.pi / 10,
                   offset: Offset(SizeConfig.safeBlockHorizontal * 30,
                       SizeConfig.safeBlockVertical * -1),
-                  opacity: getIt<VisibilityService>().isDrag ? 0 : 0.4,
+                  opacity: visibilityService.isDrag ? 0 : 0.4,
                 ),
                 // text of quote shown at start (there's 2 at same spot)
                 // this one can be slided
                 AnimatedBuilder(
                     animation: _animation1,
                     child: MainQuote(
-                      index: _index,
+                      index: visibilityService.quoteIndex,
                     ),
                     // swipe functionality
                     builder: (_, child) {
@@ -376,7 +376,7 @@ class _QuotesScreenState extends State<QuotesScreen>
                       double angleY = (math.pi / 2) * _animation1.value;
 
                       return Opacity(
-                        opacity: getIt<VisibilityService>().isDrag ? 1 : 0,
+                        opacity: visibilityService.isDrag ? 1 : 0,
                         child: Transform(
                           transform: Matrix4.identity()
                             ..translate(slide)
@@ -389,11 +389,11 @@ class _QuotesScreenState extends State<QuotesScreen>
                 AnimatedBuilder(
                     animation: _animation3pt1,
                     child: MainQuote(
-                      index: _index,
+                      index: visibilityService.quoteIndex,
                     ),
                     builder: (_, child) {
                       return Opacity(
-                        opacity: getIt<VisibilityService>().isDrag
+                        opacity: visibilityService.isDrag
                             ? 0
                             : 1 - _animation3pt1.value,
                         child: Transform.scale(
@@ -407,7 +407,7 @@ class _QuotesScreenState extends State<QuotesScreen>
                 AnimatedBuilder(
                   animation: _animation3pt2,
                   child: MainQuote(
-                    index: _index + 1,
+                    index: visibilityService.quoteIndex + 1,
                   ),
                   builder: (_, child) => Opacity(
                     opacity: _animation3pt2.value,
@@ -439,7 +439,7 @@ class _QuotesScreenState extends State<QuotesScreen>
                       child: Transform.rotate(
                         angle: -math.pi / 2,
                         child: MainQuote(
-                          index: _index + 1,
+                          index: visibilityService.quoteIndex + 1,
                         ),
                       ),
                     ),

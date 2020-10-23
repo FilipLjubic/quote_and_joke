@@ -4,103 +4,103 @@ import 'package:like_button/like_button.dart';
 import 'package:quote_and_joke/locator.dart';
 import 'package:quote_and_joke/services/joke_service.dart';
 import 'package:quote_and_joke/services/quote_service.dart';
+import 'package:quote_and_joke/services/visibility_service.dart';
 import 'package:quote_and_joke/utils/screen_size_config.dart';
 
 class Today extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Positioned(
-              top: -SizeConfig.blockSizeVertical * 13,
-              right: -SizeConfig.blockSizeHorizontal * 30,
-              child: Container(
-                height: SizeConfig.blockSizeVertical * 50,
-                width: SizeConfig.blockSizeHorizontal * 70,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
-                    colors: [
-                      Theme.of(context).primaryColor.withOpacity(0.8),
-                      Theme.of(context).accentColor.withOpacity(0.8),
-                    ],
-                  ),
+      body: Stack(
+        children: [
+          Positioned(
+            top: -SizeConfig.blockSizeVertical * 13,
+            right: -SizeConfig.blockSizeHorizontal * 30,
+            child: Container(
+              height: SizeConfig.blockSizeVertical * 50,
+              width: SizeConfig.blockSizeHorizontal * 70,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                  colors: [
+                    Theme.of(context).primaryColor.withOpacity(0.8),
+                    Theme.of(context).accentColor.withOpacity(0.8),
+                  ],
                 ),
               ),
             ),
-            Positioned(
-              left: -SizeConfig.blockSizeHorizontal * 25,
-              bottom: SizeConfig.blockSizeHorizontal * 20,
-              child: Container(
-                height: SizeConfig.blockSizeVertical * 25,
-                width: SizeConfig.blockSizeHorizontal * 70,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      Theme.of(context).primaryColor.withOpacity(0.8),
-                      Theme.of(context).accentColor.withOpacity(0.8),
-                    ],
-                  ),
+          ),
+          Positioned(
+            left: -SizeConfig.blockSizeHorizontal * 25,
+            bottom: SizeConfig.blockSizeHorizontal * 20,
+            child: Container(
+              height: SizeConfig.blockSizeVertical * 25,
+              width: SizeConfig.blockSizeHorizontal * 70,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Theme.of(context).primaryColor.withOpacity(0.8),
+                    Theme.of(context).accentColor.withOpacity(0.8),
+                  ],
                 ),
               ),
             ),
-            Positioned(
-              right: -SizeConfig.blockSizeHorizontal * 5,
-              bottom: SizeConfig.blockSizeHorizontal * 20,
-              child: Container(
-                height: SizeConfig.blockSizeVertical * 25,
-                width: SizeConfig.blockSizeHorizontal * 35,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    begin: Alignment.bottomRight,
-                    end: Alignment.topRight,
-                    colors: [
-                      Theme.of(context).primaryColor.withOpacity(0.8),
-                      Theme.of(context).accentColor.withOpacity(0.8),
-                    ],
-                  ),
+          ),
+          Positioned(
+            right: -SizeConfig.blockSizeHorizontal * 5,
+            bottom: SizeConfig.blockSizeHorizontal * 20,
+            child: Container(
+              height: SizeConfig.blockSizeVertical * 25,
+              width: SizeConfig.blockSizeHorizontal * 35,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  begin: Alignment.bottomRight,
+                  end: Alignment.topRight,
+                  colors: [
+                    Theme.of(context).primaryColor.withOpacity(0.8),
+                    Theme.of(context).accentColor.withOpacity(0.8),
+                  ],
                 ),
               ),
             ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      "Quote & Joke",
-                      style: TextStyle(
-                          color: Colors.black54,
-                          fontSize: SizeConfig.safeBlockHorizontal * 5),
-                    ),
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Spacer(flex: 1),
+              Expanded(
+                child: Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    "Quote & Joke",
+                    style: TextStyle(
+                        color: Colors.black54,
+                        fontSize: SizeConfig.safeBlockHorizontal * 5),
                   ),
                 ),
-                Expanded(
-                  flex: 1,
-                  child: TodayHeadline(),
-                ),
-                Expanded(
-                  flex: 7,
-                  child: TodayCard(),
-                ),
-                Expanded(
-                  flex: 2,
-                  child: NotificationSettings(),
-                ),
-              ],
-            ),
-          ],
-        ),
+              ),
+              Expanded(
+                flex: 1,
+                child: TodayHeadline(),
+              ),
+              Expanded(
+                flex: 8,
+                child: TodayCard(),
+              ),
+              Expanded(
+                flex: 3,
+                child: NotificationSettings(),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -264,7 +264,15 @@ class TodayButtons extends StatefulWidget {
 }
 
 class _TodayButtonsState extends State<TodayButtons> {
-  bool _isFirstSelected = true;
+  VisibilityService visibilityService = getIt<VisibilityService>();
+
+  @override
+  void initState() {
+    super.initState();
+    getIt<VisibilityService>().addListener(() {
+      if (mounted) setState(() {});
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -277,21 +285,22 @@ class _TodayButtonsState extends State<TodayButtons> {
         children: [
           Expanded(
             child: RaisedButton(
-                color: _isFirstSelected
+                color: visibilityService.isQuoteOfDaySelected
                     ? Theme.of(context).primaryColor
                     : Theme.of(context).accentColor,
                 elevation: 1.0,
                 child: Text(
                   "Today's Quote",
                   style: TextStyle(
-                    color: _isFirstSelected ? Colors.white : Colors.black54,
+                    color: visibilityService.isQuoteOfDaySelected
+                        ? Colors.white
+                        : Colors.black54,
                     fontSize: SizeConfig.safeBlockHorizontal * 4,
                   ),
                 ),
                 onPressed: () {
-                  setState(() {
-                    _isFirstSelected = !_isFirstSelected;
-                  });
+                  if (!visibilityService.isQuoteOfDaySelected)
+                    visibilityService.changeButtonSelected();
                 }),
           ),
           SizedBox(
@@ -299,21 +308,22 @@ class _TodayButtonsState extends State<TodayButtons> {
           ),
           Expanded(
             child: RaisedButton(
-                color: !_isFirstSelected
+                color: !visibilityService.isQuoteOfDaySelected
                     ? Theme.of(context).primaryColor
                     : Theme.of(context).accentColor,
                 elevation: 1.0,
                 child: Text(
                   "Today's Joke",
                   style: TextStyle(
-                    color: !_isFirstSelected ? Colors.white : Colors.black54,
+                    color: !visibilityService.isQuoteOfDaySelected
+                        ? Colors.white
+                        : Colors.black54,
                     fontSize: SizeConfig.safeBlockHorizontal * 4,
                   ),
                 ),
                 onPressed: () {
-                  setState(() {
-                    _isFirstSelected = !_isFirstSelected;
-                  });
+                  if (visibilityService.isQuoteOfDaySelected)
+                    visibilityService.changeButtonSelected();
                 }),
           ),
         ],
@@ -322,7 +332,22 @@ class _TodayButtonsState extends State<TodayButtons> {
   }
 }
 
-class TodayQuote extends StatelessWidget {
+class TodayQuote extends StatefulWidget {
+  @override
+  _TodayQuoteState createState() => _TodayQuoteState();
+}
+
+class _TodayQuoteState extends State<TodayQuote> {
+  VisibilityService visibilityService = getIt<VisibilityService>();
+
+  @override
+  void initState() {
+    super.initState();
+    visibilityService.addListener(() {
+      if (mounted) setState(() {});
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -331,13 +356,21 @@ class TodayQuote extends StatelessWidget {
           vertical: SizeConfig.safeBlockVertical),
       child: Material(
         elevation: 1.0,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            QuoteText(),
-            Save(),
-            JokeText(),
-          ],
+        child: AnimatedCrossFade(
+          firstChild: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              QuoteText(),
+              Save(),
+            ],
+          ),
+          secondChild: JokeText(),
+          crossFadeState: visibilityService.isQuoteOfDaySelected
+              ? CrossFadeState.showFirst
+              : CrossFadeState.showSecond,
+          duration: const Duration(milliseconds: 150),
+          firstCurve: Curves.ease,
+          secondCurve: Curves.ease,
         ),
       ),
     );

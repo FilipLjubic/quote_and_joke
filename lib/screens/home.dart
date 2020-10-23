@@ -69,8 +69,8 @@ class _HomeState extends State<Home> with AfterInitMixin<Home> {
       });
 
     _pageController.animateToPage(index,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.fastLinearToSlowEaseIn);
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeOutCubic);
   }
 
   @override

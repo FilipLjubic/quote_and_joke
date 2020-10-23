@@ -1,45 +1,21 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:quote_and_joke/locator.dart';
 import 'package:quote_and_joke/models/quote_model.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:quote_and_joke/services/visibility_service.dart';
 
 class QuoteService with ChangeNotifier {
   List<Quote> _quotes = [];
+  VisibilityService visibilityService = getIt<VisibilityService>();
   Quote qod;
   int _pageOffset = 0;
-  //TODO: Napraviti VisibilityService s ova 3 dole atributa
-  bool _isLoading = false;
-  // hide if screen is being changed so there is no overlap
-  bool _showScreen = false;
-  bool _isDrag = false;
-
   List<Quote> get quotes => _quotes;
 
-  bool get isLoading => _isLoading;
-
-  bool get show => _showScreen;
-
-  bool get isDrag => _isDrag;
-
-  void _changeLoadingState() {
-    _isLoading = !_isLoading;
-    notifyListeners();
-  }
-
-  void showScreen(bool state) {
-    _showScreen = state;
-    notifyListeners();
-  }
-
-  void setDrag(bool drag) {
-    _isDrag = drag;
-    notifyListeners();
-  }
-
   Future<void> fetchQuotes() async {
-    _changeLoadingState();
+    visibilityService.changeLoadingState();
 
     _quotes.clear();
     _setOffset();
@@ -53,9 +29,9 @@ class QuoteService with ChangeNotifier {
         _quotes.add(Quote.fromJson(result));
       }
 
-      _changeLoadingState();
+      visibilityService.changeLoadingState();
     } else {
-      _changeLoadingState();
+      visibilityService.changeLoadingState();
       throw ("Error fetching data");
     }
   }

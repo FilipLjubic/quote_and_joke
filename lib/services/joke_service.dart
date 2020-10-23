@@ -20,6 +20,6 @@ class JokeService with ChangeNotifier {
     // replace with throw("Error fetching data") later
     await Future.delayed(const Duration(seconds: 1));
     jod =
-        "The six stages of debugging:\n1. That can't happen.\n2. That doesn't happen on my machine.\n3. That shouldn't happen.\n4. Why does that happen?\n5. Oh, I see.\n6. How did that ever work?";
+        "Java and C were telling jokes. It was C's turn, so he writes something on the wall, points to it and says \"Do you get the reference?\" But Java didn't.";
   }
 }

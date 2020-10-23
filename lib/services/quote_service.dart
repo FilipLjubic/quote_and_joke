@@ -62,26 +62,27 @@ class QuoteService with ChangeNotifier {
 
   // save generated quote into PreferredSettings
   Future<void> generateQOD() async {
-    final http.Response response =
-        await http.get("https://quotes.rest/qod.json");
+    // final http.Response response =
+    //     await http.get("https://quotes.rest/qod.json");
 
-    if (response.statusCode == 200) {
-      final decode = jsonDecode(response.body);
+    // if (response.statusCode == 200) {
+    //   final decode = jsonDecode(response.body);
 
-      var quote = decode['contents']['quotes'][0]['quote'];
-      var author = decode['contents']['quotes'][0]['author'];
-      qod = Quote(
-          quote: quote,
-          author: author,
-          authorShort: Quote.createShortAuthor(author));
-    } else {
-      // replace with throw("Error fetching data") later
-      qod = Quote(
-          quote:
-              "When you recover or discover something that nourishes your soul and brings joy, care enough about yourself to make room for it in your life.",
-          author: "Jean Shinoda Bolen",
-          authorShort: "Bolen");
-    }
+    //   var quote = decode['contents']['quotes'][0]['quote'];
+    //   var author = decode['contents']['quotes'][0]['author'];
+    //   qod = Quote(
+    //       quote: quote,
+    //       author: author,
+    //       authorShort: Quote.createShortAuthor(author));
+    // } else {
+    // replace with throw("Error fetching data") later
+    await Future.delayed(const Duration(seconds: 1));
+    qod = Quote(
+        quote:
+            "We hold ourselves back in ways both big and small, by lacking self-confidence, by not raising our hands, and by pulling back when we should be leaning in.",
+        author: "Sheryl Sandberg",
+        authorShort: "Sandberg");
+    // }
   }
 
   // to let the api know how many pages to skip

@@ -2,10 +2,9 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:like_button/like_button.dart';
 import 'package:quote_and_joke/locator.dart';
-import 'package:quote_and_joke/models/quote_model.dart';
+import 'package:quote_and_joke/services/joke_service.dart';
 import 'package:quote_and_joke/services/quote_service.dart';
 import 'package:quote_and_joke/utils/screen_size_config.dart';
-import 'package:async/async.dart';
 
 class Today extends StatelessWidget {
   @override
@@ -285,6 +284,7 @@ class _TodayButtonsState extends State<TodayButtons> {
                 child: Text(
                   "Today's Quote",
                   style: TextStyle(
+                    color: _isFirstSelected ? Colors.white : Colors.black54,
                     fontSize: SizeConfig.safeBlockHorizontal * 4,
                   ),
                 ),
@@ -306,6 +306,7 @@ class _TodayButtonsState extends State<TodayButtons> {
                 child: Text(
                   "Today's Joke",
                   style: TextStyle(
+                    color: !_isFirstSelected ? Colors.white : Colors.black54,
                     fontSize: SizeConfig.safeBlockHorizontal * 4,
                   ),
                 ),
@@ -335,6 +336,7 @@ class TodayQuote extends StatelessWidget {
           children: [
             QuoteText(),
             Save(),
+            JokeText(),
           ],
         ),
       ),
@@ -401,9 +403,9 @@ class QuoteText extends StatelessWidget {
           AutoSizeText(
             getIt<QuoteService>().qod.quote,
             style: TextStyle(
-                fontSize: SizeConfig.safeBlockHorizontal * 6,
+                fontSize: SizeConfig.safeBlockHorizontal * 5.7,
                 color: Colors.black87),
-            maxLines: 6,
+            maxLines: 7,
           ),
           SizedBox(
             height: SizeConfig.safeBlockVertical * 2,
@@ -413,6 +415,26 @@ class QuoteText extends StatelessWidget {
             style: TextStyle(color: Colors.black45),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class JokeText extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.fromLTRB(
+          SizeConfig.safeBlockVertical * 5,
+          SizeConfig.safeBlockVertical * 5,
+          SizeConfig.safeBlockVertical * 5,
+          0),
+      child: AutoSizeText(
+        getIt<JokeService>().jod,
+        style: TextStyle(
+            fontSize: SizeConfig.safeBlockHorizontal * 5.7,
+            color: Colors.black87),
+        maxLines: 10,
       ),
     );
   }

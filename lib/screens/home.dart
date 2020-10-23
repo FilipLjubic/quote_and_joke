@@ -2,6 +2,7 @@ import 'package:after_init/after_init.dart';
 import 'package:flutter/material.dart';
 import 'package:quote_and_joke/locator.dart';
 import 'package:quote_and_joke/screens/bookmarks.dart';
+import 'package:quote_and_joke/services/joke_service.dart';
 import 'package:quote_and_joke/services/quote_service.dart';
 import 'package:quote_and_joke/utils/screen_size_config.dart';
 import 'package:quote_and_joke/screens/jokes.dart';
@@ -36,7 +37,9 @@ class _HomeState extends State<Home> with AfterInitMixin<Home> {
   }
 
   Future<bool> _fetchData() async {
+    // await Future.delayed(const Duration(seconds: 1));
     await getIt<QuoteService>().generateQOD();
+    await getIt<JokeService>().generateJOD();
     return true;
   }
 

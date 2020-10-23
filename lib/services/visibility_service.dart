@@ -8,6 +8,10 @@ class VisibilityService with ChangeNotifier {
   bool _isQuoteOfDaySelected = true;
   int _quoteIndex = 0;
 
+  bool _qodIsLiked = false;
+
+  bool get qodIsLiked => _qodIsLiked;
+
   int get quoteIndex => _quoteIndex;
 
   bool get isQuoteOfDaySelected => _isQuoteOfDaySelected;
@@ -17,6 +21,10 @@ class VisibilityService with ChangeNotifier {
   bool get show => _showScreen;
 
   bool get isDrag => _isDrag;
+
+  void changeQodLikedState() {
+    _qodIsLiked = !_qodIsLiked;
+  }
 
   void increaseIndex() {
     _quoteIndex++;

@@ -383,6 +383,7 @@ class Save extends StatefulWidget {
 }
 
 class _SaveState extends State<Save> {
+  VisibilityService visibilityService = getIt<VisibilityService>();
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -403,11 +404,17 @@ class _SaveState extends State<Save> {
               end: Theme.of(context).primaryColor,
             ),
             likeBuilder: (bool isLiked) {
-              return isLiked
+              return visibilityService.qodIsLiked
                   ? Icon(Icons.favorite, color: Theme.of(context).primaryColor)
                   : Icon(Icons.favorite_border,
                       color: Theme.of(context).accentColor);
             },
+            onTap: (_) => Future.delayed(const Duration(milliseconds: 0), () {
+              visibilityService.changeQodLikedState();
+              // dodati ili obrisati iz databaze quote
+              return visibilityService.qodIsLiked;
+            }),
+            isLiked: visibilityService.qodIsLiked,
           ),
           Text(
             "SAVE",

@@ -11,3 +11,5 @@ setupLocator() {
   getIt.registerSingleton<QuoteService>(QuoteService());
   getIt.registerSingleton<JokeService>(JokeService());
 }
+
+//TODO: zamjeniti locator sa Providerima

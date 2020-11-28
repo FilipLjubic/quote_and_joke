@@ -9,6 +9,7 @@ import 'package:quote_and_joke/services/visibility_service.dart';
 
 class QuoteService with ChangeNotifier {
   List<Quote> _quotes = [];
+  //TODO: zamjeniti s Provider
   VisibilityService visibilityService = getIt<VisibilityService>();
   Quote qod;
   int _pageOffset = 0;
@@ -36,7 +37,7 @@ class QuoteService with ChangeNotifier {
     }
   }
 
-  // save generated quote into PreferredSettings
+  //TODO: save generated quote into PreferredSettings
   Future<void> generateQOD() async {
     // final http.Response response =
     //     await http.get("https://quotes.rest/qod.json");

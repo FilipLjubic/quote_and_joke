@@ -9,6 +9,7 @@ void main() async {
   await SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
   await Firebase.initializeApp();
+  //TODO: maknut locator stavit u ProviderScope MyApp()
   await locator.setupLocator();
   return runApp(MyApp());
 }

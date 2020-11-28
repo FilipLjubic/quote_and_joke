@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+//TODO: zamjeniti sa StateNotifier
+//TODO: rastaviti u dvije klase - za quoteove i za today screen
 class VisibilityService with ChangeNotifier {
   bool _isLoading = false;
   // hide if screen is being changed so there is no overlap

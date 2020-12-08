@@ -9,10 +9,10 @@ class Quote {
     return Quote(
         author: json['author'],
         quote: json['content'],
-        authorShort: createShortAuthor(json["author"]));
+        authorShort: _createShortAuthor(json["author"]));
   }
 
-  static String createShortAuthor(String author) {
+  static String _createShortAuthor(String author) {
     List<String> nameSurname = author.split(" ");
     return nameSurname[nameSurname.length - 1];
   }

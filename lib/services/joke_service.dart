@@ -1,25 +1,25 @@
-import 'package:flutter/material.dart';
+import 'dart:convert';
 
-class JokeService with ChangeNotifier {
-  String jod;
+import 'package:http/http.dart' as http;
+import 'package:quote_and_joke/models/joke_models.dart';
 
-  Future<void> generateJOD() async {
-    // final http.Response response =
-    //     await http.get("https://quotes.rest/qod.json");
+class JokeService {
+  JokeSingle dadJoke = JokeSingle(text: "Nothing yet!");
 
-    // if (response.statusCode == 200) {
-    //   final decode = jsonDecode(response.body);
+  Future<JokeSingle> getDadJoke() async {
+    final http.Response response = await http.get("https://icanhazdadjoke.com/",
+        headers: {'Accept': 'application/json'});
 
-    //   var quote = decode['contents']['quotes'][0]['quote'];
-    //   var author = decode['contents']['quotes'][0]['author'];
-    //   qod = Quote(
-    //       quote: quote,
-    //       author: author,
-    //       authorShort: Quote.createShortAuthor(author));
-    // } else {
-    // replace with throw("Error fetching data") later
-    await Future.delayed(const Duration(seconds: 1));
-    jod =
-        "Java and C were telling jokes. It was C's turn, so he writes something on the wall, points to it and says \"Do you get the reference?\" But Java didn't.";
+    if (response.statusCode == 200) {
+      final decode = jsonDecode(response.body);
+
+      dadJoke = JokeSingle(text: decode["joke"]);
+      print(dadJoke.text);
+    } else {
+      dadJoke = JokeSingle(
+        text: "No internet connection :(",
+      );
+    }
+    return dadJoke;
   }
 }

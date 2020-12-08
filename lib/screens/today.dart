@@ -4,7 +4,7 @@ import 'package:like_button/like_button.dart';
 import 'package:quote_and_joke/locator.dart';
 import 'package:quote_and_joke/services/joke_service.dart';
 import 'package:quote_and_joke/services/quote_service.dart';
-import 'package:quote_and_joke/services/visibility_service.dart';
+import 'package:quote_and_joke/services/visibility_helper.dart';
 import 'package:quote_and_joke/utils/screen_size_config.dart';
 
 class Today extends StatelessWidget {

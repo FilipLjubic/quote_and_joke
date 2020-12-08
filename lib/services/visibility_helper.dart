@@ -1,20 +1,19 @@
-import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-//TODO: zamjeniti sa StateNotifier
+final quoteIndexProvider = StateNotifierProvider((ref) => QuoteIndex());
+
+//TODO: za svaku varijablu smisliti provider
 //TODO: rastaviti u dvije klase - za quoteove i za today screen
-class VisibilityService with ChangeNotifier {
+class VisibilityService {
   bool _isLoading = false;
   // hide if screen is being changed so there is no overlap
   bool _showScreen = false;
   bool _isDrag = false;
   bool _isQuoteOfDaySelected = true;
-  int _quoteIndex = 0;
 
   bool _qodIsLiked = false;
 
   bool get qodIsLiked => _qodIsLiked;
-
-  int get quoteIndex => _quoteIndex;
 
   bool get isQuoteOfDaySelected => _isQuoteOfDaySelected;
 
@@ -28,33 +27,31 @@ class VisibilityService with ChangeNotifier {
     _qodIsLiked = !_qodIsLiked;
   }
 
-  void increaseIndex() {
-    _quoteIndex++;
-    notifyListeners();
-  }
-
-  void resetIndex() {
-    _quoteIndex = 0;
-    notifyListeners();
-  }
-
   void changeButtonSelected() {
     _isQuoteOfDaySelected = !_isQuoteOfDaySelected;
-    notifyListeners();
   }
 
   void changeLoadingState() {
     _isLoading = !_isLoading;
-    notifyListeners();
   }
 
   void showScreen(bool state) {
     _showScreen = state;
-    notifyListeners();
   }
 
   void setDrag(bool drag) {
     _isDrag = drag;
-    notifyListeners();
+  }
+}
+
+class QuoteIndex extends StateNotifier<int> {
+  QuoteIndex() : super(0);
+
+  void resetIndex() {
+    state = 0;
+  }
+
+  void increaseIndex() {
+    state = state + 1;
   }
 }

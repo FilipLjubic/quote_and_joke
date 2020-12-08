@@ -1,19 +1,17 @@
 import 'dart:math' as math;
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:quote_and_joke/locator.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/all.dart';
 import 'package:quote_and_joke/services/quote_service.dart';
-import 'package:quote_and_joke/services/visibility_service.dart';
+import 'package:quote_and_joke/services/visibility_helper.dart';
 import 'package:quote_and_joke/utils/screen_size_config.dart';
 import 'package:quote_and_joke/widgets/main_quote.dart';
 
-class QuotesScreen extends StatefulWidget {
-  @override
-  _QuotesScreenState createState() => _QuotesScreenState();
-}
+// Needed so that you can't trigger another animation while one is running
+final _inAnimationProvider = StateProvider<bool>((ref) => false);
 
-class _QuotesScreenState extends State<QuotesScreen>
-    with TickerProviderStateMixin {
+class QuotesScreen extends HookWidget {
   AnimationController _animationController;
   AnimationController _animationController2;
   AnimationController _animationController3;
@@ -30,29 +28,28 @@ class _QuotesScreenState extends State<QuotesScreen>
   Animation _animationContainerDrag2;
   Animation _animationContainerDrag3;
   Animation _animationContainerDrag4;
-  QuoteService quoteService = getIt<QuoteService>();
-  VisibilityService visibilityService = getIt<VisibilityService>();
+  QuoteService quoteService = QuoteService();
+  VisibilityService visibilityService = VisibilityService();
   bool _leftDrag = false;
   bool _isSwipe = false;
-  bool _inAnimation = false;
   // to slide off screen
   int _maxMainSlide = -100;
   // to get to position of main quote
   double _maxSecondarySlideX = SizeConfig.safeBlockHorizontal * 106.4;
   double _maxSecondarySlideY = SizeConfig.safeBlockVertical * -25.6;
 
-  @override
-  void initState() {
-    super.initState();
-    initializeAnimationControllers();
-    quoteService.addListener(() {
-      if (mounted) setState(() {});
-    });
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   initializeAnimationControllers();
+  //   quoteService.addListener(() {
+  //     if (mounted) setState(() {});
+  //   });
 
-    visibilityService.addListener(() {
-      if (mounted) setState(() {});
-    });
-  }
+  //   visibilityService.addListener(() {
+  //     if (mounted) setState(() {});
+  //   });
+  // }
 
   void initializeAnimationControllers() {
     _animationController = AnimationController(
@@ -146,48 +143,52 @@ class _QuotesScreenState extends State<QuotesScreen>
       });
   }
 
-  @override
-  void dispose() {
-    _animationController.dispose();
-    _animationController2.dispose();
-    _animationController3.dispose();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   _animationController.dispose();
+  //   _animationController2.dispose();
+  //   _animationController3.dispose();
+  //   super.dispose();
+  // }
 
-  void _onTap() {
-    if (!_inAnimation) {
+  void _onTap(BuildContext context) {
+    final inAnimation = context.read(_inAnimationProvider);
+    if (inAnimation.state == false) {
+      inAnimation.state = true;
       _animationController3.forward();
-      setState(() {
-        _inAnimation = true;
-      });
+
       visibilityService.setDrag(false);
     }
   }
 
-  void _nextPage() {
+  void _nextPage(BuildContext context) {
+    final quotes = context.read(quoteProvider).data?.value;
+    final inAnimation = context.read(_inAnimationProvider);
     setState(() {
       visibilityService.increaseIndex();
       _animationController.value = 0;
       _animationController2.value = 0;
       _animationController3.value = 0;
-      if (visibilityService.quoteIndex + 1 == quoteService.quotes.length - 2) {
+      if (visibilityService.quoteIndex + 1 == quotes.length - 2) {
         visibilityService.resetIndex();
         quoteService.fetchQuotes();
       }
-      _inAnimation = false;
+      inAnimation.state = false;
     });
   }
 
-  void _onDragStart(DragStartDetails details) {
-    if (!_inAnimation) {
+  void _onDragStart(DragStartDetails details, BuildContext context) {
+    final inAnimation = context.read(_inAnimationProvider).state;
+    if (!inAnimation) {
       _leftDrag =
           _animationController.isDismissed && details.globalPosition.dx > 200;
       visibilityService.setDrag(true);
     }
   }
 
-  void _onDragUpdate(DragUpdateDetails details) {
-    if (_leftDrag && !_inAnimation) {
+  void _onDragUpdate(DragUpdateDetails details, BuildContext context) {
+    final inAnimation = context.read(_inAnimationProvider).state;
+    if (_leftDrag && !inAnimation) {
       if (details.primaryDelta < -11) {
         _isSwipe = true;
       } else {
@@ -200,7 +201,8 @@ class _QuotesScreenState extends State<QuotesScreen>
     }
   }
 
-  void _onDragEnd(DragEndDetails details) {
+  void _onDragEnd(DragEndDetails details, BuildContext context) {
+    final inAnimation = context.read(_inAnimationProvider);
     if (_animationController.isDismissed || _animationController.isCompleted) {
       return;
     }
@@ -209,9 +211,7 @@ class _QuotesScreenState extends State<QuotesScreen>
     if (!isDismissedOrSwiped) {
       _animationController.reverse();
     } else {
-      setState(() {
-        _inAnimation = true;
-      });
+      inAnimation.state = true;
       _animationController.forward();
       _animationController2.forward();
       _isSwipe = false;
@@ -220,12 +220,16 @@ class _QuotesScreenState extends State<QuotesScreen>
 
   @override
   Widget build(BuildContext context) {
+    final quotes = useProvider(quoteProvider);
+    final inAnimation = useProvider(_inAnimationProvider);
+    final quoteIndex = useProvider(quoteIndexProvider);
+
     return !visibilityService.isLoading
         ? GestureDetector(
-            onTap: _onTap,
-            onHorizontalDragStart: _onDragStart,
-            onHorizontalDragUpdate: _onDragUpdate,
-            onHorizontalDragEnd: _onDragEnd,
+            onTap: () => _onTap(context),
+            onHorizontalDragStart: (details) => _onDragStart(details, context),
+            onHorizontalDragUpdate: (det) => _onDragUpdate(det, context),
+            onHorizontalDragEnd: (details) => _onDragEnd(details, context),
             behavior: HitTestBehavior.opaque,
             child: Stack(
               alignment: Alignment.centerLeft,

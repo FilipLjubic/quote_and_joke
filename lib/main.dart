@@ -1,17 +1,16 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:quote_and_joke/locator.dart' as locator;
-import 'package:quote_and_joke/screens/home.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:quote_and_joke/screens/splash.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
   await Firebase.initializeApp();
-  //TODO: maknut locator stavit u ProviderScope MyApp()
-  await locator.setupLocator();
-  return runApp(MyApp());
+
+  return runApp(ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -28,7 +27,7 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Montserrat',
       ),
       title: 'Quotes & Jokes',
-      home: Home(),
+      home: SplashScreen(),
     );
   }
 }

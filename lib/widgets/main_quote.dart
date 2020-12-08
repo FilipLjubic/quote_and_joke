@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:quote_and_joke/services/quote_service.dart';
 import 'package:quote_and_joke/utils/screen_size_config.dart';
 
-import '../locator.dart';
-
 class MainQuote extends StatelessWidget {
   const MainQuote({
     @required this.index,

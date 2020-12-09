@@ -260,7 +260,7 @@ final showQodProvider = StateProvider<bool>((ref) => true);
 class TodayButtons extends HookWidget {
   @override
   Widget build(BuildContext context) {
-    final showQod = useProvider(showQodProvider);
+    final showQod = useProvider(showQodProvider).state;
     return Container(
       margin: EdgeInsets.symmetric(
           horizontal: SizeConfig.safeBlockHorizontal * 2,
@@ -269,51 +269,43 @@ class TodayButtons extends HookWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Expanded(
-            child: RaisedButton(
-                color: visibilityService.isQuoteOfDaySelected
-                    ? Theme.of(context).primaryColor
-                    : Theme.of(context).accentColor,
-                elevation: 1.0,
-                child: Text(
-                  "Today's Quote",
-                  style: TextStyle(
-                    color: visibilityService.isQuoteOfDaySelected
-                        ? Colors.white
-                        : Colors.black54,
-                    fontSize: SizeConfig.safeBlockHorizontal * 4,
-                  ),
-                ),
-                onPressed: () {
-                  if (!visibilityService.isQuoteOfDaySelected)
-                    visibilityService.changeButtonSelected();
-                }),
+            child: XOfDayButton(showQod: showQod, text: "Today's Quote"),
           ),
           SizedBox(
             width: SizeConfig.safeBlockHorizontal,
           ),
           Expanded(
-            child: RaisedButton(
-                color: !visibilityService.isQuoteOfDaySelected
-                    ? Theme.of(context).primaryColor
-                    : Theme.of(context).accentColor,
-                elevation: 1.0,
-                child: Text(
-                  "Today's Joke",
-                  style: TextStyle(
-                    color: !visibilityService.isQuoteOfDaySelected
-                        ? Colors.white
-                        : Colors.black54,
-                    fontSize: SizeConfig.safeBlockHorizontal * 4,
-                  ),
-                ),
-                onPressed: () {
-                  if (visibilityService.isQuoteOfDaySelected)
-                    visibilityService.changeButtonSelected();
-                }),
-          ),
+              child: XOfDayButton(showQod: !showQod, text: "Today's Joke")),
         ],
       ),
     );
+  }
+}
+
+class XOfDayButton extends StatelessWidget {
+  const XOfDayButton({@required this.showQod, @required this.text});
+
+  final bool showQod;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return RaisedButton(
+        color: showQod
+            ? Theme.of(context).primaryColor
+            : Theme.of(context).accentColor,
+        elevation: 1.0,
+        child: Text(
+          text,
+          style: TextStyle(
+            color: showQod ? Colors.white : Colors.black54,
+            fontSize: SizeConfig.safeBlockHorizontal * 4,
+          ),
+        ),
+        onPressed: () {
+          final showQod = context.read(showQodProvider);
+          if (showQod.state == false) showQod.state = true;
+        });
   }
 }
 

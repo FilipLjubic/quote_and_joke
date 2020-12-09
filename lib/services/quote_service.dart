@@ -5,10 +5,16 @@ import 'package:quote_and_joke/models/quote_model.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-final quoteProvider = FutureProvider((ref) async {
+final quoteProvider = FutureProvider.autoDispose((ref) async {
   final quoteService = QuoteService();
 
   return quoteService.fetchQuotes();
+});
+
+final qodProvider = FutureProvider.autoDispose((ref) async {
+  final quoteService = QuoteService();
+
+  return quoteService.getQOD();
 });
 
 class QuoteService {
@@ -32,8 +38,8 @@ class QuoteService {
     }
   }
 
-  //TODO: save generated quote into PreferredSettings
-  Future<Quote> generateQOD() async {
+  //TODO: save quote into PreferredSettings
+  Future<Quote> getQOD() async {
     final http.Response response =
         await http.get("https://quotes.rest/qod.json");
 

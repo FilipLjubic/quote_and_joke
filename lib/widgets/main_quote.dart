@@ -9,8 +9,9 @@ import 'package:quote_and_joke/utils/screen_size_config.dart';
 class MainQuote extends HookWidget {
   @override
   Widget build(BuildContext context) {
+    // mozda budem trebao state prebacit van
     final index = useProvider(quoteIndexProvider.state);
-    final quotes = useProvider(quoteProvider).data.value;
+    final quotes = useProvider(quoteProvider).data?.value;
 
     return Padding(
       padding: EdgeInsets.only(

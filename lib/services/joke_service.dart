@@ -1,7 +1,14 @@
 import 'dart:convert';
 
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:quote_and_joke/models/joke_models.dart';
+
+final dadJokeProvider = FutureProvider((ref) async {
+  final jokeService = JokeService();
+
+  return jokeService.getDadJoke();
+});
 
 class JokeService {
   JokeSingle dadJoke = JokeSingle(text: "Nothing yet!");

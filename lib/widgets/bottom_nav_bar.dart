@@ -31,10 +31,6 @@ class BottomNavBar extends StatelessWidget {
           label: "Jokes",
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.add),
-          label: "Add",
-        ),
-        BottomNavigationBarItem(
           icon: Icon(Icons.collections_bookmark),
           label: "Bookmarks",
         )

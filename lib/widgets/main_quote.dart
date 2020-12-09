@@ -1,16 +1,17 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:quote_and_joke/services/quote_service.dart';
+import 'package:quote_and_joke/services/visibility_helper.dart';
 import 'package:quote_and_joke/utils/screen_size_config.dart';
 
-class MainQuote extends StatelessWidget {
-  const MainQuote({
-    @required this.index,
-  });
-  final int index;
-
+class MainQuote extends HookWidget {
   @override
   Widget build(BuildContext context) {
+    final index = useProvider(quoteIndexProvider.state);
+    final quotes = useProvider(quoteProvider).data.value;
+
     return Padding(
       padding: EdgeInsets.only(
           left: SizeConfig.safeBlockHorizontal * 5,
@@ -22,7 +23,7 @@ class MainQuote extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             AutoSizeText(
-              getIt<QuoteService>().quotes[index].quote,
+              quotes[index].quote,
               maxLines: 5,
               style: TextStyle(
                 fontSize: SizeConfig.blockSizeHorizontal * 9.5,
@@ -31,7 +32,7 @@ class MainQuote extends StatelessWidget {
               textAlign: TextAlign.left,
             ),
             AutoSizeText(
-              getIt<QuoteService>().quotes[index].authorShort,
+              quotes[index].authorShort,
               maxLines: 1,
               style: TextStyle(
                 fontSize: SizeConfig.blockSizeHorizontal * 4.5,

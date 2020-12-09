@@ -44,23 +44,11 @@ class Home extends HookWidget {
     final currentPageIndex = useProvider(_currentPageIndexProvider).state;
 
     return Scaffold(
-      body: FutureBuilder(
-          future: _loadData,
-          builder: (_, snapshot) {
-            return snapshot.hasData
-                ? PageView(
-                    controller: pageController,
-                    children: _screens,
-                    physics: NeverScrollableScrollPhysics(),
-                  )
-                : Center(
-                    child: CircularProgressIndicator(
-                      backgroundColor: Theme.of(context).primaryColor,
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                          Theme.of(context).accentColor),
-                    ),
-                  );
-          }),
+      body: PageView(
+        controller: pageController,
+        children: _screens,
+        physics: NeverScrollableScrollPhysics(),
+      ),
       bottomNavigationBar: BottomNavBar(
         currentIndex: currentPageIndex,
         onTap: (index) => _onTap(context, index, pageController),

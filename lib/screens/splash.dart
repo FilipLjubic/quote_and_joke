@@ -10,6 +10,7 @@ class SplashScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final quotes = useProvider(quoteProvider).data;
     final qod = useProvider(qodProvider).data;
+    //TODO: Change to jodProvider
     final jod = useProvider(dadJokeProvider).data;
     SizeConfig().init(context);
 

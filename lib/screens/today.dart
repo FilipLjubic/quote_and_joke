@@ -255,12 +255,12 @@ class TodayCard extends StatelessWidget {
   }
 }
 
-final showQodProvider = StateProvider<bool>((ref) => true);
+final _showQodProvider = StateProvider<bool>((ref) => true);
 
 class TodayButtons extends HookWidget {
   @override
   Widget build(BuildContext context) {
-    final showQod = useProvider(showQodProvider).state;
+    final showQod = useProvider(_showQodProvider).state;
     return Container(
       margin: EdgeInsets.symmetric(
           horizontal: SizeConfig.safeBlockHorizontal * 2,
@@ -303,30 +303,17 @@ class XOfDayButton extends StatelessWidget {
           ),
         ),
         onPressed: () {
-          final showQod = context.read(showQodProvider);
+          final showQod = context.read(_showQodProvider);
           if (showQod.state == false) showQod.state = true;
         });
   }
 }
 
-class TodayQuote extends StatefulWidget {
-  @override
-  _TodayQuoteState createState() => _TodayQuoteState();
-}
-
-class _TodayQuoteState extends State<TodayQuote> {
-  VisibilityService visibilityService = getIt<VisibilityService>();
-
-  @override
-  void initState() {
-    super.initState();
-    visibilityService.addListener(() {
-      if (mounted) setState(() {});
-    });
-  }
-
+class TodayQuote extends HookWidget {
   @override
   Widget build(BuildContext context) {
+    final showQod = useProvider(_showQodProvider).state;
+
     return Container(
       margin: EdgeInsets.symmetric(
           horizontal: SizeConfig.safeBlockHorizontal * 2,
@@ -342,9 +329,8 @@ class _TodayQuoteState extends State<TodayQuote> {
             ],
           ),
           secondChild: JokeText(),
-          crossFadeState: visibilityService.isQuoteOfDaySelected
-              ? CrossFadeState.showFirst
-              : CrossFadeState.showSecond,
+          crossFadeState:
+              showQod ? CrossFadeState.showFirst : CrossFadeState.showSecond,
           duration: const Duration(milliseconds: 150),
           firstCurve: Curves.ease,
           secondCurve: Curves.ease,
@@ -354,15 +340,13 @@ class _TodayQuoteState extends State<TodayQuote> {
   }
 }
 
-class Save extends StatefulWidget {
-  @override
-  _SaveState createState() => _SaveState();
-}
+final _qodIsLikedProvider = StateProvider<bool>((ref) => false);
 
-class _SaveState extends State<Save> {
-  VisibilityService visibilityService = getIt<VisibilityService>();
+class Save extends HookWidget {
   @override
   Widget build(BuildContext context) {
+    final qodIsLiked = useProvider(_qodIsLikedProvider).state;
+
     return Container(
       margin: EdgeInsets.only(
           bottom: SizeConfig.safeBlockVertical * 2,
@@ -381,17 +365,20 @@ class _SaveState extends State<Save> {
               end: Theme.of(context).primaryColor,
             ),
             likeBuilder: (bool isLiked) {
-              return visibilityService.qodIsLiked
+              return qodIsLiked
                   ? Icon(Icons.favorite, color: Theme.of(context).primaryColor)
                   : Icon(Icons.favorite_border,
                       color: Theme.of(context).accentColor);
             },
             onTap: (_) => Future.delayed(const Duration(milliseconds: 0), () {
-              visibilityService.changeQodLikedState();
-              // dodati ili obrisati iz databaze quote
-              return visibilityService.qodIsLiked;
+              final qodIsLiked = context.read(_qodIsLikedProvider);
+
+              qodIsLiked.state = !qodIsLiked.state;
+
+              //TODO: dodati ili obrisati iz databaze quote
+              return qodIsLiked.state;
             }),
-            isLiked: visibilityService.qodIsLiked,
+            isLiked: qodIsLiked,
           ),
           Text(
             "SAVE",
@@ -406,9 +393,10 @@ class _SaveState extends State<Save> {
   }
 }
 
-class QuoteText extends StatelessWidget {
+class QuoteText extends HookWidget {
   @override
   Widget build(BuildContext context) {
+    final qod = useProvider(qodProvider).data?.value;
     return Container(
       padding: EdgeInsets.fromLTRB(
           SizeConfig.safeBlockVertical * 5,
@@ -418,7 +406,7 @@ class QuoteText extends StatelessWidget {
       child: Column(
         children: [
           AutoSizeText(
-            getIt<QuoteService>().qod.quote,
+            qod.quote,
             style: TextStyle(
                 fontSize: SizeConfig.safeBlockHorizontal * 5.7,
                 color: Colors.black87),
@@ -428,7 +416,7 @@ class QuoteText extends StatelessWidget {
             height: SizeConfig.safeBlockVertical * 2,
           ),
           Text(
-            getIt<QuoteService>().qod.author,
+            qod.author,
             style: TextStyle(color: Colors.black45),
           ),
         ],
@@ -440,6 +428,8 @@ class QuoteText extends StatelessWidget {
 class JokeText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    //TODO: Change to jodProvider
+    final jod = useProvider(dadJokeProvider).data?.value;
     return Container(
       padding: EdgeInsets.fromLTRB(
           SizeConfig.safeBlockVertical * 5,
@@ -447,7 +437,7 @@ class JokeText extends StatelessWidget {
           SizeConfig.safeBlockVertical * 5,
           0),
       child: AutoSizeText(
-        getIt<JokeService>().jod,
+        jod.text,
         style: TextStyle(
             fontSize: SizeConfig.safeBlockHorizontal * 5.7,
             color: Colors.black87),

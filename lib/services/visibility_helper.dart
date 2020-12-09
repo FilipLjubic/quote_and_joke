@@ -6,8 +6,7 @@ final quoteIndexProvider = StateNotifierProvider((ref) => QuoteIndex());
 //TODO: rastaviti u dvije klase - za quoteove i za today screen
 class VisibilityService {
   bool _isLoading = false;
-  // hide if screen is being changed so there is no overlap
-  bool _showScreen = false;
+
   bool _isDrag = false;
   bool _isQuoteOfDaySelected = true;
 
@@ -18,8 +17,6 @@ class VisibilityService {
   bool get isQuoteOfDaySelected => _isQuoteOfDaySelected;
 
   bool get isLoading => _isLoading;
-
-  bool get show => _showScreen;
 
   bool get isDrag => _isDrag;
 
@@ -33,10 +30,6 @@ class VisibilityService {
 
   void changeLoadingState() {
     _isLoading = !_isLoading;
-  }
-
-  void showScreen(bool state) {
-    _showScreen = state;
   }
 
   void setDrag(bool drag) {

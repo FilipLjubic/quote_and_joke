@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:quote_and_joke/screens/bookmarks.dart';
-import 'package:quote_and_joke/services/joke_service.dart';
-import 'package:quote_and_joke/services/quote_service.dart';
 import 'package:quote_and_joke/services/visibility_helper.dart';
 import 'package:quote_and_joke/screens/jokes.dart';
 import 'package:quote_and_joke/screens/quotes.dart';
 import 'package:quote_and_joke/screens/today.dart';
 import 'package:quote_and_joke/widgets/bottom_nav_bar.dart';
+
+final _currentPageIndexProvider = StateProvider<int>((ref) => 0);
+
+/// Is used because containers on quote screen overflow
+/// so when we're changing from quote screen we want it to hide itself after a mini-delay
+final _hideScreenProvider = StateProvider<bool>((ref) => true);
 
 class Home extends HookWidget {
   final List<Widget> _screens = [
@@ -16,34 +21,19 @@ class Home extends HookWidget {
     Jokes(),
     Bookmarks(),
   ];
-  Future<bool> _loadData;
-  int _currentIndex = 0;
 
-  @override
-  void initState() {
-    super.initState();
-    getIt<QuoteService>().fetchQuotes();
-    _loadData = _fetchData();
-  }
+  void _onTap(BuildContext context, int index, PageController pageController) {
+    final currentPageIndex = context.read(_currentPageIndexProvider);
+    final hideScreen = context.read(_hideScreenProvider);
 
-  Future<bool> _fetchData() async {
-    await getIt<QuoteService>().generateQOD();
-    await getIt<JokeService>().getDadJoke();
-    return true;
-  }
-
-  void _onTap(int index) {
     index == 1
-        ? getIt<VisibilityService>().showScreen(true)
-        : Future.delayed(const Duration(milliseconds: 20),
-            () => getIt<VisibilityService>().showScreen(false));
+        ? hideScreen.state = true
+        : Future.delayed(
+            const Duration(milliseconds: 20), () => hideScreen.state = false);
 
-    if (mounted)
-      setState(() {
-        _currentIndex = index;
-      });
+    currentPageIndex.state = index;
 
-    _pageController.animateToPage(index,
+    pageController.animateToPage(index,
         duration: const Duration(milliseconds: 400),
         curve: Curves.fastLinearToSlowEaseIn);
   }
@@ -51,6 +41,8 @@ class Home extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final pageController = usePageController();
+    final currentPageIndex = useProvider(_currentPageIndexProvider).state;
+
     return Scaffold(
       body: FutureBuilder(
           future: _loadData,
@@ -70,8 +62,8 @@ class Home extends HookWidget {
                   );
           }),
       bottomNavigationBar: BottomNavBar(
-        currentIndex: _currentIndex,
-        onTap: (index) => _onTap(index),
+        currentIndex: currentPageIndex,
+        onTap: (index) => _onTap(context, index, pageController),
       ),
     );
   }

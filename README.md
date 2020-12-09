@@ -16,3 +16,12 @@
 - save a quote/random text from some picture
 
  
+## Update
+- want to use Riverpod for state management instead
+- the code was a complete mess so I'm working on refactoring everything currently
+
+## What I got so far
+It seems laggy in the gif, but it's actually working pretty well irl.
+
+
+![product gif](https://github.com/fljubic-flutter/quote_and_joke/blob/master/images/preview.gif)

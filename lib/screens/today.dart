@@ -1,7 +1,8 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:like_button/like_button.dart';
-import 'package:quote_and_joke/locator.dart';
 import 'package:quote_and_joke/services/joke_service.dart';
 import 'package:quote_and_joke/services/quote_service.dart';
 import 'package:quote_and_joke/services/visibility_helper.dart';
@@ -133,55 +134,55 @@ class NotificationSettings extends StatelessWidget {
   }
 }
 
-class SettingsDropdowns extends StatelessWidget {
+class SettingsDropdowns extends HookWidget {
   @override
   Widget build(BuildContext context) {
+    final days = useProvider(_frequencyDropdownDaysProvider);
+    final times = useProvider(_frequencyDropdownTimesProvider);
+
     return Container(
       margin: EdgeInsets.symmetric(
           horizontal: SizeConfig.safeBlockHorizontal * 5,
           vertical: SizeConfig.safeBlockVertical * 2),
       child: Row(
         children: [
-          FrequencyDropdown(
-            items: ['Every day', 'Every monday', 'Never'],
-          ),
-          FrequencyDropdown(items: [
-            '8:00 AM',
-            '8:30 AM',
-            '9:00 AM',
-            '9:30 AM',
-            '10:00 AM',
-            '8:00 PM',
-            '8:30 PM',
-            '9:00 PM',
-            '9:30 PM',
-            '10:00 PM'
-          ]),
+          FrequencyDropdown(items: days),
+          FrequencyDropdown(items: times),
         ],
       ),
     );
   }
 }
 
-class FrequencyDropdown extends StatefulWidget {
-  final List<String> items;
+final _frequencyDropdownDaysProvider =
+    Provider<List<String>>((ref) => ['Every day', 'Every monday', 'Never']);
+
+final _frequencyDropdownTimesProvider = Provider<List<String>>((ref) => [
+      '8:00 AM',
+      '8:30 AM',
+      '9:00 AM',
+      '9:30 AM',
+      '10:00 AM',
+      '8:00 PM',
+      '8:30 PM',
+      '9:00 PM',
+      '9:30 PM',
+      '10:00 PM'
+    ]);
+
+final _frequencyDropdownSelectedValue =
+    StateProvider.family<String, String>((ref, items) {
+  return items[0];
+});
+
+class FrequencyDropdown extends HookWidget {
   FrequencyDropdown({this.items});
-
-  @override
-  _FrequencyDropdownState createState() => _FrequencyDropdownState();
-}
-
-class _FrequencyDropdownState extends State<FrequencyDropdown> {
-  String _value;
-
-  @override
-  void initState() {
-    super.initState();
-    _value = widget.items[0];
-  }
+  final items;
 
   @override
   Widget build(BuildContext context) {
+    final value = useProvider(_frequencyDropdownSelectedValue(items));
+
     return Expanded(
       child: Container(
         padding: EdgeInsets.symmetric(
@@ -190,7 +191,7 @@ class _FrequencyDropdownState extends State<FrequencyDropdown> {
             border: Border.all(width: 1.0, color: Colors.black12),
             borderRadius: BorderRadius.circular(3.0)),
         child: DropdownButton(
-          value: _value,
+          value: value.state,
           icon: Icon(
             Icons.keyboard_arrow_down,
             color: Theme.of(context).accentColor,
@@ -201,17 +202,13 @@ class _FrequencyDropdownState extends State<FrequencyDropdown> {
           ),
           style: TextStyle(color: Colors.grey),
           isExpanded: true,
-          items: widget.items.map<DropdownMenuItem<String>>((String value) {
+          items: items.map<DropdownMenuItem<String>>((String value) {
             return DropdownMenuItem<String>(
               value: value,
               child: Text(value),
             );
           }).toList(),
-          onChanged: (String newValue) {
-            setState(() {
-              _value = newValue;
-            });
-          },
+          onChanged: (newValue) => value.state = newValue,
         ),
       ),
     );
@@ -258,24 +255,12 @@ class TodayCard extends StatelessWidget {
   }
 }
 
-class TodayButtons extends StatefulWidget {
-  @override
-  _TodayButtonsState createState() => _TodayButtonsState();
-}
+final showQodProvider = StateProvider<bool>((ref) => true);
 
-class _TodayButtonsState extends State<TodayButtons> {
-  VisibilityService visibilityService = getIt<VisibilityService>();
-
-  @override
-  void initState() {
-    super.initState();
-    getIt<VisibilityService>().addListener(() {
-      if (mounted) setState(() {});
-    });
-  }
-
+class TodayButtons extends HookWidget {
   @override
   Widget build(BuildContext context) {
+    final showQod = useProvider(showQodProvider);
     return Container(
       margin: EdgeInsets.symmetric(
           horizontal: SizeConfig.safeBlockHorizontal * 2,

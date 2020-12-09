@@ -17,6 +17,8 @@ final qodProvider = FutureProvider.autoDispose((ref) async {
   return quoteService.getQOD();
 });
 
+// TODO: Create repository to check if device has internet connection and handle if it doesn't
+// also gonna use _setOffset in it, instead of service class being pAcKeD
 class QuoteService {
   int _pageOffset = 0;
 

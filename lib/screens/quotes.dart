@@ -8,148 +8,29 @@ import 'package:quote_and_joke/services/visibility_helper.dart';
 import 'package:quote_and_joke/utils/screen_size_config.dart';
 import 'package:quote_and_joke/widgets/main_quote.dart';
 
+const MAX_MAIN_SLIDE = 100;
+
 // Needed so that you can't trigger another animation while one is running
 final _inAnimationProvider = StateProvider<bool>((ref) => false);
 
 class QuotesScreen extends HookWidget {
-  AnimationController _animationController;
-  AnimationController _animationController2;
-  AnimationController _animationController3;
-  Animation _animation1;
-  Animation _animation2;
-  Animation _animation3;
-  Animation _animation3pt1;
-  Animation _animation3pt2;
-  Animation _animationContainerTap1;
-  Animation _animationContainerTap2;
-  Animation _animationContainerTap3;
-  Animation _animationContainerTap4;
-  Animation _animationContainerDrag1;
-  Animation _animationContainerDrag2;
-  Animation _animationContainerDrag3;
-  Animation _animationContainerDrag4;
-  QuoteService quoteService = QuoteService();
-  VisibilityService visibilityService = VisibilityService();
   bool _leftDrag = false;
   bool _isSwipe = false;
   // to slide off screen
-  int _maxMainSlide = -100;
   // to get to position of main quote
   double _maxSecondarySlideX = SizeConfig.safeBlockHorizontal * 106.4;
   double _maxSecondarySlideY = SizeConfig.safeBlockVertical * -25.6;
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   initializeAnimationControllers();
-  //   quoteService.addListener(() {
-  //     if (mounted) setState(() {});
-  //   });
-
-  //   visibilityService.addListener(() {
-  //     if (mounted) setState(() {});
-  //   });
-  // }
-
   void initializeAnimationControllers() {
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 700),
-    );
-    _animation1 = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-          curve: Interval(0.0, 0.875), parent: _animationController),
-    );
-
-    _animationContainerDrag1 = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Interval(0.0, 0.875, curve: Curves.easeOut),
-      ),
-    );
-    _animationContainerDrag2 = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Interval(0.05, 0.93, curve: Curves.easeOut),
-      ),
-    );
-    _animationContainerDrag3 = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Interval(0.07, 0.96, curve: Curves.easeOut),
-      ),
-    );
-    _animationContainerDrag4 = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Interval(0.1, 1.0, curve: Curves.easeOut),
-      ),
-    );
-
-    _animationController2 = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 450),
-    );
-    _animation2 = CurvedAnimation(
-        curve: Curves.easeOutCubic, parent: _animationController2)
-      ..addStatusListener((status) {
-        if (status == AnimationStatus.completed) {
-          _nextPage();
-        }
-      });
-
-    _animationController3 = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 900),
-    );
-    _animation3 = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-          curve: Interval(0.0, 0.8, curve: Curves.easeOut),
-          parent: _animationController3),
-    );
-
-    _animation3pt1 = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-          curve: Interval(0.0, 0.375, curve: Curves.easeOut),
-          parent: _animationController3),
-    );
-    _animation3pt2 = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-          curve: Interval(0.2, 0.75, curve: Curves.easeOut),
-          parent: _animationController3),
-    );
-
-    _animationContainerTap1 = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-          curve: Interval(0.0, 0.75, curve: Curves.easeOut),
-          parent: _animationController3),
-    );
-    _animationContainerTap2 = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-          curve: Interval(0.05, 0.8, curve: Curves.easeOut),
-          parent: _animationController3),
-    );
-    _animationContainerTap3 = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-          curve: Interval(0.08, 0.9, curve: Curves.easeOut),
-          parent: _animationController3),
-    );
-    _animationContainerTap4 = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-          curve: Interval(0.12, 1, curve: Curves.easeOut),
-          parent: _animationController3),
-    )..addStatusListener((status) {
-        if (status == AnimationStatus.completed) _nextPage();
-      });
+    _animation2.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        _nextPage();
+      }
+    });
+    _animationContainerTap4.addStatusListener((status) {
+      if (status == AnimationStatus.completed) _nextPage();
+    });
   }
-
-  // @override
-  // void dispose() {
-  //   _animationController.dispose();
-  //   _animationController2.dispose();
-  //   _animationController3.dispose();
-  //   super.dispose();
-  // }
 
   void _onTap(BuildContext context) {
     final inAnimation = context.read(_inAnimationProvider);
@@ -196,7 +77,7 @@ class QuotesScreen extends HookWidget {
       }
       // makes dragging smooth instead of linear and awkward
       double delta = -details.primaryDelta /
-          (-_maxMainSlide * 1.5 * math.log(-_maxMainSlide));
+          (MAX_MAIN_SLIDE * 1.5 * math.log(MAX_MAIN_SLIDE));
       _animationController.value += delta;
     }
   }
@@ -221,8 +102,14 @@ class QuotesScreen extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final quotes = useProvider(quoteProvider);
-    final inAnimation = useProvider(_inAnimationProvider);
     final quoteIndex = useProvider(quoteIndexProvider);
+    final inAnimation = useProvider(_inAnimationProvider);
+    final animationController1 =
+        useAnimationController(duration: const Duration(milliseconds: 700));
+    final animationController2 =
+        useAnimationController(duration: const Duration(milliseconds: 450));
+    final animationController3 =
+        useAnimationController(duration: const Duration(milliseconds: 900));
 
     return !visibilityService.isLoading
         ? GestureDetector(
@@ -376,7 +263,7 @@ class QuotesScreen extends HookWidget {
                     ),
                     // swipe functionality
                     builder: (_, child) {
-                      double slide = _maxMainSlide * _animation1.value;
+                      double slide = -1 * MAX_MAIN_SLIDE * _animation1.value;
                       double angleY = (math.pi / 2) * _animation1.value;
 
                       return Opacity(

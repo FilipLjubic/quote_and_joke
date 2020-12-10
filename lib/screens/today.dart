@@ -5,8 +5,10 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:like_button/like_button.dart';
 import 'package:quote_and_joke/services/joke_service.dart';
 import 'package:quote_and_joke/services/quote_service.dart';
-import 'package:quote_and_joke/services/visibility_helper.dart';
 import 'package:quote_and_joke/utils/screen_size_config.dart';
+
+//TODO: Change all StateProviders to StateNotifierProviders
+//TODO: Change final fields to useMemoized(() => Field)
 
 class Today extends StatelessWidget {
   @override
@@ -17,65 +19,32 @@ class Today extends StatelessWidget {
           Positioned(
             top: -SizeConfig.blockSizeVertical * 13,
             right: -SizeConfig.blockSizeHorizontal * 30,
-            child: Container(
+            child: BackgroundBlob(
               height: SizeConfig.blockSizeVertical * 50,
               width: SizeConfig.blockSizeHorizontal * 70,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  begin: Alignment.bottomCenter,
-                  end: Alignment.topCenter,
-                  colors: [
-                    Theme.of(context).primaryColor.withOpacity(0.8),
-                    Theme.of(context).accentColor.withOpacity(0.8),
-                  ],
-                ),
-              ),
             ),
           ),
           Positioned(
             left: -SizeConfig.blockSizeHorizontal * 25,
             bottom: SizeConfig.blockSizeHorizontal * 20,
-            child: Container(
+            child: BackgroundBlob(
               height: SizeConfig.blockSizeVertical * 25,
               width: SizeConfig.blockSizeHorizontal * 70,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Theme.of(context).primaryColor.withOpacity(0.8),
-                    Theme.of(context).accentColor.withOpacity(0.8),
-                  ],
-                ),
-              ),
             ),
           ),
           Positioned(
             right: -SizeConfig.blockSizeHorizontal * 5,
             bottom: SizeConfig.blockSizeHorizontal * 20,
-            child: Container(
+            child: BackgroundBlob(
               height: SizeConfig.blockSizeVertical * 25,
               width: SizeConfig.blockSizeHorizontal * 35,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  begin: Alignment.bottomRight,
-                  end: Alignment.topRight,
-                  colors: [
-                    Theme.of(context).primaryColor.withOpacity(0.8),
-                    Theme.of(context).accentColor.withOpacity(0.8),
-                  ],
-                ),
-              ),
             ),
           ),
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Spacer(flex: 1),
+              Spacer(),
               Expanded(
                 child: Align(
                   alignment: Alignment.center,
@@ -88,7 +57,6 @@ class Today extends StatelessWidget {
                 ),
               ),
               Expanded(
-                flex: 1,
                 child: TodayHeadline(),
               ),
               Expanded(
@@ -102,6 +70,35 @@ class Today extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+class BackgroundBlob extends StatelessWidget {
+  const BackgroundBlob({
+    @required this.height,
+    @required this.width,
+  });
+
+  final height;
+  final width;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: height,
+      width: width,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: LinearGradient(
+          begin: Alignment.bottomCenter,
+          end: Alignment.topCenter,
+          colors: [
+            Theme.of(context).primaryColor.withOpacity(0.8),
+            Theme.of(context).accentColor.withOpacity(0.8),
+          ],
+        ),
       ),
     );
   }

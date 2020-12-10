@@ -21,7 +21,8 @@ class Home extends HookWidget {
     Bookmarks(),
   ];
 
-  void _onTap(BuildContext context, int index, PageController pageController) {
+  void _onTap(int index, PageController pageController) {
+    final context = useContext();
     final currentPageIndex = context.read(_currentPageIndexProvider);
     final hideScreen = context.read(_hideScreenProvider);
 
@@ -50,7 +51,7 @@ class Home extends HookWidget {
       ),
       bottomNavigationBar: BottomNavBar(
         currentIndex: currentPageIndex,
-        onTap: (index) => _onTap(context, index, pageController),
+        onTap: (index) => _onTap(index, pageController),
       ),
     );
   }

@@ -8,25 +8,10 @@ class VisibilityService {
   bool _isLoading = false;
 
   bool _isDrag = false;
-  bool _isQuoteOfDaySelected = true;
-
-  bool _qodIsLiked = false;
-
-  bool get qodIsLiked => _qodIsLiked;
-
-  bool get isQuoteOfDaySelected => _isQuoteOfDaySelected;
 
   bool get isLoading => _isLoading;
 
   bool get isDrag => _isDrag;
-
-  void changeQodLikedState() {
-    _qodIsLiked = !_qodIsLiked;
-  }
-
-  void changeButtonSelected() {
-    _isQuoteOfDaySelected = !_isQuoteOfDaySelected;
-  }
 
   void changeLoadingState() {
     _isLoading = !_isLoading;

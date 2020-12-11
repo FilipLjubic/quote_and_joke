@@ -4,7 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:quote_and_joke/models/joke_models.dart';
 
-final dadJokeProvider = FutureProvider((ref) async {
+final dadJokeProvider = FutureProvider.autoDispose((ref) async {
   final jokeService = JokeService();
 
   return jokeService.getDadJoke();

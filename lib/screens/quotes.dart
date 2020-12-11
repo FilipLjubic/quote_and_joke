@@ -19,10 +19,9 @@ class QuotesScreen extends HookWidget with QuoteAnimationMixin {
 
   void _addListeners() {
     fields.animation2.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        nextPage();
-      }
+      if (status == AnimationStatus.completed) nextPage();
     });
+
     fields.animationContainerTap4.addStatusListener((status) {
       if (status == AnimationStatus.completed) nextPage();
     });

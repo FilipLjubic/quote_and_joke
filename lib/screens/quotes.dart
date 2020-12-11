@@ -3,133 +3,62 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/all.dart';
-import 'package:quote_and_joke/services/quote_service.dart';
 import 'package:quote_and_joke/services/visibility_helper.dart';
+import 'package:quote_and_joke/utils/constants.dart';
 import 'package:quote_and_joke/utils/mixins/quote_animation_mixin.dart';
+import 'package:quote_and_joke/utils/mixins/quote_animation_mixin_fields.dart';
 import 'package:quote_and_joke/utils/screen_size_config.dart';
 import 'package:quote_and_joke/widgets/main_quote.dart';
 
-const MAX_MAIN_SLIDE = 100;
-
-// Needed so that you can't trigger another animation while one is running
-final _inAnimationProvider = StateProvider<bool>((ref) => false);
-
-final _isDragProvider = StateProvider<bool>((ref) => false);
-
+// ignore: must_be_immutable
 class QuotesScreen extends HookWidget with QuoteAnimationMixin {
-  bool _leftDrag = false;
-  bool _isSwipe = false;
   // to slide off screen
   // to get to position of main quote
   double _maxSecondarySlideX = SizeConfig.safeBlockHorizontal * 106.4;
   double _maxSecondarySlideY = SizeConfig.safeBlockVertical * -25.6;
 
-  void initializeAnimationControllers() {
-    _animation2.addStatusListener((status) {
+  void _addListeners() {
+    fields.animation2.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
-        _nextPage();
+        nextPage();
       }
     });
-    _animationContainerTap4.addStatusListener((status) {
-      if (status == AnimationStatus.completed) _nextPage();
+    fields.animationContainerTap4.addStatusListener((status) {
+      if (status == AnimationStatus.completed) nextPage();
     });
   }
 
-  void _onTap() {
-    final context = useContext();
-    final inAnimation = context.read(_inAnimationProvider);
-    final isDrag = context.read(_isDragProvider);
-
-    if (inAnimation.state == false) {
-      inAnimation.state = true;
-      _animationController3.forward();
-
-      isDrag.state = false;
-    }
-  }
-
-  void _nextPage() {
-    final context = useContext();
-    final refetchQuotes = context.read(refetchQuotesProvider);
-    final inAnimation = context.read(_inAnimationProvider);
-    final quoteIndex = context.read(quoteIndexProvider);
-
-    quoteIndex.increaseIndex();
-
-    _animationController.value = 0;
-    _animationController2.value = 0;
-    _animationController3.value = 0;
-    // there are always 50 quotes fetched
-    if (quoteIndex.currentIndex + 1 == 50) {
-      refetchQuotes();
-      quoteIndex.resetIndex();
-    }
-    inAnimation.state = false;
-  }
-
-  void _onDragStart(DragStartDetails details) {
-    final context = useContext();
-    final inAnimation = context.read(_inAnimationProvider).state;
-    final isDrag = context.read(_isDragProvider);
-    if (!inAnimation) {
-      _leftDrag =
-          _animationController.isDismissed && details.globalPosition.dx > 200;
-      isDrag.state = true;
-    }
-  }
-
-  void _onDragUpdate(DragUpdateDetails details) {
-    final context = useContext();
-    final inAnimation = context.read(_inAnimationProvider).state;
-    if (_leftDrag && !inAnimation) {
-      if (details.primaryDelta < -11) {
-        _isSwipe = true;
-      } else {
-        _isSwipe = false;
-      }
-      // makes dragging smooth instead of linear and awkward
-      double delta = -details.primaryDelta /
-          (MAX_MAIN_SLIDE * 1.5 * math.log(MAX_MAIN_SLIDE));
-      _animationController.value += delta;
-    }
-  }
-
-  void _onDragEnd(DragEndDetails details) {
-    final context = useContext();
-    final inAnimation = context.read(_inAnimationProvider);
-    if (_animationController.isDismissed || _animationController.isCompleted) {
-      return;
-    }
-    // if quote is over "half" of screen
-    bool isDismissedOrSwiped = _animationController.value > 0.25 || _isSwipe;
-    if (!isDismissedOrSwiped) {
-      _animationController.reverse();
-    } else {
-      inAnimation.state = true;
-      _animationController.forward();
-      _animationController2.forward();
-      _isSwipe = false;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final quoteIndex = useProvider(quoteIndexProvider);
-    final isDrag = useProvider(_isDragProvider).state;
-    final animationController1 =
+  void _initializeFields() {
+    final animationController =
         useAnimationController(duration: const Duration(milliseconds: 700));
     final animationController2 =
         useAnimationController(duration: const Duration(milliseconds: 450));
     final animationController3 =
         useAnimationController(duration: const Duration(milliseconds: 900));
-    final hideBecauseOverflow = useProvider(hideScreenProvider).state;
 
-    return !visibilityService.isLoading
+    fields = useMemoized(() => QuoteAnimationMixinFields(
+        animationController, animationController2, animationController3));
+  }
+
+  void _runAnimationHooks() {
+    _initializeFields();
+    _addListeners();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final quoteIndex = useProvider(quoteIndexProvider);
+    final isDrag = useProvider(isDragProvider).state;
+    final hideBecauseOverflow = useProvider(hideScreenProvider).state;
+    final isLoading = useProvider(isLoadingProvider).state;
+    _runAnimationHooks();
+
+    return isLoading
         ? GestureDetector(
-            onTap: _onTap,
-            onHorizontalDragStart: _onDragStart,
-            onHorizontalDragUpdate: _onDragUpdate,
-            onHorizontalDragEnd: _onDragEnd,
+            onTap: onTap,
+            onHorizontalDragStart: onDragStart,
+            onHorizontalDragUpdate: onDragUpdate,
+            onHorizontalDragEnd: onDragEnd,
             behavior: HitTestBehavior.opaque,
             child: Stack(
               alignment: Alignment.centerLeft,
@@ -137,7 +66,7 @@ class QuotesScreen extends HookWidget with QuoteAnimationMixin {
                 // Drag containers are shown when text is being slided, otherwise they're hidden
                 // this one had to be done manually because it has different function for translation
                 AnimatedBuilder(
-                    animation: _animationContainerDrag1,
+                    animation: fields.animationContainerDrag1,
                     child: Container(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
@@ -151,8 +80,8 @@ class QuotesScreen extends HookWidget with QuoteAnimationMixin {
                     builder: (_, child) {
                       double opacity = isDrag ? 1 : 0;
                       double angleOffset = (math.pi / 5 - math.pi / 6.2) / 2;
-                      double returnEffect =
-                          math.sin(_animationContainerDrag1.value * math.pi);
+                      double returnEffect = math
+                          .sin(fields.animationContainerDrag1.value * math.pi);
                       return Opacity(
                         opacity: hideBecauseOverflow ? 0 : opacity,
                         child: Transform.rotate(
@@ -171,7 +100,7 @@ class QuotesScreen extends HookWidget with QuoteAnimationMixin {
                 // this one is hidden until the first container gets to half its needed distance
                 // has the effect of being summoned out of nowhere
                 AnimatedBuilder(
-                    animation: _animationContainerDrag1,
+                    animation: fields.animationContainerDrag1,
                     child: Container(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
@@ -185,29 +114,30 @@ class QuotesScreen extends HookWidget with QuoteAnimationMixin {
                     ),
                     builder: (_, child) {
                       double opacity =
-                          isDrag && _animationContainerDrag1.value >= 0.5
-                              ? _animationContainerDrag1.value * 0.6
+                          isDrag && fields.animationContainerDrag1.value >= 0.5
+                              ? fields.animationContainerDrag1.value * 0.6
                               : 0;
                       double angleOffset = math.pi / 5 - math.pi / 6.2;
 
                       return Opacity(
-                        opacity: visibilityService.show ? opacity : 0,
+                        opacity: hideBecauseOverflow ? 0 : opacity,
                         child: Transform.rotate(
                           angle: -math.pi / 5 +
-                              angleOffset * _animationContainerDrag1.value,
+                              angleOffset *
+                                  fields.animationContainerDrag1.value,
                           child: Transform.translate(
                             offset: Offset(SizeConfig.safeBlockHorizontal * 31,
                                     SizeConfig.safeBlockVertical * 10) +
                                 Offset(SizeConfig.safeBlockHorizontal * 1,
                                         SizeConfig.safeBlockVertical * -4) *
-                                    _animationContainerDrag1.value,
+                                    fields.animationContainerDrag1.value,
                             child: child,
                           ),
                         ),
                       );
                     }),
                 BackgroundContainerDrag(
-                  animationController: _animationContainerDrag2,
+                  animationController: fields.animationContainerDrag2,
                   angle: -math.pi / 6.2,
                   angleEnd: -math.pi / 7.6,
                   offset: Offset(SizeConfig.safeBlockHorizontal * 32,
@@ -218,7 +148,7 @@ class QuotesScreen extends HookWidget with QuoteAnimationMixin {
                   opacityReduction: 0.1,
                 ),
                 BackgroundContainerDrag(
-                  animationController: _animationContainerDrag3,
+                  animationController: fields.animationContainerDrag3,
                   angle: -math.pi / 7.6,
                   angleEnd: -math.pi / 10,
                   offset: Offset(SizeConfig.safeBlockHorizontal * 31,
@@ -229,7 +159,7 @@ class QuotesScreen extends HookWidget with QuoteAnimationMixin {
                   opacityReduction: 0.1,
                 ),
                 BackgroundContainerDrag(
-                  animationController: _animationContainerDrag4,
+                  animationController: fields.animationContainerDrag4,
                   angle: -math.pi / 10,
                   angleEnd: -math.pi / 13,
                   offset: Offset(SizeConfig.safeBlockHorizontal * 30,
@@ -240,28 +170,28 @@ class QuotesScreen extends HookWidget with QuoteAnimationMixin {
                   opacityReduction: 0.4,
                 ),
                 BackgroundContainer(
-                  animationController: _animationContainerTap1,
+                  animationController: fields.animationContainerTap1,
                   angle: -math.pi / 5,
                   offset: Offset(SizeConfig.safeBlockHorizontal * 31,
                       SizeConfig.safeBlockVertical * 10),
                   opacity: isDrag ? 0 : 1,
                 ),
                 BackgroundContainer(
-                  animationController: _animationContainerTap2,
+                  animationController: fields.animationContainerTap2,
                   angle: -math.pi / 6.2,
                   offset: Offset(SizeConfig.safeBlockHorizontal * 32,
                       SizeConfig.safeBlockVertical * 6),
                   opacity: isDrag ? 0 : 0.6,
                 ),
                 BackgroundContainer(
-                  animationController: _animationContainerTap3,
+                  animationController: fields.animationContainerTap3,
                   angle: -math.pi / 7.6,
                   offset: Offset(SizeConfig.safeBlockHorizontal * 31,
                       SizeConfig.safeBlockVertical * 2),
                   opacity: isDrag ? 0 : 0.5,
                 ),
                 BackgroundContainer(
-                  animationController: _animationContainerTap4,
+                  animationController: fields.animationContainerTap4,
                   angle: -math.pi / 10,
                   offset: Offset(SizeConfig.safeBlockHorizontal * 30,
                       SizeConfig.safeBlockVertical * -1),
@@ -270,14 +200,15 @@ class QuotesScreen extends HookWidget with QuoteAnimationMixin {
                 // text of quote shown at start (there's 2 at same spot)
                 // this one can be slided
                 AnimatedBuilder(
-                    animation: _animation1,
+                    animation: fields.animation1,
                     child: MainQuote(
-                      index: quoteIndex,
+                      index: quoteIndex.currentIndex,
                     ),
                     // swipe functionality
                     builder: (_, child) {
-                      double slide = -1 * MAX_MAIN_SLIDE * _animation1.value;
-                      double angleY = (math.pi / 2) * _animation1.value;
+                      double slide =
+                          -1 * MAX_MAIN_SLIDE * fields.animation1.value;
+                      double angleY = (math.pi / 2) * fields.animation1.value;
 
                       return Opacity(
                         opacity: isDrag ? 1 : 0,
@@ -291,15 +222,15 @@ class QuotesScreen extends HookWidget with QuoteAnimationMixin {
                     }),
                 // same main quote as first, but used when tapped
                 AnimatedBuilder(
-                    animation: _animation3pt1,
+                    animation: fields.animation3pt1,
                     child: MainQuote(
-                      index: quoteIndex,
+                      index: quoteIndex.currentIndex,
                     ),
                     builder: (_, child) {
                       return Opacity(
-                        opacity: isDrag ? 0 : 1 - _animation3pt1.value,
+                        opacity: isDrag ? 0 : 1 - fields.animation3pt1.value,
                         child: Transform.scale(
-                          scale: 1 - (0.25 * _animation3pt1.value),
+                          scale: 1 - (0.25 * fields.animation3pt1.value),
                           child: child,
                         ),
                       );
@@ -307,25 +238,25 @@ class QuotesScreen extends HookWidget with QuoteAnimationMixin {
 
                 // quote that's after the first one, basically is just invisible till it's needed
                 AnimatedBuilder(
-                  animation: _animation3pt2,
+                  animation: fields.animation3pt2,
                   child: MainQuote(
-                    index: quoteIndex + 1,
+                    index: quoteIndex.currentIndex,
                   ),
                   builder: (_, child) => Opacity(
-                    opacity: _animation3pt2.value,
+                    opacity: fields.animation3pt2.value,
                     child: Transform.scale(
-                      scale: 0.75 + (0.25 * _animation3pt2.value),
+                      scale: 0.75 + (0.25 * fields.animation3pt2.value),
                       child: child,
                     ),
                   ),
                 ),
                 // blur activated when quote is tapped
                 AnimatedBuilder(
-                  animation: _animation3,
+                  animation: fields.animation3,
                   builder: (_, __) => BackdropFilter(
                     filter: ImageFilter.blur(
-                      sigmaX: 1.5 * math.sin(math.pi * _animation3.value),
-                      sigmaY: 1.5 * math.sin(math.pi * _animation3.value),
+                      sigmaX: 1.5 * math.sin(math.pi * fields.animation3.value),
+                      sigmaY: 1.5 * math.sin(math.pi * fields.animation3.value),
                     ),
                     child: Container(
                       color: Colors.transparent,
@@ -334,23 +265,25 @@ class QuotesScreen extends HookWidget with QuoteAnimationMixin {
                 ),
                 // next quote that is rendered outside of screen so that when you swipe it comes out flying
                 AnimatedBuilder(
-                    animation: _animationController2,
+                    animation: fields.animationController2,
                     child: Transform.translate(
                       offset: Offset(SizeConfig.safeBlockVertical * 50,
                           SizeConfig.safeBlockHorizontal * -35),
                       child: Transform.rotate(
                         angle: -math.pi / 2,
                         child: MainQuote(
-                          index: quoteIndex + 1,
+                          index: quoteIndex.currentIndex + 1,
                         ),
                       ),
                     ),
                     builder: (context, child) {
-                      double slideX = _maxSecondarySlideX * _animation2.value;
-                      double slideY = _maxSecondarySlideY * _animation2.value;
-                      double angleY = (math.pi / 2) * _animation2.value;
+                      double slideX =
+                          _maxSecondarySlideX * fields.animation2.value;
+                      double slideY =
+                          _maxSecondarySlideY * fields.animation2.value;
+                      double angleY = (math.pi / 2) * fields.animation2.value;
                       return Opacity(
-                        opacity: _animation2.value,
+                        opacity: fields.animation2.value,
                         child: Transform(
                           transform: Matrix4.identity()
                             ..translate(slideX, slideY)

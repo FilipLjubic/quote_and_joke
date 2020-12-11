@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 // Class where all the boilerplate for initializing animations is
 
-class AnimationMixinFields {
+class QuoteAnimationMixinFields {
   AnimationController animationController;
   AnimationController animationController2;
   AnimationController animationController3;
@@ -20,7 +20,7 @@ class AnimationMixinFields {
   Animation animationContainerDrag3;
   Animation animationContainerDrag4;
 
-  AnimationMixinFields._(
+  QuoteAnimationMixinFields._(
     this.animationController,
     this.animationController2,
     this.animationController3,
@@ -39,7 +39,7 @@ class AnimationMixinFields {
     this.animationContainerDrag4,
   );
 
-  factory AnimationMixinFields(
+  factory QuoteAnimationMixinFields(
       AnimationController animationController,
       AnimationController animationController2,
       AnimationController animationController3) {
@@ -117,7 +117,7 @@ class AnimationMixinFields {
           parent: animationController3),
     );
 
-    return AnimationMixinFields._(
+    return QuoteAnimationMixinFields._(
       animationController,
       animationController2,
       animationController3,

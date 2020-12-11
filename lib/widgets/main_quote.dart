@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:quote_and_joke/services/quote_service.dart';
-import 'package:quote_and_joke/services/visibility_helper.dart';
 import 'package:quote_and_joke/utils/screen_size_config.dart';
 
 class MainQuote extends HookWidget {
+  MainQuote({this.index});
+  final index;
+
   @override
   Widget build(BuildContext context) {
-    // mozda budem trebao state prebacit van
-    final index = useProvider(quoteIndexProvider.state);
     final quotes = useProvider(quoteProvider).data?.value;
 
     return Padding(

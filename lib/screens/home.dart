@@ -6,6 +6,7 @@ import 'package:quote_and_joke/screens/jokes.dart';
 import 'package:quote_and_joke/screens/quotes.dart';
 import 'package:quote_and_joke/screens/today.dart';
 import 'package:quote_and_joke/services/visibility_helper.dart';
+import 'package:quote_and_joke/utils/screen_size_config.dart';
 import 'package:quote_and_joke/widgets/bottom_nav_bar.dart';
 
 final _currentPageIndexProvider = StateProvider<int>((ref) => 0);
@@ -18,8 +19,7 @@ class Home extends HookWidget {
     Bookmarks(),
   ];
 
-  void _onTap(int index, PageController pageController) {
-    final context = useContext();
+  void _onTap(BuildContext context, int index, PageController pageController) {
     final currentPageIndex = context.read(_currentPageIndexProvider);
     final hideScreen = context.read(hideScreenProvider);
 
@@ -37,6 +37,7 @@ class Home extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    SizeConfig().init(context);
     final pageController = usePageController();
     final currentPageIndex = useProvider(_currentPageIndexProvider).state;
 
@@ -48,7 +49,7 @@ class Home extends HookWidget {
       ),
       bottomNavigationBar: BottomNavBar(
         currentIndex: currentPageIndex,
-        onTap: (index) => _onTap(index, pageController),
+        onTap: (index) => _onTap(context, index, pageController),
       ),
     );
   }

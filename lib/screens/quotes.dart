@@ -9,14 +9,10 @@ import 'package:quote_and_joke/utils/mixins/quote_animation_mixin.dart';
 import 'package:quote_and_joke/utils/mixins/quote_animation_mixin_fields.dart';
 import 'package:quote_and_joke/utils/screen_size_config.dart';
 import 'package:quote_and_joke/widgets/main_quote.dart';
+import 'package:quote_and_joke/widgets/themed_circular_progress_indicator.dart';
 
 // ignore: must_be_immutable
 class QuotesScreen extends HookWidget with QuoteAnimationMixin {
-  // to slide off screen
-  // to get to position of main quote
-  double _maxSecondarySlideX = SizeConfig.safeBlockHorizontal * 106.4;
-  double _maxSecondarySlideY = SizeConfig.safeBlockVertical * -25.6;
-
   void _addListeners() {
     fields.animation2.addStatusListener((status) {
       if (status == AnimationStatus.completed) nextPage();
@@ -51,6 +47,11 @@ class QuotesScreen extends HookWidget with QuoteAnimationMixin {
     final hideBecauseOverflow = useProvider(hideScreenProvider).state;
     final isLoading = useProvider(isLoadingProvider).state;
     _runAnimationHooks();
+
+    final maxSecondarySlideX =
+        useMemoized(() => SizeConfig.safeBlockHorizontal * 106.4);
+    final maxSecondarySlideY =
+        useMemoized(() => SizeConfig.safeBlockVertical * -25.6);
 
     return isLoading
         ? GestureDetector(
@@ -277,9 +278,9 @@ class QuotesScreen extends HookWidget with QuoteAnimationMixin {
                     ),
                     builder: (context, child) {
                       double slideX =
-                          _maxSecondarySlideX * fields.animation2.value;
+                          maxSecondarySlideX * fields.animation2.value;
                       double slideY =
-                          _maxSecondarySlideY * fields.animation2.value;
+                          maxSecondarySlideY * fields.animation2.value;
                       double angleY = (math.pi / 2) * fields.animation2.value;
                       return Opacity(
                         opacity: fields.animation2.value,
@@ -308,11 +309,7 @@ class QuotesScreen extends HookWidget with QuoteAnimationMixin {
               SizedBox(
                 height: SizeConfig.safeBlockVertical * 5,
               ),
-              CircularProgressIndicator(
-                backgroundColor: Theme.of(context).primaryColor,
-                valueColor: AlwaysStoppedAnimation<Color>(
-                    Theme.of(context).accentColor),
-              ),
+              ThemedCircularProgressIndicator(),
             ],
           );
   }

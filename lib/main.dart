@@ -2,7 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:quote_and_joke/screens/splash.dart';
+import 'package:quote_and_joke/screens/home.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Montserrat',
       ),
       title: 'Quotes & Jokes',
-      home: SplashScreen(),
+      home: Home(),
     );
   }
 }

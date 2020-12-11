@@ -5,7 +5,9 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:like_button/like_button.dart';
 import 'package:quote_and_joke/services/joke_service.dart';
 import 'package:quote_and_joke/services/quote_service.dart';
+import 'package:quote_and_joke/utils/constants.dart';
 import 'package:quote_and_joke/utils/screen_size_config.dart';
+import 'package:quote_and_joke/widgets/themed_circular_progress_indicator.dart';
 
 //TODO: Change all StateProviders to StateNotifierProviders
 //TODO: Change final fields to useMemoized(() => Field)
@@ -131,46 +133,22 @@ class NotificationSettings extends StatelessWidget {
   }
 }
 
-class SettingsDropdowns extends HookWidget {
+class SettingsDropdowns extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final days = useProvider(_frequencyDropdownDaysProvider);
-    final times = useProvider(_frequencyDropdownTimesProvider);
-
     return Container(
       margin: EdgeInsets.symmetric(
           horizontal: SizeConfig.safeBlockHorizontal * 5,
           vertical: SizeConfig.safeBlockVertical * 2),
       child: Row(
         children: [
-          FrequencyDropdown(items: days),
-          FrequencyDropdown(items: times),
+          FrequencyDropdown(items: FREQUENCY_DROPDOWN_DAYS),
+          FrequencyDropdown(items: FREQUENCY_DROPDOWN_TIMES),
         ],
       ),
     );
   }
 }
-
-final _frequencyDropdownDaysProvider =
-    Provider<List<String>>((ref) => ['Every day', 'Every monday', 'Never']);
-
-final _frequencyDropdownTimesProvider = Provider<List<String>>((ref) => [
-      '8:00 AM',
-      '8:30 AM',
-      '9:00 AM',
-      '9:30 AM',
-      '10:00 AM',
-      '8:00 PM',
-      '8:30 PM',
-      '9:00 PM',
-      '9:30 PM',
-      '10:00 PM'
-    ]);
-
-final _frequencyDropdownSelectedValue =
-    StateProvider.family<String, String>((ref, items) {
-  return items[0];
-});
 
 class FrequencyDropdown extends HookWidget {
   FrequencyDropdown({this.items});
@@ -178,7 +156,7 @@ class FrequencyDropdown extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final value = useProvider(_frequencyDropdownSelectedValue(items));
+    final current = useState(items[0]);
 
     return Expanded(
       child: Container(
@@ -188,7 +166,7 @@ class FrequencyDropdown extends HookWidget {
             border: Border.all(width: 1.0, color: Colors.black12),
             borderRadius: BorderRadius.circular(3.0)),
         child: DropdownButton(
-          value: value.state,
+          value: current.value,
           icon: Icon(
             Icons.keyboard_arrow_down,
             color: Theme.of(context).accentColor,
@@ -205,7 +183,7 @@ class FrequencyDropdown extends HookWidget {
               child: Text(value),
             );
           }).toList(),
-          onChanged: (newValue) => value.state = newValue,
+          onChanged: (newValue) => current.value = newValue,
         ),
       ),
     );
@@ -393,52 +371,74 @@ class Save extends HookWidget {
 class QuoteText extends HookWidget {
   @override
   Widget build(BuildContext context) {
-    final qod = useProvider(qodProvider).data?.value;
+    final qod = useProvider(qodProvider);
     return Container(
       padding: EdgeInsets.fromLTRB(
           SizeConfig.safeBlockVertical * 5,
           SizeConfig.safeBlockVertical * 5,
           SizeConfig.safeBlockVertical * 5,
           0),
-      child: Column(
-        children: [
-          AutoSizeText(
-            qod.quote,
+      child: qod.when(
+        data: (qod) => Column(
+          children: [
+            AutoSizeText(
+              qod.quote,
+              style: TextStyle(
+                  fontSize: SizeConfig.safeBlockHorizontal * 5.7,
+                  color: Colors.black87),
+              maxLines: 7,
+            ),
+            SizedBox(
+              height: SizeConfig.safeBlockVertical * 2,
+            ),
+            Text(
+              qod.author,
+              style: TextStyle(color: Colors.black45),
+            ),
+          ],
+        ),
+        loading: () => ThemedCircularProgressIndicator(),
+        error: (s, t) => Center(
+          child: Text(
+            "There seems to be a problem with your connection",
             style: TextStyle(
                 fontSize: SizeConfig.safeBlockHorizontal * 5.7,
                 color: Colors.black87),
-            maxLines: 7,
           ),
-          SizedBox(
-            height: SizeConfig.safeBlockVertical * 2,
-          ),
-          Text(
-            qod.author,
-            style: TextStyle(color: Colors.black45),
-          ),
-        ],
+        ),
       ),
     );
   }
 }
 
-class JokeText extends StatelessWidget {
+class JokeText extends HookWidget {
   @override
   Widget build(BuildContext context) {
     //TODO: Change to jodProvider
-    final jod = useProvider(dadJokeProvider).data?.value;
-    return Container(
-      padding: EdgeInsets.fromLTRB(
-          SizeConfig.safeBlockVertical * 5,
-          SizeConfig.safeBlockVertical * 5,
-          SizeConfig.safeBlockVertical * 5,
-          0),
-      child: AutoSizeText(
-        jod.text,
-        style: TextStyle(
-            fontSize: SizeConfig.safeBlockHorizontal * 5.7,
-            color: Colors.black87),
-        maxLines: 10,
+    final jod = useProvider(dadJokeProvider);
+    return jod.when(
+      data: (jod) => Container(
+        padding: EdgeInsets.fromLTRB(
+            SizeConfig.safeBlockVertical * 5,
+            SizeConfig.safeBlockVertical * 5,
+            SizeConfig.safeBlockVertical * 5,
+            0),
+        child: AutoSizeText(
+          jod.text,
+          style: TextStyle(
+              fontSize: SizeConfig.safeBlockHorizontal * 5.7,
+              color: Colors.black87),
+          maxLines: 10,
+        ),
+      ),
+      loading: () => ThemedCircularProgressIndicator(),
+      error: (s, t) => Center(
+        child: Text(
+          "There seems to be a problem with your connection",
+          style: TextStyle(
+              fontSize: SizeConfig.safeBlockHorizontal * 5.7,
+              color: Colors.black87),
+        ),
       ),
     );
   }

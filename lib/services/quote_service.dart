@@ -4,15 +4,20 @@ import 'package:hooks_riverpod/all.dart';
 import 'package:quote_and_joke/models/quote_model.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:quote_and_joke/services/visibility_helper.dart';
+
+final quoteServiceProvider = Provider((ref) => QuoteService());
+
+final refetchQuotesProvider = StateNotifierProvider((ref) => Refetch());
 
 final quoteProvider = FutureProvider.autoDispose((ref) async {
-  final quoteService = QuoteService();
+  final quoteService = ref.watch(quoteServiceProvider);
 
   return quoteService.fetchQuotes();
 });
 
 final qodProvider = FutureProvider.autoDispose((ref) async {
-  final quoteService = QuoteService();
+  final quoteService = ref.watch(quoteServiceProvider);
 
   return quoteService.getQOD();
 });

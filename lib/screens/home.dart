@@ -5,13 +5,10 @@ import 'package:quote_and_joke/screens/bookmarks.dart';
 import 'package:quote_and_joke/screens/jokes.dart';
 import 'package:quote_and_joke/screens/quotes.dart';
 import 'package:quote_and_joke/screens/today.dart';
+import 'package:quote_and_joke/services/visibility_helper.dart';
 import 'package:quote_and_joke/widgets/bottom_nav_bar.dart';
 
 final _currentPageIndexProvider = StateProvider<int>((ref) => 0);
-
-/// Is used because containers on quote screen overflow
-/// so when we're changing from quote screen we want it to hide itself after a mini-delay
-final _hideScreenProvider = StateProvider<bool>((ref) => true);
 
 class Home extends HookWidget {
   final List<Widget> _screens = [
@@ -24,7 +21,7 @@ class Home extends HookWidget {
   void _onTap(int index, PageController pageController) {
     final context = useContext();
     final currentPageIndex = context.read(_currentPageIndexProvider);
-    final hideScreen = context.read(_hideScreenProvider);
+    final hideScreen = context.read(hideScreenProvider);
 
     index == 1
         ? hideScreen.state = true

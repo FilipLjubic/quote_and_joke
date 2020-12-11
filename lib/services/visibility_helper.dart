@@ -7,23 +7,21 @@ final quoteIndexProvider = StateNotifierProvider((ref) => QuoteIndex());
 class VisibilityService {
   bool _isLoading = false;
 
-  bool _isDrag = false;
-
   bool get isLoading => _isLoading;
-
-  bool get isDrag => _isDrag;
 
   void changeLoadingState() {
     _isLoading = !_isLoading;
   }
-
-  void setDrag(bool drag) {
-    _isDrag = drag;
-  }
 }
+
+/// Is used because containers on quote screen overflow
+/// so when we're changing from quote screen we want it to hide itself after a mini-delay
+final hideScreenProvider = StateProvider<bool>((ref) => true);
 
 class QuoteIndex extends StateNotifier<int> {
   QuoteIndex() : super(0);
+
+  int get currentIndex => state;
 
   void resetIndex() {
     state = 0;
@@ -32,4 +30,10 @@ class QuoteIndex extends StateNotifier<int> {
   void increaseIndex() {
     state = state + 1;
   }
+}
+
+class Refetch extends StateNotifier<bool> {
+  Refetch() : super(true);
+
+  void call() => state = !state;
 }

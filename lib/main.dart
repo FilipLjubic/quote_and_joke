@@ -2,6 +2,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:quote_and_joke/repositories/fake_quote_repository.dart';
+import 'package:quote_and_joke/repositories/quotes_repository.dart';
 import 'package:quote_and_joke/screens/home.dart';
 
 void main() async {
@@ -10,7 +12,14 @@ void main() async {
       [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
   await Firebase.initializeApp();
 
-  return runApp(ProviderScope(child: MyApp()));
+  return runApp(
+    ProviderScope(
+      overrides: [
+        quoteRepositoryProvider.overrideWithValue(FakeQuoteRepository())
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

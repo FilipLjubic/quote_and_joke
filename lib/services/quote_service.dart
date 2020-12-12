@@ -6,17 +6,17 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:quote_and_joke/services/visibility_helper.dart';
 
-final quoteServiceProvider = Provider((ref) => QuoteService());
+final quoteServiceProvider = Provider((ref) => QuoteService(ref.read));
 
 final refetchQuotesProvider = StateNotifierProvider((ref) => Refetch());
 
-final quoteProvider = FutureProvider.autoDispose((ref) async {
+final quoteProvider = FutureProvider((ref) async {
   final quoteService = ref.watch(quoteServiceProvider);
 
   return quoteService.fetchQuotes();
 });
 
-final qodProvider = FutureProvider.autoDispose((ref) async {
+final qodProvider = FutureProvider((ref) async {
   final quoteService = ref.watch(quoteServiceProvider);
 
   return quoteService.getQOD();
@@ -25,11 +25,16 @@ final qodProvider = FutureProvider.autoDispose((ref) async {
 // TODO: Create repository to check if device has internet connection and handle if it doesn't
 // also gonna use _setOffset in it, instead of service class being pAcKeD
 class QuoteService {
+  QuoteService(this.read);
+
   int _pageOffset = 0;
+  final Reader read;
 
   Future<List<Quote>> fetchQuotes() async {
     List<Quote> quotes = [];
+
     _setOffset();
+
     final http.Response response = await http.get(
         "https://api.quotable.io/quotes?limit=50&skip=$_pageOffset&maxLength=93");
 
@@ -39,10 +44,10 @@ class QuoteService {
       for (var result in decode['results']) {
         quotes.add(Quote.fromJson(result));
       }
-      return quotes;
     } else {
-      throw ("Error fetching data");
+      throw Exception("Error fetching data");
     }
+    return quotes;
   }
 
   //TODO: save quote into PreferredSettings
@@ -59,8 +64,12 @@ class QuoteService {
         quote: quote,
         author: author,
       );
+    } else if (response.statusCode == 429) {
+      return Quote(
+          quote: "You only need to click once, fool.", author: 'Mordekeiser');
     } else {
-      throw ("Error fetching data");
+      // only 10 calls of this api are possible per hour
+      throw Exception("Error fetching data");
     }
   }
 

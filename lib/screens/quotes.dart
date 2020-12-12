@@ -13,14 +13,9 @@ import 'package:quote_and_joke/widgets/themed_circular_progress_indicator.dart';
 
 // ignore: must_be_immutable
 class QuotesScreen extends HookWidget with QuoteAnimationMixin {
-  void _addListeners() {
-    fields.animation2.addStatusListener((status) {
-      if (status == AnimationStatus.completed) nextPage();
-    });
-
-    fields.animationContainerTap4.addStatusListener((status) {
-      if (status == AnimationStatus.completed) nextPage();
-    });
+  void _runAnimationHooks() {
+    _initializeFields();
+    _addListeners();
   }
 
   void _initializeFields() {
@@ -35,9 +30,14 @@ class QuotesScreen extends HookWidget with QuoteAnimationMixin {
         animationController, animationController2, animationController3));
   }
 
-  void _runAnimationHooks() {
-    _initializeFields();
-    _addListeners();
+  void _addListeners() {
+    fields.animation2.addStatusListener((status) {
+      if (status == AnimationStatus.completed) nextPage();
+    });
+
+    fields.animationContainerTap4.addStatusListener((status) {
+      if (status == AnimationStatus.completed) nextPage();
+    });
   }
 
   @override
@@ -45,7 +45,6 @@ class QuotesScreen extends HookWidget with QuoteAnimationMixin {
     final quoteIndex = useProvider(quoteIndexProvider);
     final isDrag = useProvider(isDragProvider).state;
     final hideBecauseOverflow = useProvider(hideScreenProvider).state;
-    final isLoading = useProvider(isLoadingProvider).state;
     _runAnimationHooks();
 
     final maxSecondarySlideX =
@@ -53,7 +52,10 @@ class QuotesScreen extends HookWidget with QuoteAnimationMixin {
     final maxSecondarySlideY =
         useMemoized(() => SizeConfig.safeBlockVertical * -25.6);
 
-    return isLoading
+    final isLoading = useState(true);
+
+    // TODO: move isLoading inside of stack list
+    return !isLoading.value
         ? GestureDetector(
             onTap: onTap,
             onHorizontalDragStart: onDragStart,

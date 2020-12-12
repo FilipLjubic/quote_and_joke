@@ -397,7 +397,12 @@ class QuoteText extends HookWidget {
             ),
           ],
         ),
-        loading: () => ThemedCircularProgressIndicator(),
+        loading: () => Padding(
+          padding: EdgeInsets.only(top: SizeConfig.safeBlockVertical * 10),
+          child: Center(
+            child: ThemedCircularProgressIndicator(),
+          ),
+        ),
         error: (s, t) => Center(
           child: Text(
             "There seems to be a problem with your connection",

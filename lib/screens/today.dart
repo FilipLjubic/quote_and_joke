@@ -322,12 +322,25 @@ class TodayQuote extends HookWidget {
   }
 }
 
-final _qodIsLikedProvider = StateProvider<bool>((ref) => false);
+class LikeButtonState {
+  LikeButtonState({this.state});
+
+  bool state;
+
+  Future<bool> changeState() async {
+    Future.delayed(const Duration(seconds: 0));
+    state = !state;
+    return state;
+  }
+}
+
+final _likeButtonStateProvider =
+    Provider((ref) => LikeButtonState(state: false));
 
 class Save extends HookWidget {
   @override
   Widget build(BuildContext context) {
-    final qodIsLiked = useProvider(_qodIsLikedProvider).state;
+    final isLiked = useProvider(_likeButtonStateProvider);
 
     return Container(
       margin: EdgeInsets.only(
@@ -346,21 +359,14 @@ class Save extends HookWidget {
               start: Theme.of(context).accentColor,
               end: Theme.of(context).primaryColor,
             ),
-            likeBuilder: (bool isLiked) {
-              return qodIsLiked
+            likeBuilder: (bool liked) {
+              return isLiked.state
                   ? Icon(Icons.favorite, color: Theme.of(context).primaryColor)
                   : Icon(Icons.favorite_border,
                       color: Theme.of(context).accentColor);
             },
-            onTap: (_) => Future.delayed(const Duration(milliseconds: 0), () {
-              final qodIsLiked = context.read(_qodIsLikedProvider);
-
-              qodIsLiked.state = !qodIsLiked.state;
-
-              //TODO: dodati ili obrisati iz databaze quote
-              return qodIsLiked.state;
-            }),
-            isLiked: qodIsLiked,
+            onTap: (_) async => isLiked.changeState(),
+            isLiked: isLiked.state,
           ),
           Text(
             "SAVE",

@@ -32,8 +32,8 @@ mixin QuoteAnimationMixin {
     final quotesNotifier = context.read(quotesNotifierProvider);
     final inAnimation = context.read(inAnimationProvider);
     final quoteIndex = context.read(quoteIndexProvider);
-    quoteIndex.increaseIndex();
-    print("increasing index : ${quoteIndex.currentIndex}");
+    // quoteIndex.increaseIndex();
+    // print("increasing index : ${quoteIndex.currentIndex}");
 
     fields.animationController.value = 0;
     fields.animationController2.value = 0;

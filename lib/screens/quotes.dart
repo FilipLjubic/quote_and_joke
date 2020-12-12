@@ -31,12 +31,21 @@ class QuotesScreen extends HookWidget with QuoteAnimationMixin {
   }
 
   void _addListeners(BuildContext context) {
+    final count = useState(0);
     fields.animation2.addStatusListener((status) {
-      if (status == AnimationStatus.completed) nextPage(context);
+      if (status == AnimationStatus.completed) {
+        print("calling from left swipe");
+
+        nextPage(context);
+      }
     });
 
     fields.animationContainerTap4.addStatusListener((status) {
-      if (status == AnimationStatus.completed) nextPage(context);
+      if (status == AnimationStatus.completed) {
+        count.value = count.value + 1;
+        print("${count.value} tap4");
+        nextPage(context);
+      }
     });
   }
 
@@ -364,6 +373,7 @@ class BackgroundContainerDrag extends HookWidget {
   Widget build(BuildContext context) {
     final angleOffset = useMemoized(() => -angle + angleEnd);
     final hideBecauseOverflow = useProvider(hideScreenProvider).state;
+
     return AnimatedBuilder(
       animation: animationController,
       child: Container(

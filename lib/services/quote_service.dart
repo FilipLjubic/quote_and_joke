@@ -4,23 +4,7 @@ import 'package:hooks_riverpod/all.dart';
 import 'package:quote_and_joke/models/quote_model.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:quote_and_joke/services/visibility_helper.dart';
-
-final quoteServiceProvider = Provider((ref) => QuoteService(ref.read));
-
-final refetchQuotesProvider = StateNotifierProvider((ref) => Refetch());
-
-final quoteProvider = FutureProvider((ref) async {
-  final quoteService = ref.watch(quoteServiceProvider);
-
-  return quoteService.fetchQuotes();
-});
-
-final qodProvider = FutureProvider((ref) async {
-  final quoteService = ref.watch(quoteServiceProvider);
-
-  return quoteService.getQOD();
-});
+import 'package:quote_and_joke/utils/exceptions/quote_exception.dart';
 
 // TODO: Create repository to check if device has internet connection and handle if it doesn't
 // also gonna use _setOffset in it, instead of service class being pAcKeD
@@ -45,7 +29,7 @@ class QuoteService {
         quotes.add(Quote.fromJson(result));
       }
     } else {
-      throw Exception("Error fetching data");
+      throw QuoteException("Error fetching data");
     }
     return quotes;
   }
@@ -64,12 +48,12 @@ class QuoteService {
         quote: quote,
         author: author,
       );
+      // only 10 calls of this api are possible per hour
     } else if (response.statusCode == 429) {
       return Quote(
           quote: "You only need to click once, fool.", author: 'Mordekeiser');
     } else {
-      // only 10 calls of this api are possible per hour
-      throw Exception("Error fetching data");
+      throw QuoteException("Error fetching data");
     }
   }
 

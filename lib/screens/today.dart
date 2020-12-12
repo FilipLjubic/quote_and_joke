@@ -371,7 +371,6 @@ class Save extends HookWidget {
 class QuoteText extends HookWidget {
   @override
   Widget build(BuildContext context) {
-    final qod = useProvider(qodProvider);
     return Container(
       padding: EdgeInsets.fromLTRB(
           SizeConfig.safeBlockVertical * 5,

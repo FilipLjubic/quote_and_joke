@@ -11,8 +11,6 @@ class MainQuote extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final quotes = useProvider(quoteProvider).data?.value;
-
     return Padding(
       padding: EdgeInsets.only(
           left: SizeConfig.safeBlockHorizontal * 5,

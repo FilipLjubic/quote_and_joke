@@ -1,30 +1,34 @@
 import 'dart:convert';
 
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:quote_and_joke/models/joke_models.dart';
-
-final dadJokeProvider = FutureProvider((ref) async {
-  final jokeService = JokeService();
-
-  return jokeService.getDadJoke();
-});
+import 'package:quote_and_joke/utils/exceptions/joke_exception.dart';
 
 class JokeService {
   Future<JokeSingle> getDadJoke() async {
     final http.Response response = await http.get("https://icanhazdadjoke.com/",
         headers: {'Accept': 'application/json'});
 
-    JokeSingle dadJoke;
     if (response.statusCode == 200) {
-      final decode = jsonDecode(response.body);
+      final jsonString = jsonDecode(response.body);
 
-      dadJoke = JokeSingle(text: decode["joke"]);
+      return JokeSingle(text: jsonString["joke"]);
     } else {
-      dadJoke = JokeSingle(
-        text: "No internet connection :(",
-      );
+      throw const JokeException('Error fetching dad joke');
     }
-    return dadJoke;
+  }
+
+  Future<JokeSingle> fetchQod() async {
+    final http.Response response =
+        await http.get("https://api.jokes.one/jod.json");
+
+    if (response.statusCode == 200) {
+      final jsonString = jsonDecode(response.body);
+
+      return JokeSingle(
+          text: jsonString['contents']['jokes'][0]['joke']['text']);
+    } else {
+      throw const JokeException('Error fetching joke');
+    }
   }
 }

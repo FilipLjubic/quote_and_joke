@@ -1,7 +1,8 @@
 import 'dart:math';
 
 import 'package:quote_and_joke/models/quote_model.dart';
-import 'package:quote_and_joke/repositories/quotes_repository.dart';
+import 'package:quote_and_joke/repositories/abstract/quotes_repository.dart';
+import 'package:quote_and_joke/utils/exceptions/quote_exception.dart';
 
 final _sampleQuotes = [
   Quote(
@@ -36,43 +37,11 @@ final _sampleQuotes = [
       authorShort: 'Emerson'),
 ];
 
-final _sampleQOD = Quote(
-    quote: 'Go put your creed into the deed. Nor speak with double tongue.',
-    author: 'Ralph Waldo Emerson',
-    authorShort: 'Emerson');
-
-class QuoteException implements Exception {
-  const QuoteException(this.error);
-
-  final error;
-
-  @override
-  String toString() {
-    return 'Error: $error';
-  }
-}
-
-const ERROR_CHANCE = 0.3;
-
 class FakeQuoteRepository implements QuoteRepository {
-  FakeQuoteRepository()
-      : quotes = [..._sampleQuotes],
-        qod = _sampleQOD;
+  FakeQuoteRepository() : quotes = [..._sampleQuotes];
 
   final random = Random();
   final List<Quote> quotes;
-  final Quote qod;
-
-  @override
-  Future<Quote> fetchQOD() async {
-    await _waitRandomTime();
-
-    if (random.nextDouble() < ERROR_CHANCE) {
-      throw const QuoteException("Error fetching QOD");
-    } else {
-      return qod;
-    }
-  }
 
   @override
   Future<List<Quote>> fetchQuotes() async {

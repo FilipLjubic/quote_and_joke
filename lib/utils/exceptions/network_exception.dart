@@ -1,5 +1,5 @@
-class QuoteException implements Exception {
-  const QuoteException(this.error);
+class NetworkException implements Exception {
+  const NetworkException(this.error);
 
   final error;
 

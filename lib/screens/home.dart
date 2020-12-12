@@ -24,9 +24,9 @@ class Home extends HookWidget {
     final hideScreen = context.read(hideScreenProvider);
 
     index == 1
-        ? hideScreen.state = true
+        ? hideScreen.state = false
         : Future.delayed(
-            const Duration(milliseconds: 20), () => hideScreen.state = false);
+            const Duration(milliseconds: 20), () => hideScreen.state = true);
 
     currentPageIndex.state = index;
 

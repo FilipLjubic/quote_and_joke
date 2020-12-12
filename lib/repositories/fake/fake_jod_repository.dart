@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:quote_and_joke/models/joke_models.dart';
 import 'package:quote_and_joke/repositories/abstract/jod_repository.dart';
-import 'package:quote_and_joke/utils/exceptions/joke_exception.dart';
+import 'package:quote_and_joke/utils/exceptions/network_exception.dart';
 
 final _sampleJOD = JokeSingle(
     text: "Anton, do you think I’m a bad mother?\r\nMy name is Paul.\r\n\r\n");
@@ -18,7 +18,7 @@ class FakeJodRepository implements JodRepository {
     await _waitRandomTime();
 
     if (random.nextDouble() < ERROR_CHANCE) {
-      throw const JokeException("Error fetching QOD");
+      throw const NetworkException("Error fetching QOD");
     } else {
       return cachedJod;
     }

@@ -13,9 +13,9 @@ import 'package:quote_and_joke/widgets/themed_circular_progress_indicator.dart';
 
 // ignore: must_be_immutable
 class QuotesScreen extends HookWidget with QuoteAnimationMixin {
-  void _runAnimationHooks() {
+  void _runAnimationHooks(BuildContext context) {
     _initializeFields();
-    _addListeners();
+    _addListeners(context);
   }
 
   void _initializeFields() {
@@ -30,13 +30,13 @@ class QuotesScreen extends HookWidget with QuoteAnimationMixin {
         animationController, animationController2, animationController3));
   }
 
-  void _addListeners() {
+  void _addListeners(BuildContext context) {
     fields.animation2.addStatusListener((status) {
-      if (status == AnimationStatus.completed) nextPage();
+      if (status == AnimationStatus.completed) nextPage(context);
     });
 
     fields.animationContainerTap4.addStatusListener((status) {
-      if (status == AnimationStatus.completed) nextPage();
+      if (status == AnimationStatus.completed) nextPage(context);
     });
   }
 
@@ -45,275 +45,252 @@ class QuotesScreen extends HookWidget with QuoteAnimationMixin {
     final quoteIndex = useProvider(quoteIndexProvider);
     final isDrag = useProvider(isDragProvider).state;
     final hideBecauseOverflow = useProvider(hideScreenProvider).state;
-    _runAnimationHooks();
+    _runAnimationHooks(context);
 
     final maxSecondarySlideX =
         useMemoized(() => SizeConfig.safeBlockHorizontal * 106.4);
     final maxSecondarySlideY =
         useMemoized(() => SizeConfig.safeBlockVertical * -25.6);
 
-    final isLoading = useState(true);
-
     // TODO: move isLoading inside of stack list
-    return !isLoading.value
-        ? GestureDetector(
-            onTap: onTap,
-            onHorizontalDragStart: onDragStart,
-            onHorizontalDragUpdate: onDragUpdate,
-            onHorizontalDragEnd: onDragEnd,
-            behavior: HitTestBehavior.opaque,
-            child: Stack(
-              alignment: Alignment.centerLeft,
-              children: [
-                // Drag containers are shown when text is being slided, otherwise they're hidden
-                // this one had to be done manually because it has different function for translation
-                AnimatedBuilder(
-                    animation: fields.animationContainerDrag1,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                            begin: Alignment.bottomLeft,
-                            end: Alignment.topRight,
-                            colors: [Color(0xFF6FD9E2), Color(0xFFDBDFB8)]),
-                      ),
-                      height: SizeConfig.screenHeight / 1.3,
-                      width: SizeConfig.screenWidth * 2,
-                    ),
-                    builder: (_, child) {
-                      double opacity = isDrag ? 1 : 0;
-                      double angleOffset = (math.pi / 5 - math.pi / 6.2) / 2;
-                      double returnEffect = math
-                          .sin(fields.animationContainerDrag1.value * math.pi);
-                      return Opacity(
-                        opacity: hideBecauseOverflow ? 0 : opacity,
-                        child: Transform.rotate(
-                          angle: -math.pi / 5 + angleOffset * returnEffect,
-                          child: Transform.translate(
-                            offset: Offset(SizeConfig.safeBlockHorizontal * 31,
-                                    SizeConfig.safeBlockVertical * 10) +
-                                Offset(SizeConfig.safeBlockHorizontal * 0.5,
-                                        SizeConfig.safeBlockVertical * -2) *
-                                    returnEffect,
-                            child: child,
-                          ),
-                        ),
-                      );
-                    }),
-                // this one is hidden until the first container gets to half its needed distance
-                // has the effect of being summoned out of nowhere
-                AnimatedBuilder(
-                    animation: fields.animationContainerDrag1,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.bottomLeft,
-                          end: Alignment.topRight,
-                          colors: [Color(0xFF6FD9E2), Color(0xFFDBDFB8)],
-                        ),
-                      ),
-                      height: SizeConfig.screenHeight / 1.3,
-                      width: SizeConfig.screenWidth * 2,
-                    ),
-                    builder: (_, child) {
-                      double opacity =
-                          isDrag && fields.animationContainerDrag1.value >= 0.5
-                              ? fields.animationContainerDrag1.value * 0.6
-                              : 0;
-                      double angleOffset = math.pi / 5 - math.pi / 6.2;
-
-                      return Opacity(
-                        opacity: hideBecauseOverflow ? 0 : opacity,
-                        child: Transform.rotate(
-                          angle: -math.pi / 5 +
-                              angleOffset *
-                                  fields.animationContainerDrag1.value,
-                          child: Transform.translate(
-                            offset: Offset(SizeConfig.safeBlockHorizontal * 31,
-                                    SizeConfig.safeBlockVertical * 10) +
-                                Offset(SizeConfig.safeBlockHorizontal * 1,
-                                        SizeConfig.safeBlockVertical * -4) *
-                                    fields.animationContainerDrag1.value,
-                            child: child,
-                          ),
-                        ),
-                      );
-                    }),
-                BackgroundContainerDrag(
-                  animationController: fields.animationContainerDrag2,
-                  angle: -math.pi / 6.2,
-                  angleEnd: -math.pi / 7.6,
-                  offset: Offset(SizeConfig.safeBlockHorizontal * 32,
-                      SizeConfig.safeBlockVertical * 6),
-                  translation: Offset(SizeConfig.safeBlockHorizontal * -1,
-                      SizeConfig.safeBlockVertical * -4),
-                  opacity: isDrag ? 0.6 : 0,
-                  opacityReduction: 0.1,
+    return GestureDetector(
+      onTap: () => onTap(context),
+      onHorizontalDragStart: (details) => onDragStart(context, details),
+      onHorizontalDragUpdate: (details) => onDragUpdate(context, details),
+      onHorizontalDragEnd: (details) => onDragEnd(context, details),
+      behavior: HitTestBehavior.opaque,
+      child: Stack(
+        alignment: Alignment.centerLeft,
+        children: [
+          // Drag containers are shown when text is being slided, otherwise they're hidden
+          // this one had to be done manually because it has different function for translation
+          AnimatedBuilder(
+              animation: fields.animationContainerDrag1,
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                      begin: Alignment.bottomLeft,
+                      end: Alignment.topRight,
+                      colors: [Color(0xFF6FD9E2), Color(0xFFDBDFB8)]),
                 ),
-                BackgroundContainerDrag(
-                  animationController: fields.animationContainerDrag3,
-                  angle: -math.pi / 7.6,
-                  angleEnd: -math.pi / 10,
-                  offset: Offset(SizeConfig.safeBlockHorizontal * 31,
-                      SizeConfig.safeBlockVertical * 2),
-                  translation: Offset(SizeConfig.safeBlockHorizontal * -1,
-                      SizeConfig.safeBlockVertical * -3),
-                  opacity: isDrag ? 0.5 : 0,
-                  opacityReduction: 0.1,
-                ),
-                BackgroundContainerDrag(
-                  animationController: fields.animationContainerDrag4,
-                  angle: -math.pi / 10,
-                  angleEnd: -math.pi / 13,
-                  offset: Offset(SizeConfig.safeBlockHorizontal * 30,
-                      SizeConfig.safeBlockVertical * -1),
-                  translation: Offset(SizeConfig.safeBlockHorizontal * -2,
-                      SizeConfig.safeBlockVertical * -4),
-                  opacity: isDrag ? 0.4 : 0,
-                  opacityReduction: 0.4,
-                ),
-                BackgroundContainer(
-                  animationController: fields.animationContainerTap1,
-                  angle: -math.pi / 5,
-                  offset: Offset(SizeConfig.safeBlockHorizontal * 31,
-                      SizeConfig.safeBlockVertical * 10),
-                  opacity: isDrag ? 0 : 1,
-                ),
-                BackgroundContainer(
-                  animationController: fields.animationContainerTap2,
-                  angle: -math.pi / 6.2,
-                  offset: Offset(SizeConfig.safeBlockHorizontal * 32,
-                      SizeConfig.safeBlockVertical * 6),
-                  opacity: isDrag ? 0 : 0.6,
-                ),
-                BackgroundContainer(
-                  animationController: fields.animationContainerTap3,
-                  angle: -math.pi / 7.6,
-                  offset: Offset(SizeConfig.safeBlockHorizontal * 31,
-                      SizeConfig.safeBlockVertical * 2),
-                  opacity: isDrag ? 0 : 0.5,
-                ),
-                BackgroundContainer(
-                  animationController: fields.animationContainerTap4,
-                  angle: -math.pi / 10,
-                  offset: Offset(SizeConfig.safeBlockHorizontal * 30,
-                      SizeConfig.safeBlockVertical * -1),
-                  opacity: isDrag ? 0 : 0.4,
-                ),
-                // text of quote shown at start (there's 2 at same spot)
-                // this one can be slided
-                AnimatedBuilder(
-                    animation: fields.animation1,
-                    child: MainQuote(
-                      index: quoteIndex.currentIndex,
-                    ),
-                    // swipe functionality
-                    builder: (_, child) {
-                      double slide =
-                          -1 * MAX_MAIN_SLIDE * fields.animation1.value;
-                      double angleY = (math.pi / 2) * fields.animation1.value;
-
-                      return Opacity(
-                        opacity: isDrag ? 1 : 0,
-                        child: Transform(
-                          transform: Matrix4.identity()
-                            ..translate(slide)
-                            ..rotateZ(angleY),
-                          child: child,
-                        ),
-                      );
-                    }),
-                // same main quote as first, but used when tapped
-                AnimatedBuilder(
-                    animation: fields.animation3pt1,
-                    child: MainQuote(
-                      index: quoteIndex.currentIndex,
-                    ),
-                    builder: (_, child) {
-                      return Opacity(
-                        opacity: isDrag ? 0 : 1 - fields.animation3pt1.value,
-                        child: Transform.scale(
-                          scale: 1 - (0.25 * fields.animation3pt1.value),
-                          child: child,
-                        ),
-                      );
-                    }),
-
-                // quote that's after the first one, basically is just invisible till it's needed
-                AnimatedBuilder(
-                  animation: fields.animation3pt2,
-                  child: MainQuote(
-                    index: quoteIndex.currentIndex,
-                  ),
-                  builder: (_, child) => Opacity(
-                    opacity: fields.animation3pt2.value,
-                    child: Transform.scale(
-                      scale: 0.75 + (0.25 * fields.animation3pt2.value),
+                height: SizeConfig.screenHeight / 1.3,
+                width: SizeConfig.screenWidth * 2,
+              ),
+              builder: (_, child) {
+                double opacity = isDrag ? 1 : 0;
+                double angleOffset = (math.pi / 5 - math.pi / 6.2) / 2;
+                double returnEffect =
+                    math.sin(fields.animationContainerDrag1.value * math.pi);
+                return Opacity(
+                  opacity: hideBecauseOverflow ? 0 : opacity,
+                  child: Transform.rotate(
+                    angle: -math.pi / 5 + angleOffset * returnEffect,
+                    child: Transform.translate(
+                      offset: Offset(SizeConfig.safeBlockHorizontal * 31,
+                              SizeConfig.safeBlockVertical * 10) +
+                          Offset(SizeConfig.safeBlockHorizontal * 0.5,
+                                  SizeConfig.safeBlockVertical * -2) *
+                              returnEffect,
                       child: child,
                     ),
                   ),
-                ),
-                // blur activated when quote is tapped
-                AnimatedBuilder(
-                  animation: fields.animation3,
-                  builder: (_, __) => BackdropFilter(
-                    filter: ImageFilter.blur(
-                      sigmaX: 1.5 * math.sin(math.pi * fields.animation3.value),
-                      sigmaY: 1.5 * math.sin(math.pi * fields.animation3.value),
-                    ),
-                    child: Container(
-                      color: Colors.transparent,
-                    ),
+                );
+              }),
+          // this one is hidden until the first container gets to half its needed distance
+          // has the effect of being summoned out of nowhere
+          AnimatedBuilder(
+              animation: fields.animationContainerDrag1,
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.bottomLeft,
+                    end: Alignment.topRight,
+                    colors: [Color(0xFF6FD9E2), Color(0xFFDBDFB8)],
                   ),
                 ),
-                // next quote that is rendered outside of screen so that when you swipe it comes out flying
-                AnimatedBuilder(
-                    animation: fields.animationController2,
+                height: SizeConfig.screenHeight / 1.3,
+                width: SizeConfig.screenWidth * 2,
+              ),
+              builder: (_, child) {
+                double opacity =
+                    isDrag && fields.animationContainerDrag1.value >= 0.5
+                        ? fields.animationContainerDrag1.value * 0.6
+                        : 0;
+                double angleOffset = math.pi / 5 - math.pi / 6.2;
+
+                return Opacity(
+                  opacity: hideBecauseOverflow ? 0 : opacity,
+                  child: Transform.rotate(
+                    angle: -math.pi / 5 +
+                        angleOffset * fields.animationContainerDrag1.value,
                     child: Transform.translate(
-                      offset: Offset(SizeConfig.safeBlockVertical * 50,
-                          SizeConfig.safeBlockHorizontal * -35),
-                      child: Transform.rotate(
-                        angle: -math.pi / 2,
-                        child: MainQuote(
-                          index: quoteIndex.currentIndex + 1,
-                        ),
-                      ),
+                      offset: Offset(SizeConfig.safeBlockHorizontal * 31,
+                              SizeConfig.safeBlockVertical * 10) +
+                          Offset(SizeConfig.safeBlockHorizontal * 1,
+                                  SizeConfig.safeBlockVertical * -4) *
+                              fields.animationContainerDrag1.value,
+                      child: child,
                     ),
-                    builder: (context, child) {
-                      double slideX =
-                          maxSecondarySlideX * fields.animation2.value;
-                      double slideY =
-                          maxSecondarySlideY * fields.animation2.value;
-                      double angleY = (math.pi / 2) * fields.animation2.value;
-                      return Opacity(
-                        opacity: fields.animation2.value,
-                        child: Transform(
-                          transform: Matrix4.identity()
-                            ..translate(slideX, slideY)
-                            ..rotateZ(angleY),
-                          child: child,
-                        ),
-                      );
-                    }),
-              ],
+                  ),
+                );
+              }),
+          BackgroundContainerDrag(
+            animationController: fields.animationContainerDrag2,
+            angle: -math.pi / 6.2,
+            angleEnd: -math.pi / 7.6,
+            offset: Offset(SizeConfig.safeBlockHorizontal * 32,
+                SizeConfig.safeBlockVertical * 6),
+            translation: Offset(SizeConfig.safeBlockHorizontal * -1,
+                SizeConfig.safeBlockVertical * -4),
+            opacity: isDrag ? 0.6 : 0,
+            opacityReduction: 0.1,
+          ),
+          BackgroundContainerDrag(
+            animationController: fields.animationContainerDrag3,
+            angle: -math.pi / 7.6,
+            angleEnd: -math.pi / 10,
+            offset: Offset(SizeConfig.safeBlockHorizontal * 31,
+                SizeConfig.safeBlockVertical * 2),
+            translation: Offset(SizeConfig.safeBlockHorizontal * -1,
+                SizeConfig.safeBlockVertical * -3),
+            opacity: isDrag ? 0.5 : 0,
+            opacityReduction: 0.1,
+          ),
+          BackgroundContainerDrag(
+            animationController: fields.animationContainerDrag4,
+            angle: -math.pi / 10,
+            angleEnd: -math.pi / 13,
+            offset: Offset(SizeConfig.safeBlockHorizontal * 30,
+                SizeConfig.safeBlockVertical * -1),
+            translation: Offset(SizeConfig.safeBlockHorizontal * -2,
+                SizeConfig.safeBlockVertical * -4),
+            opacity: isDrag ? 0.4 : 0,
+            opacityReduction: 0.4,
+          ),
+          BackgroundContainer(
+            animationController: fields.animationContainerTap1,
+            angle: -math.pi / 5,
+            offset: Offset(SizeConfig.safeBlockHorizontal * 31,
+                SizeConfig.safeBlockVertical * 10),
+            opacity: isDrag ? 0 : 1,
+          ),
+          BackgroundContainer(
+            animationController: fields.animationContainerTap2,
+            angle: -math.pi / 6.2,
+            offset: Offset(SizeConfig.safeBlockHorizontal * 32,
+                SizeConfig.safeBlockVertical * 6),
+            opacity: isDrag ? 0 : 0.6,
+          ),
+          BackgroundContainer(
+            animationController: fields.animationContainerTap3,
+            angle: -math.pi / 7.6,
+            offset: Offset(SizeConfig.safeBlockHorizontal * 31,
+                SizeConfig.safeBlockVertical * 2),
+            opacity: isDrag ? 0 : 0.5,
+          ),
+          BackgroundContainer(
+            animationController: fields.animationContainerTap4,
+            angle: -math.pi / 10,
+            offset: Offset(SizeConfig.safeBlockHorizontal * 30,
+                SizeConfig.safeBlockVertical * -1),
+            opacity: isDrag ? 0 : 0.4,
+          ),
+          // text of quote shown at start (there's 2 at same spot)
+          // this one can be slided
+          AnimatedBuilder(
+              animation: fields.animation1,
+              child: MainQuote(
+                index: quoteIndex.currentIndex,
+              ),
+              // swipe functionality
+              builder: (_, child) {
+                double slide = -1 * MAX_MAIN_SLIDE * fields.animation1.value;
+                double angleY = (math.pi / 2) * fields.animation1.value;
+
+                return Opacity(
+                  opacity: isDrag ? 1 : 0,
+                  child: Transform(
+                    transform: Matrix4.identity()
+                      ..translate(slide)
+                      ..rotateZ(angleY),
+                    child: child,
+                  ),
+                );
+              }),
+          // same main quote as first, but used when tapped
+          AnimatedBuilder(
+              animation: fields.animation3pt1,
+              child: MainQuote(
+                index: quoteIndex.currentIndex,
+              ),
+              builder: (_, child) {
+                return Opacity(
+                  opacity: isDrag ? 0 : 1 - fields.animation3pt1.value,
+                  child: Transform.scale(
+                    scale: 1 - (0.25 * fields.animation3pt1.value),
+                    child: child,
+                  ),
+                );
+              }),
+
+          // quote that's after the first one, basically is just invisible till it's needed
+          AnimatedBuilder(
+            animation: fields.animation3pt2,
+            child: MainQuote(
+              index: quoteIndex.currentIndex,
             ),
-          )
-        // replace one day with animation of containers swirling
-        : Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                "Loading more quotes",
-                style: TextStyle(
-                    color: Colors.black45,
-                    fontSize: SizeConfig.safeBlockHorizontal * 8),
+            builder: (_, child) => Opacity(
+              opacity: fields.animation3pt2.value,
+              child: Transform.scale(
+                scale: 0.75 + (0.25 * fields.animation3pt2.value),
+                child: child,
               ),
-              SizedBox(
-                height: SizeConfig.safeBlockVertical * 5,
+            ),
+          ),
+          // blur activated when quote is tapped
+          AnimatedBuilder(
+            animation: fields.animation3,
+            builder: (_, __) => BackdropFilter(
+              filter: ImageFilter.blur(
+                sigmaX: 1.5 * math.sin(math.pi * fields.animation3.value),
+                sigmaY: 1.5 * math.sin(math.pi * fields.animation3.value),
               ),
-              ThemedCircularProgressIndicator(),
-            ],
-          );
+              child: Container(
+                color: Colors.transparent,
+              ),
+            ),
+          ),
+          // next quote that is rendered outside of screen so that when you swipe it comes out flying
+          AnimatedBuilder(
+              animation: fields.animationController2,
+              child: Transform.translate(
+                offset: Offset(SizeConfig.safeBlockVertical * 50,
+                    SizeConfig.safeBlockHorizontal * -35),
+                child: Transform.rotate(
+                  angle: -math.pi / 2,
+                  child: MainQuote(
+                    index: quoteIndex.currentIndex + 1,
+                  ),
+                ),
+              ),
+              builder: (context, child) {
+                double slideX = maxSecondarySlideX * fields.animation2.value;
+                double slideY = maxSecondarySlideY * fields.animation2.value;
+                double angleY = (math.pi / 2) * fields.animation2.value;
+                return Opacity(
+                  opacity: fields.animation2.value,
+                  child: Transform(
+                    transform: Matrix4.identity()
+                      ..translate(slideX, slideY)
+                      ..rotateZ(angleY),
+                    child: child,
+                  ),
+                );
+              }),
+        ],
+      ),
+    );
+    // replace one day with animation of containers swirling
   }
 }
 
@@ -333,6 +310,7 @@ class BackgroundContainer extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final hideBecauseOverflow = useProvider(hideScreenProvider).state;
+
     return AnimatedBuilder(
       animation: animationController,
       child: Container(

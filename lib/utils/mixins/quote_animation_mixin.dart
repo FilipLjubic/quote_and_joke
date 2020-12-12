@@ -1,9 +1,8 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:quote_and_joke/state/quotes_notifier.dart';
 import 'package:quote_and_joke/utils/constants.dart';
 import 'package:quote_and_joke/utils/mixins/quote_animation_mixin_fields.dart';
-import 'package:quote_and_joke/services/quote_service.dart';
 import 'package:quote_and_joke/services/visibility_helper.dart';
 import 'package:hooks_riverpod/all.dart';
 
@@ -17,8 +16,7 @@ mixin QuoteAnimationMixin {
   bool _leftDrag = false;
   bool _isSwipe = false;
 
-  void onTap() {
-    final context = useContext();
+  void onTap(BuildContext context) {
     final inAnimation = context.read(inAnimationProvider);
     final isDrag = context.read(isDragProvider);
 
@@ -30,27 +28,25 @@ mixin QuoteAnimationMixin {
     }
   }
 
-  void nextPage() {
-    final context = useContext();
-    final refetchQuotes = context.read(refetchQuotesProvider);
+  void nextPage(BuildContext context) {
+    final quotesNotifier = context.read(quotesNotifierProvider);
     final inAnimation = context.read(inAnimationProvider);
     final quoteIndex = context.read(quoteIndexProvider);
-
     quoteIndex.increaseIndex();
+    print("increasing index : ${quoteIndex.currentIndex}");
 
     fields.animationController.value = 0;
     fields.animationController2.value = 0;
     fields.animationController3.value = 0;
     // there are always 50 quotes fetched
     if (quoteIndex.currentIndex + 1 == 50) {
-      refetchQuotes();
+      quotesNotifier.getQuotes();
       quoteIndex.resetIndex();
     }
     inAnimation.state = false;
   }
 
-  void onDragStart(DragStartDetails details) {
-    final context = useContext();
+  void onDragStart(BuildContext context, DragStartDetails details) {
     final inAnimation = context.read(inAnimationProvider).state;
     final isDrag = context.read(isDragProvider);
     if (!inAnimation) {
@@ -60,8 +56,7 @@ mixin QuoteAnimationMixin {
     }
   }
 
-  void onDragUpdate(DragUpdateDetails details) {
-    final context = useContext();
+  void onDragUpdate(BuildContext context, DragUpdateDetails details) {
     final inAnimation = context.read(inAnimationProvider).state;
     if (_leftDrag && !inAnimation) {
       if (details.primaryDelta < -11) {
@@ -76,9 +71,9 @@ mixin QuoteAnimationMixin {
     }
   }
 
-  void onDragEnd(DragEndDetails details) {
-    final context = useContext();
+  void onDragEnd(BuildContext context, DragEndDetails details) {
     final inAnimation = context.read(inAnimationProvider);
+
     if (fields.animationController.isDismissed ||
         fields.animationController.isCompleted) {
       return;

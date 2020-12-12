@@ -4,10 +4,9 @@ import 'package:hooks_riverpod/all.dart';
 import 'package:quote_and_joke/models/quote_model.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:quote_and_joke/utils/exceptions/quote_exception.dart';
+import 'package:quote_and_joke/utils/exceptions/network_exception.dart';
 
-// TODO: Create repository to check if device has internet connection and handle if it doesn't
-// also gonna use _setOffset in it, instead of service class being pAcKeD
+// use _setOffset in repository, instead of service class being pAcKeD
 class QuoteService {
   QuoteService(this.read);
 
@@ -29,7 +28,7 @@ class QuoteService {
         quotes.add(Quote.fromJson(result));
       }
     } else {
-      throw QuoteException("Error fetching data");
+      throw NetworkException("Error fetching data");
     }
     return quotes;
   }
@@ -53,7 +52,7 @@ class QuoteService {
       return Quote(
           quote: "You only need to click once, fool.", author: 'Mordekeiser');
     } else {
-      throw QuoteException("Error fetching data");
+      throw NetworkException("Error fetching data");
     }
   }
 

@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:quote_and_joke/models/joke_models.dart';
-import 'package:quote_and_joke/utils/exceptions/joke_exception.dart';
+import 'package:quote_and_joke/utils/exceptions/network_exception.dart';
 
 class JokeService {
   Future<JokeSingle> getDadJoke() async {
@@ -14,7 +14,7 @@ class JokeService {
 
       return JokeSingle(text: jsonString["joke"]);
     } else {
-      throw const JokeException('Error fetching dad joke');
+      throw const NetworkException('Error fetching dad joke');
     }
   }
 
@@ -28,7 +28,7 @@ class JokeService {
       return JokeSingle(
           text: jsonString['contents']['jokes'][0]['joke']['text']);
     } else {
-      throw const JokeException('Error fetching joke');
+      throw const NetworkException('Error fetching joke');
     }
   }
 }

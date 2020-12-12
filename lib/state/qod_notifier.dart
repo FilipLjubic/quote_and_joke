@@ -1,24 +1,27 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:quote_and_joke/models/quote_model.dart';
-import 'package:quote_and_joke/repositories/abstract/qod_repository.dart';
-import 'package:quote_and_joke/utils/exceptions/quote_exception.dart';
+import 'package:quote_and_joke/repositories/repository_providers.dart';
+import 'package:quote_and_joke/utils/exceptions/network_exception.dart';
 
-class QuotesNotifier extends StateNotifier<AsyncValue<Quote>> {
-  QuotesNotifier(this.read, [AsyncValue<Quote> qod])
+final qodNotifierProvider =
+    StateNotifierProvider<QodNotifier>((ref) => QodNotifier(ref.read));
+
+class QodNotifier extends StateNotifier<AsyncValue<Quote>> {
+  QodNotifier(this.read, [AsyncValue<Quote> qod])
       : super(qod ?? const AsyncValue.loading()) {
-    getQuotes();
+    getQod();
   }
 
   final Reader read;
 
-  Future<void> getQuotes() async {
+  Future<void> getQod() async {
     try {
       state = AsyncValue.loading();
 
       final qod = await read(qodRepositoryProvider).fetchQOD();
 
       state = AsyncValue.data(qod);
-    } on QuoteException catch (e, st) {
+    } on NetworkException catch (e, st) {
       state = AsyncValue.error(e, st);
     }
   }

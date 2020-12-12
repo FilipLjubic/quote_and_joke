@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:quote_and_joke/models/quote_model.dart';
 import 'package:quote_and_joke/repositories/abstract/quotes_repository.dart';
-import 'package:quote_and_joke/utils/exceptions/quote_exception.dart';
+import 'package:quote_and_joke/utils/exceptions/network_exception.dart';
 
 final _sampleQuotes = [
   Quote(
@@ -48,7 +48,7 @@ class FakeQuoteRepository implements QuoteRepository {
     await _waitRandomTime();
 
     if (random.nextDouble() < ERROR_CHANCE) {
-      throw const QuoteException("Error fetching QOD");
+      throw const NetworkException("Error fetching QOD");
     } else {
       return quotes;
     }

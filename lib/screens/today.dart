@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:like_button/like_button.dart';
-import 'package:quote_and_joke/services/joke_service.dart';
-import 'package:quote_and_joke/services/quote_service.dart';
+import 'package:quote_and_joke/state/jod_notifier.dart';
+import 'package:quote_and_joke/state/qod_notifier.dart';
 import 'package:quote_and_joke/utils/constants.dart';
 import 'package:quote_and_joke/utils/screen_size_config.dart';
 import 'package:quote_and_joke/widgets/themed_circular_progress_indicator.dart';
@@ -244,24 +244,29 @@ class TodayButtons extends HookWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Expanded(
-            child: XOfDayButton(showQod: showQod, text: "Today's Quote"),
+            child: XOfDayButton(showQod: showQod, type: ButtonType.quote),
           ),
           SizedBox(
             width: SizeConfig.safeBlockHorizontal,
           ),
           Expanded(
-              child: XOfDayButton(showQod: !showQod, text: "Today's Joke")),
+              child: XOfDayButton(showQod: !showQod, type: ButtonType.joke)),
         ],
       ),
     );
   }
 }
 
+enum ButtonType {
+  quote,
+  joke,
+}
+
 class XOfDayButton extends StatelessWidget {
-  const XOfDayButton({@required this.showQod, @required this.text});
+  const XOfDayButton({@required this.showQod, @required this.type});
 
   final bool showQod;
-  final String text;
+  final ButtonType type;
 
   @override
   Widget build(BuildContext context) {
@@ -271,7 +276,7 @@ class XOfDayButton extends StatelessWidget {
             : Theme.of(context).accentColor,
         elevation: 1.0,
         child: Text(
-          text,
+          type == ButtonType.quote ? "Today's Quote" : "Today's Joke",
           style: TextStyle(
             color: showQod ? Colors.white : Colors.black54,
             fontSize: SizeConfig.safeBlockHorizontal * 4,
@@ -279,7 +284,9 @@ class XOfDayButton extends StatelessWidget {
         ),
         onPressed: () {
           final showQod = context.read(_showQodProvider);
-          if (showQod.state == false) showQod.state = true;
+          type == ButtonType.quote
+              ? showQod.state = true
+              : showQod.state = false;
         });
   }
 }
@@ -371,6 +378,8 @@ class Save extends HookWidget {
 class QuoteText extends HookWidget {
   @override
   Widget build(BuildContext context) {
+    final qod = useProvider(qodNotifierProvider.state);
+
     return Container(
       padding: EdgeInsets.fromLTRB(
           SizeConfig.safeBlockVertical * 5,
@@ -418,8 +427,8 @@ class QuoteText extends HookWidget {
 class JokeText extends HookWidget {
   @override
   Widget build(BuildContext context) {
-    //TODO: Change to jodProvider
-    final jod = useProvider(dadJokeProvider);
+    final jod = useProvider(jodNotifierProvider.state);
+
     return jod.when(
       data: (jod) => Container(
         padding: EdgeInsets.fromLTRB(

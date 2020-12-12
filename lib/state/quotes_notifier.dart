@@ -1,7 +1,7 @@
 import 'package:hooks_riverpod/all.dart';
 import 'package:quote_and_joke/models/quote_model.dart';
-import 'package:quote_and_joke/repositories/abstract/quotes_repository.dart';
-import 'package:quote_and_joke/utils/exceptions/quote_exception.dart';
+import 'package:quote_and_joke/repositories/repository_providers.dart';
+import 'package:quote_and_joke/utils/exceptions/network_exception.dart';
 
 final quotesNotifierProvider =
     StateNotifierProvider<QuotesNotifier>((ref) => QuotesNotifier(ref.read));
@@ -21,7 +21,7 @@ class QuotesNotifier extends StateNotifier<AsyncValue<List<Quote>>> {
       final quotes = await read(quoteRepositoryProvider).fetchQuotes();
 
       state = AsyncValue.data(quotes);
-    } on QuoteException catch (e, st) {
+    } on NetworkException catch (e, st) {
       state = AsyncValue.error(e, st);
     }
   }

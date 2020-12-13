@@ -4,7 +4,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:quote_and_joke/state/quotes_notifier.dart';
 import 'package:quote_and_joke/utils/screen_size_config.dart';
-import 'package:quote_and_joke/widgets/themed_circular_progress_indicator.dart';
 
 class MainQuote extends HookWidget {
   MainQuote({this.index});
@@ -45,11 +44,8 @@ class MainQuote extends HookWidget {
                 ),
               ],
             ),
-            error: (e, st) => Text(
-              "There was an error loading data. Could you check your internet connection?",
-              style: TextStyle(fontSize: SizeConfig.blockSizeHorizontal * 10),
-            ),
-            loading: () => ThemedCircularProgressIndicator(),
+            error: (e, st) => Container(),
+            loading: () => Container(),
           )),
     );
   }

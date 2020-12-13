@@ -4,6 +4,33 @@ import 'package:quote_and_joke/models/quote_model.dart';
 import 'package:quote_and_joke/repositories/abstract/quotes_repository.dart';
 import 'package:quote_and_joke/utils/exceptions/network_exception.dart';
 
+class FakeQuoteRepository implements QuoteRepository {
+  FakeQuoteRepository() : quotes = [..._sampleQuotes];
+
+  final random = Random();
+  final List<Quote> quotes;
+
+  @override
+  Future<List<Quote>> fetchQuotes() async {
+    await _waitRandomTime();
+
+    if (random.nextDouble() < ERROR_CHANCE) {
+      throw const NetworkException(
+          "Error fetching quotes.\nCheck your internet connection.");
+    } else {
+      return quotes;
+    }
+  }
+
+  /// Simulates API call
+  Future<void> _waitRandomTime() async {
+    await Future.delayed(
+      Duration(seconds: random.nextInt(3)),
+      () {},
+    ); // simulate loading
+  }
+}
+
 final _sampleQuotes = [
   Quote(
       quote: 'What is not started today is never finished tomorrow.',
@@ -222,29 +249,3 @@ final _sampleQuotes = [
       author: 'Ralph Waldo Emerson',
       authorShort: 'Emerson'),
 ];
-
-class FakeQuoteRepository implements QuoteRepository {
-  FakeQuoteRepository() : quotes = [..._sampleQuotes];
-
-  final random = Random();
-  final List<Quote> quotes;
-
-  @override
-  Future<List<Quote>> fetchQuotes() async {
-    await _waitRandomTime();
-
-    if (random.nextDouble() < ERROR_CHANCE) {
-      throw const NetworkException("Error fetching QOD");
-    } else {
-      return quotes;
-    }
-  }
-
-  /// Simulates API call
-  Future<void> _waitRandomTime() async {
-    await Future.delayed(
-      Duration(seconds: random.nextInt(3)),
-      () {},
-    ); // simulate loading
-  }
-}

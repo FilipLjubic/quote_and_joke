@@ -6,7 +6,7 @@ import 'package:quote_and_joke/state/quotes_notifier.dart';
 import 'package:quote_and_joke/utils/screen_size_config.dart';
 
 class MainQuote extends HookWidget {
-  MainQuote({this.index});
+  const MainQuote({this.index});
   final index;
 
   @override

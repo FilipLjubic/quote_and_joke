@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:like_button/like_button.dart';
+import 'package:quote_and_joke/models/quote_model.dart';
 import 'package:quote_and_joke/state/jod_notifier.dart';
 import 'package:quote_and_joke/state/qod_notifier.dart';
 import 'package:quote_and_joke/utils/constants.dart';
@@ -295,6 +296,7 @@ class TodayQuote extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final showQod = useProvider(_showQodProvider).state;
+    final qod = useProvider(qodNotifierProvider.state);
 
     return Container(
       margin: EdgeInsets.symmetric(
@@ -303,12 +305,34 @@ class TodayQuote extends HookWidget {
       child: Material(
         elevation: 1.0,
         child: AnimatedCrossFade(
-          firstChild: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              QuoteText(),
-              Save(),
-            ],
+          firstChild: qod.when(
+            data: (qod) => Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                QuoteText(qod: qod),
+                Save(),
+              ],
+            ),
+            loading: () => Padding(
+              padding: EdgeInsets.only(top: SizeConfig.safeBlockVertical * 10),
+              child: Center(
+                child: ThemedCircularProgressIndicator(),
+              ),
+            ),
+            error: (s, t) => Container(
+              padding: EdgeInsets.fromLTRB(
+                  SizeConfig.safeBlockVertical * 5,
+                  SizeConfig.safeBlockVertical * 5,
+                  SizeConfig.safeBlockVertical * 5,
+                  0),
+              child: AutoSizeText(
+                "There seems to be a problem with your connection",
+                style: TextStyle(
+                    fontSize: SizeConfig.safeBlockHorizontal * 5.7,
+                    color: Colors.black87),
+                maxLines: 10,
+              ),
+            ),
           ),
           secondChild: JokeText(),
           crossFadeState:
@@ -382,49 +406,34 @@ class Save extends HookWidget {
 }
 
 class QuoteText extends HookWidget {
+  const QuoteText({this.qod});
+
+  final Quote qod;
   @override
   Widget build(BuildContext context) {
-    final qod = useProvider(qodNotifierProvider.state);
-
     return Container(
       padding: EdgeInsets.fromLTRB(
           SizeConfig.safeBlockVertical * 5,
           SizeConfig.safeBlockVertical * 5,
           SizeConfig.safeBlockVertical * 5,
           0),
-      child: qod.when(
-        data: (qod) => Column(
-          children: [
-            AutoSizeText(
-              qod.quote,
-              style: TextStyle(
-                  fontSize: SizeConfig.safeBlockHorizontal * 5.7,
-                  color: Colors.black87),
-              maxLines: 7,
-            ),
-            SizedBox(
-              height: SizeConfig.safeBlockVertical * 2,
-            ),
-            Text(
-              qod.author,
-              style: TextStyle(color: Colors.black45),
-            ),
-          ],
-        ),
-        loading: () => Padding(
-          padding: EdgeInsets.only(top: SizeConfig.safeBlockVertical * 10),
-          child: Center(
-            child: ThemedCircularProgressIndicator(),
-          ),
-        ),
-        error: (s, t) => Center(
-          child: Text(
-            "There seems to be a problem with your connection",
+      child: Column(
+        children: [
+          AutoSizeText(
+            qod.quote,
             style: TextStyle(
                 fontSize: SizeConfig.safeBlockHorizontal * 5.7,
                 color: Colors.black87),
+            maxLines: 7,
           ),
-        ),
+          SizedBox(
+            height: SizeConfig.safeBlockVertical * 2,
+          ),
+          Text(
+            qod.author,
+            style: TextStyle(color: Colors.black45),
+          ),
+        ],
       ),
     );
   }
@@ -445,18 +454,24 @@ class JokeText extends HookWidget {
         child: AutoSizeText(
           jod.text,
           style: TextStyle(
-              fontSize: SizeConfig.safeBlockHorizontal * 5.7,
+              fontSize: SizeConfig.safeBlockHorizontal * 6.5,
               color: Colors.black87),
           maxLines: 10,
         ),
       ),
       loading: () => ThemedCircularProgressIndicator(),
-      error: (s, t) => Center(
-        child: Text(
+      error: (s, t) => Container(
+        padding: EdgeInsets.fromLTRB(
+            SizeConfig.safeBlockVertical * 5,
+            SizeConfig.safeBlockVertical * 5,
+            SizeConfig.safeBlockVertical * 5,
+            0),
+        child: AutoSizeText(
           "There seems to be a problem with your connection",
           style: TextStyle(
               fontSize: SizeConfig.safeBlockHorizontal * 5.7,
               color: Colors.black87),
+          maxLines: 10,
         ),
       ),
     );

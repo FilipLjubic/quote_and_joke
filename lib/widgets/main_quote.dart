@@ -46,7 +46,9 @@ class MainQuote extends HookWidget {
               ],
             ),
             error: (e, st) => Text(
-                "There was an error loading data. Could you check your internet connection?"),
+              "There was an error loading data. Could you check your internet connection?",
+              style: TextStyle(fontSize: SizeConfig.blockSizeHorizontal * 10),
+            ),
             loading: () => ThemedCircularProgressIndicator(),
           )),
     );

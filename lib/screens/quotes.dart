@@ -17,7 +17,6 @@ class QuotesScreen extends HookWidget with QuoteAnimationMixin {
   bool _isSwipe = false;
 
   void onTap(BuildContext context) {
-    print("called onTap");
     final inAnimation = context.read(inAnimationProvider);
     final isDrag = context.read(isDragProvider);
 
@@ -30,7 +29,6 @@ class QuotesScreen extends HookWidget with QuoteAnimationMixin {
   }
 
   void nextPage(BuildContext context) {
-    print("called nextPage");
     final quotesNotifier = context.read(quotesNotifierProvider);
     final inAnimation = context.read(inAnimationProvider);
     final quoteIndex = context.read(quoteIndexProvider);
@@ -49,7 +47,6 @@ class QuotesScreen extends HookWidget with QuoteAnimationMixin {
   }
 
   void onDragStart(BuildContext context, DragStartDetails details) {
-    print("called onDragStart");
     final inAnimation = context.read(inAnimationProvider).state;
     final isDrag = context.read(isDragProvider);
     if (!inAnimation) {
@@ -60,7 +57,6 @@ class QuotesScreen extends HookWidget with QuoteAnimationMixin {
   }
 
   void onDragUpdate(BuildContext context, DragUpdateDetails details) {
-    print("called onDragUpdate");
     final inAnimation = context.read(inAnimationProvider).state;
     if (_leftDrag && !inAnimation) {
       if (details.primaryDelta < -11) {
@@ -95,13 +91,7 @@ class QuotesScreen extends HookWidget with QuoteAnimationMixin {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final quoteIndex = useProvider(quoteIndexProvider);
-    final isDrag = useProvider(isDragProvider).state;
-    final hideBecauseOverflow = useProvider(hideScreenProvider).state;
-    final inAnimation = useProvider(inAnimationProvider);
-
+  void initializeControllers() {
     final animationController =
         useAnimationController(duration: const Duration(milliseconds: 700));
     final animationController2 =
@@ -111,21 +101,23 @@ class QuotesScreen extends HookWidget with QuoteAnimationMixin {
 
     fields = useMemoized(() => QuoteAnimationMixinFields(
         animationController, animationController2, animationController3));
+  }
 
+  @override
+  Widget build(BuildContext context) {
+    final quoteIndex = useProvider(quoteIndexProvider);
+    final isDrag = useProvider(isDragProvider).state;
+    final hideBecauseOverflow = useProvider(hideScreenProvider).state;
+    final inAnimation = useProvider(inAnimationProvider);
+
+    initializeControllers();
     useEffect(() {
-      print("called addListeners");
       fields.animation2.addStatusListener((status) {
-        print("animation2 $status ");
-        if (status == AnimationStatus.completed) {
-          nextPage(context);
-        }
+        if (status == AnimationStatus.completed) nextPage(context);
       });
 
       fields.animationContainerTap4.addStatusListener((status) {
-        print("tap $status ");
-        if (status == AnimationStatus.completed) {
-          nextPage(context);
-        }
+        if (status == AnimationStatus.completed) nextPage(context);
       });
       return () {};
     }, []);
@@ -135,7 +127,6 @@ class QuotesScreen extends HookWidget with QuoteAnimationMixin {
     final maxSecondarySlideY =
         useMemoized(() => SizeConfig.safeBlockVertical * -25.6);
 
-    print("Whole screen rebuilt");
     // TODO: move isLoading inside of stack list
     return GestureDetector(
       onTap: () => onTap(context),
@@ -331,19 +322,7 @@ class QuotesScreen extends HookWidget with QuoteAnimationMixin {
               ),
             ),
           ),
-          // blur activated when quote is tapped
-          AnimatedBuilder(
-            animation: fields.animation3,
-            builder: (_, __) => BackdropFilter(
-              filter: ImageFilter.blur(
-                sigmaX: 1.5 * math.sin(math.pi * fields.animation3.value),
-                sigmaY: 1.5 * math.sin(math.pi * fields.animation3.value),
-              ),
-              child: Container(
-                color: Colors.transparent,
-              ),
-            ),
-          ),
+
           // next quote that is rendered outside of screen so that when you swipe it comes out flying
           AnimatedBuilder(
               animation: fields.animationController2,

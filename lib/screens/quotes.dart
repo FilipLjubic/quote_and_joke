@@ -4,21 +4,104 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/all.dart';
 import 'package:quote_and_joke/services/visibility_helper.dart';
+import 'package:quote_and_joke/state/quotes_notifier.dart';
 import 'package:quote_and_joke/utils/constants.dart';
 import 'package:quote_and_joke/utils/mixins/quote_animation_mixin.dart';
 import 'package:quote_and_joke/utils/mixins/quote_animation_mixin_fields.dart';
 import 'package:quote_and_joke/utils/screen_size_config.dart';
 import 'package:quote_and_joke/widgets/main_quote.dart';
-import 'package:quote_and_joke/widgets/themed_circular_progress_indicator.dart';
 
 // ignore: must_be_immutable
 class QuotesScreen extends HookWidget with QuoteAnimationMixin {
-  void _runAnimationHooks(BuildContext context) {
-    _initializeFields();
-    _addListeners(context);
+  bool _leftDrag = false;
+  bool _isSwipe = false;
+
+  void onTap(BuildContext context) {
+    print("called onTap");
+    final inAnimation = context.read(inAnimationProvider);
+    final isDrag = context.read(isDragProvider);
+
+    if (inAnimation.state == false) {
+      inAnimation.state = true;
+      fields.animationController3.forward();
+
+      isDrag.state = false;
+    }
   }
 
-  void _initializeFields() {
+  void nextPage(BuildContext context) {
+    print("called nextPage");
+    final quotesNotifier = context.read(quotesNotifierProvider);
+    final inAnimation = context.read(inAnimationProvider);
+    final quoteIndex = context.read(quoteIndexProvider);
+    quoteIndex.increaseIndex();
+    // print("increasing index : ${quoteIndex.currentIndex}");
+
+    fields.animationController.value = 0;
+    fields.animationController2.value = 0;
+    fields.animationController3.value = 0;
+    // there are always 50 quotes fetched
+    if (quoteIndex.currentIndex + 1 == 50) {
+      quotesNotifier.getQuotes();
+      quoteIndex.resetIndex();
+    }
+    inAnimation.state = false;
+  }
+
+  void onDragStart(BuildContext context, DragStartDetails details) {
+    print("called onDragStart");
+    final inAnimation = context.read(inAnimationProvider).state;
+    final isDrag = context.read(isDragProvider);
+    if (!inAnimation) {
+      _leftDrag = fields.animationController.isDismissed &&
+          details.globalPosition.dx > 200;
+      isDrag.state = true;
+    }
+  }
+
+  void onDragUpdate(BuildContext context, DragUpdateDetails details) {
+    print("called onDragUpdate");
+    final inAnimation = context.read(inAnimationProvider).state;
+    if (_leftDrag && !inAnimation) {
+      if (details.primaryDelta < -11) {
+        _isSwipe = true;
+      } else {
+        _isSwipe = false;
+      }
+      // makes dragging smooth instead of linear and awkward
+      double delta = -details.primaryDelta /
+          (MAX_MAIN_SLIDE * 1.5 * math.log(MAX_MAIN_SLIDE));
+      fields.animationController.value += delta;
+    }
+  }
+
+  void onDragEnd(BuildContext context, DragEndDetails details) {
+    final inAnimation = context.read(inAnimationProvider);
+
+    if (fields.animationController.isDismissed ||
+        fields.animationController.isCompleted) {
+      return;
+    }
+    // if quote is over "half" of screen
+    bool isDismissedOrSwiped =
+        fields.animationController.value > 0.25 || _isSwipe;
+    if (!isDismissedOrSwiped) {
+      fields.animationController.reverse();
+    } else {
+      inAnimation.state = true;
+      fields.animationController.forward();
+      fields.animationController2.forward();
+      _isSwipe = false;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final quoteIndex = useProvider(quoteIndexProvider);
+    final isDrag = useProvider(isDragProvider).state;
+    final hideBecauseOverflow = useProvider(hideScreenProvider).state;
+    final inAnimation = useProvider(inAnimationProvider);
+
     final animationController =
         useAnimationController(duration: const Duration(milliseconds: 700));
     final animationController2 =
@@ -28,39 +111,31 @@ class QuotesScreen extends HookWidget with QuoteAnimationMixin {
 
     fields = useMemoized(() => QuoteAnimationMixinFields(
         animationController, animationController2, animationController3));
-  }
 
-  void _addListeners(BuildContext context) {
-    final count = useState(0);
-    fields.animation2.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        print("calling from left swipe");
+    useEffect(() {
+      print("called addListeners");
+      fields.animation2.addStatusListener((status) {
+        print("animation2 $status ");
+        if (status == AnimationStatus.completed) {
+          nextPage(context);
+        }
+      });
 
-        nextPage(context);
-      }
-    });
-
-    fields.animationContainerTap4.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        count.value = count.value + 1;
-        print("${count.value} tap4");
-        nextPage(context);
-      }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final quoteIndex = useProvider(quoteIndexProvider);
-    final isDrag = useProvider(isDragProvider).state;
-    final hideBecauseOverflow = useProvider(hideScreenProvider).state;
-    _runAnimationHooks(context);
+      fields.animationContainerTap4.addStatusListener((status) {
+        print("tap $status ");
+        if (status == AnimationStatus.completed) {
+          nextPage(context);
+        }
+      });
+      return () {};
+    }, []);
 
     final maxSecondarySlideX =
         useMemoized(() => SizeConfig.safeBlockHorizontal * 106.4);
     final maxSecondarySlideY =
         useMemoized(() => SizeConfig.safeBlockVertical * -25.6);
 
+    print("Whole screen rebuilt");
     // TODO: move isLoading inside of stack list
     return GestureDetector(
       onTap: () => onTap(context),
@@ -246,7 +321,7 @@ class QuotesScreen extends HookWidget with QuoteAnimationMixin {
           AnimatedBuilder(
             animation: fields.animation3pt2,
             child: MainQuote(
-              index: quoteIndex.currentIndex,
+              index: quoteIndex.currentIndex + 1,
             ),
             builder: (_, child) => Opacity(
               opacity: fields.animation3pt2.value,

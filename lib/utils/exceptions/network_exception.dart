@@ -9,4 +9,4 @@ class NetworkException implements Exception {
   }
 }
 
-const ERROR_CHANCE = 0.3;
+const ERROR_CHANCE = 0.1;

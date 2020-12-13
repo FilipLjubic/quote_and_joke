@@ -185,6 +185,42 @@ final _sampleQuotes = [
       quote: 'Go put your creed into the deed. Nor speak with double tongue.',
       author: 'Ralph Waldo Emerson',
       authorShort: 'Emerson'),
+  Quote(
+      quote:
+          'Practice yourself, for heavens sake in little things, and then proceed to greater.',
+      author: 'Epictetus',
+      authorShort: 'Epictetus'),
+  Quote(
+      quote: 'Watch the little things; a small leak will sink a great ship.',
+      author: 'Benjamin Franklin',
+      authorShort: 'Franklin'),
+  Quote(
+      quote:
+          'Genius unrefined resembles a flash of lightning, but wisdom is like the sun.',
+      author: 'Franz Grillparzer',
+      authorShort: 'Grillparzer'),
+  Quote(
+      quote: 'Go put your creed into the deed. Nor speak with double tongue.',
+      author: 'Ralph Waldo Emerson',
+      authorShort: 'Emerson'),
+  Quote(
+      quote:
+          'Practice yourself, for heavens sake in little things, and then proceed to greater.',
+      author: 'Epictetus',
+      authorShort: 'Epictetus'),
+  Quote(
+      quote: 'Watch the little things; a small leak will sink a great ship.',
+      author: 'Benjamin Franklin',
+      authorShort: 'Franklin'),
+  Quote(
+      quote:
+          'Genius unrefined resembles a flash of lightning, but wisdom is like the sun.',
+      author: 'Franz Grillparzer',
+      authorShort: 'Grillparzer'),
+  Quote(
+      quote: 'Go put your creed into the deed. Nor speak with double tongue.',
+      author: 'Ralph Waldo Emerson',
+      authorShort: 'Emerson'),
 ];
 
 class FakeQuoteRepository implements QuoteRepository {

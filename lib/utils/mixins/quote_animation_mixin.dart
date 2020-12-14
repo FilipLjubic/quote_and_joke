@@ -22,7 +22,7 @@ mixin QuoteAnimationMixin {
     final animationController =
         useAnimationController(duration: const Duration(milliseconds: 700));
     final animationController2 =
-        useAnimationController(duration: const Duration(milliseconds: 450));
+        useAnimationController(duration: const Duration(milliseconds: 600));
     final animationController3 =
         useAnimationController(duration: const Duration(milliseconds: 900));
 

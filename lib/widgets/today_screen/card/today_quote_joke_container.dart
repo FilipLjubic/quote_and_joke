@@ -31,11 +31,8 @@ class TodayQuoteJokeContainer extends HookWidget {
                 Save(),
               ],
             ),
-            loading: () => Padding(
-              padding: EdgeInsets.only(top: SizeConfig.safeBlockVertical * 10),
-              child: Center(
-                child: ThemedCircularProgressIndicator(),
-              ),
+            loading: () => Center(
+              child: ThemedCircularProgressIndicator(),
             ),
             error: (s, t) => Container(
               padding: EdgeInsets.fromLTRB(

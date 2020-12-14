@@ -11,3 +11,5 @@ final jodRepositoryProvider =
 
 final quoteRepositoryProvider =
     Provider<QuoteRepository>((ref) => throw UnimplementedError());
+
+// TODO: implement automatic refetching once connectionStatus changes

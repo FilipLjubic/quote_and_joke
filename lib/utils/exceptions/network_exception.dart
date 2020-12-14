@@ -5,7 +5,7 @@ class NetworkException implements Exception {
 
   @override
   String toString() {
-    return 'Error: $error';
+    return '$error';
   }
 }
 

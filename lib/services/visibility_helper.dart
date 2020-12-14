@@ -6,8 +6,6 @@ final quoteIndexProvider = StateNotifierProvider((ref) => QuoteIndex());
 /// so when we're changing from quote screen we want it to hide itself after a mini-delay
 final hideScreenProvider = StateProvider<bool>((ref) => true);
 
-final quotesAreLoadingProvider = StateProvider<bool>((ref) => true);
-
 /// to either show qod or jod
 final showQodProvider = StateProvider<bool>((ref) => true);
 

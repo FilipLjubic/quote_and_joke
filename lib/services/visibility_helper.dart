@@ -8,6 +8,9 @@ final hideScreenProvider = StateProvider<bool>((ref) => true);
 
 final quotesAreLoadingProvider = StateProvider<bool>((ref) => true);
 
+/// to either show qod or jod
+final showQodProvider = StateProvider<bool>((ref) => true);
+
 class QuoteIndex extends StateNotifier<int> {
   QuoteIndex() : super(0);
 

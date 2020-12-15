@@ -43,7 +43,7 @@ class QuotesScreen extends HookWidget with QuoteAnimationMixin {
       return () {};
     }, []);
 
-    // TODO: handle loading, fix circularprogressindicator, ni swipeanje ne radi kako treba kada je error
+    // TODO: kada je error ne smije se moci swipeati ni tappati
     return GestureDetector(
       onTap: () => onTap(context),
       onHorizontalDragStart: (details) => onDragStart(context, details),

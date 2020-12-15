@@ -24,27 +24,15 @@ class Jokes extends HookWidget {
 
     return Stack(
       children: [
-        AnimatedBuilder(
-          animation: animationController,
-          child: const WobblyContainer(
-            opacity: 1,
-            height: 0.6,
-          ),
-          builder: (_, child) => ClipPath(
-            clipper: DrawIdleClipper(animationController.value),
-            child: child,
-          ),
+        WobblyContainer(
+          animationController: animationController,
+          opacity: 1,
+          height: 0.6,
         ),
-        AnimatedBuilder(
-          animation: animationController2,
-          child: const WobblyContainer(
-            opacity: 0.3,
-            height: 0.61,
-          ),
-          builder: (_, child) => ClipPath(
-            clipper: DrawIdleClipper(animationController2.value),
-            child: child,
-          ),
+        WobblyContainer(
+          animationController: animationController2,
+          opacity: 0.3,
+          height: 0.61,
         ),
         Positioned(
           left: SizeConfig.blockSizeHorizontal * 3,
@@ -77,29 +65,38 @@ class Jokes extends HookWidget {
 
 class WobblyContainer extends StatelessWidget {
   const WobblyContainer({
+    @required this.animationController,
     this.opacity,
-    this.height,
+    @required this.height,
   });
 
+  final AnimationController animationController;
   final double opacity;
   final double height;
 
   @override
   Widget build(BuildContext context) {
-    return Opacity(
-      opacity: opacity,
-      child: Container(
-        height: SizeConfig.screenHeight * height,
-        width: SizeConfig.screenWidth,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-              begin: Alignment.bottomLeft,
-              end: Alignment.topCenter,
-              colors: [
-                Theme.of(context).primaryColor.withOpacity(0.8),
-                Theme.of(context).accentColor.withOpacity(0.8),
-              ]),
+    return AnimatedBuilder(
+      animation: animationController,
+      child: Opacity(
+        opacity: opacity,
+        child: Container(
+          height: SizeConfig.screenHeight * height,
+          width: SizeConfig.screenWidth,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.bottomLeft,
+                end: Alignment.topCenter,
+                colors: [
+                  Theme.of(context).primaryColor.withOpacity(0.8),
+                  Theme.of(context).accentColor.withOpacity(0.8),
+                ]),
+          ),
         ),
+      ),
+      builder: (_, child) => ClipPath(
+        clipper: DrawIdleClipper(animationController.value),
+        child: child,
       ),
     );
   }

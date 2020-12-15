@@ -18,7 +18,7 @@ class JodNotifier extends StateNotifier<AsyncValue<JokeSingle>> {
     try {
       state = AsyncValue.loading();
 
-      final jod = await read(jodRepositoryProvider).fetchJOD();
+      final jod = await read(jokeRepositoryProvider).fetchJod();
 
       state = AsyncValue.data(jod);
     } on NetworkException catch (e, st) {

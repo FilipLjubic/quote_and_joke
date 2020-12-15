@@ -14,13 +14,19 @@ final _sampleSingleJokes = [
   JokeSingle(text: "Java told C a joke, but he didn't get the reference.")
 ];
 
-class FakeJodRepository implements JokeRepository {
-  FakeJodRepository()
+final _sampleJod = JokeSingle(
+    text: "Anton, do you think I’m a bad mother?\r\nMy name is Paul.\r\n\r\n");
+
+class FakeJokeRepository implements JokeRepository {
+  FakeJokeRepository()
       : cachedSingleJokes = _sampleSingleJokes,
-        cachedTwoPartJokes = _sampleTwoPartJokes;
+        cachedTwoPartJokes = _sampleTwoPartJokes,
+        cachedJod = _sampleJod;
 
   final random = Random();
+  final JokeSingle cachedJod;
   final List<JokeSingle> cachedSingleJokes;
+
   final List<JokeTwoPart> cachedTwoPartJokes;
 
   @override
@@ -42,6 +48,17 @@ class FakeJodRepository implements JokeRepository {
       throw const NetworkException("Error fetching two part jokes");
     } else {
       return cachedTwoPartJokes;
+    }
+  }
+
+  @override
+  Future<JokeSingle> fetchJod() async {
+    await _waitRandomTime();
+
+    if (random.nextDouble() < ERROR_CHANCE) {
+      throw const NetworkException("Error fetching QOD");
+    } else {
+      return cachedJod;
     }
   }
 

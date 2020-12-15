@@ -4,4 +4,6 @@ abstract class JokeRepository {
   Future<List<JokeTwoPart>> fetchTwoPartJokes();
 
   Future<List<JokeSingle>> fetchSingleJokes();
+
+  Future<JokeSingle> fetchJod();
 }

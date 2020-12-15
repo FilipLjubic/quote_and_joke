@@ -41,6 +41,7 @@ class BackgroundContainerDrag extends HookWidget {
         height: SizeConfig.screenHeight / 1.3,
         width: SizeConfig.screenWidth * 2,
       ),
+      //TODO: zamjeniti s FadeTransition
       builder: (_, child) => Opacity(
         opacity: hideBecauseOverflow
             ? 0

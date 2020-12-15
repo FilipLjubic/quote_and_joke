@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:quote_and_joke/state/two_part_jokes_notifier.dart';
 import 'package:quote_and_joke/utils/screen_size_config.dart';
 import 'dart:math' as math;
 
 // add Nunito font
+// onTap pop outa joke
 
 class Jokes extends HookWidget {
   @override
@@ -13,52 +16,72 @@ class Jokes extends HookWidget {
       initialValue: 0,
       lowerBound: -1,
       upperBound: 1,
-    )..repeat();
+    );
 
     final animationController2 = useAnimationController(
-      duration: const Duration(seconds: 5),
+      duration: const Duration(seconds: 7),
       initialValue: 0,
       lowerBound: -1,
       upperBound: 1,
-    )..repeat();
+    );
 
-    return Stack(
-      children: [
-        WobblyContainer(
-          animationController: animationController,
-          opacity: 1,
-          height: 0.6,
-        ),
-        WobblyContainer(
-          animationController: animationController2,
-          opacity: 0.3,
-          height: 0.61,
-        ),
-        Positioned(
-          left: SizeConfig.blockSizeHorizontal * 3,
-          top: SizeConfig.screenHeight * 0.25,
-          child: SizedBox(
-            width: SizeConfig.screenWidth * 0.95,
-            child: Text(
-              "What's a chicken with 3 legs called?",
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: SizeConfig.blockSizeHorizontal * 7.5),
+    final twoPartJokes = useProvider(twoPartJokesNotifierProvider.state);
+
+    useEffect(() {
+      animationController.repeat();
+      animationController2.repeat();
+    }, []);
+
+    final showDelivery = useState(false);
+
+    return GestureDetector(
+      onTap: () => showDelivery.value = !showDelivery.value,
+      behavior: HitTestBehavior.opaque,
+      child: Stack(
+        children: [
+          WobblyContainer(
+            animationController: animationController,
+            opacity: 1,
+            height: 0.6,
+          ),
+          WobblyContainer(
+            animationController: animationController2,
+            opacity: 0.3,
+            height: 0.61,
+          ),
+          Positioned(
+            left: SizeConfig.blockSizeHorizontal * 3,
+            top: SizeConfig.screenHeight * 0.25,
+            child: SizedBox(
+              width: SizeConfig.screenWidth * 0.95,
+              child: Text(
+                "What's a chicken with 3 legs called?",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: SizeConfig.blockSizeHorizontal * 7.5),
+              ),
             ),
           ),
-        ),
-        Positioned(
-          bottom: SizeConfig.screenHeight * 0.25,
-          left: SizeConfig.blockSizeHorizontal * 3,
-          child: Text(
-            "hehexd",
-            style: TextStyle(
-              fontSize: SizeConfig.blockSizeHorizontal * 7.5,
-              color: Colors.black87,
-            ),
-          ),
-        )
-      ],
+          twoPartJokes.when(
+              data: (twoPartJokes) => Positioned(
+                    bottom: SizeConfig.screenHeight * 0.25,
+                    left: SizeConfig.blockSizeHorizontal * 3,
+                    child: SizedBox(
+                      width: SizeConfig.screenWidth * 0.95,
+                      child: Text(
+                        //TODO: dodati index provider
+                        twoPartJokes[0].delivery,
+                        style: TextStyle(
+                          fontSize: SizeConfig.blockSizeHorizontal * 7.5,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ),
+                  ),
+              error: (e, st) => Container(),
+              loading: () => Container()),
+        ],
+      ),
     );
   }
 }

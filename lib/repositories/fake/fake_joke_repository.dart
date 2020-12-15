@@ -7,7 +7,7 @@ import 'package:quote_and_joke/utils/exceptions/network_exception.dart';
 final _sampleTwoPartJokes = [
   JokeTwoPart(
       setup: "Anton, do you think I’m a bad mother?",
-      delivery: "My name is Paul.")
+      delivery: "My name is Paul. fucking dicks man asdaasdsad")
 ];
 
 final _sampleSingleJokes = [

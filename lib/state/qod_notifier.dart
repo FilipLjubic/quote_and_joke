@@ -18,7 +18,7 @@ class QodNotifier extends StateNotifier<AsyncValue<Quote>> {
     try {
       state = AsyncValue.loading();
 
-      final qod = await read(qodRepositoryProvider).fetchQOD();
+      final qod = await read(quoteRepositoryProvider).fetchQOD();
 
       state = AsyncValue.data(qod);
     } on NetworkException catch (e, st) {

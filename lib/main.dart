@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:quote_and_joke/repositories/fake/fake_jod_repository.dart';
-import 'package:quote_and_joke/repositories/fake/fake_qod_repository.dart';
 import 'package:quote_and_joke/repositories/fake/fake_quote_repository.dart';
 import 'package:quote_and_joke/repositories/repository_providers.dart';
 import 'package:quote_and_joke/screens/home.dart';
@@ -16,9 +15,9 @@ void main() async {
 
   return runApp(
     ProviderScope(
+      //TODO: ADD JOKE REPOSITORY
       overrides: [
         quoteRepositoryProvider.overrideWithValue(FakeQuoteRepository()),
-        qodRepositoryProvider.overrideWithValue(FakeQodRepository()),
         jodRepositoryProvider.overrideWithValue(FakeJodRepository()),
       ],
       child: MyApp(),

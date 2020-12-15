@@ -4,11 +4,19 @@ import 'package:quote_and_joke/models/quote_model.dart';
 import 'package:quote_and_joke/repositories/abstract/quotes_repository.dart';
 import 'package:quote_and_joke/utils/exceptions/network_exception.dart';
 
+final _sampleQOD = Quote(
+    quote: 'Go put your creed into the deed. Nor speak with double tongue.',
+    author: 'Ralph Waldo Emerson',
+    authorShort: 'Emerson');
+
 class FakeQuoteRepository implements QuoteRepository {
-  FakeQuoteRepository() : quotes = [..._sampleQuotes];
+  FakeQuoteRepository()
+      : quotes = [..._sampleQuotes],
+        cachedQod = _sampleQOD;
 
   final random = Random();
   final List<Quote> quotes;
+  final Quote cachedQod;
 
   @override
   Future<List<Quote>> fetchQuotes() async {
@@ -19,6 +27,17 @@ class FakeQuoteRepository implements QuoteRepository {
           "Error fetching quotes.\nCheck your internet connection.");
     } else {
       return quotes;
+    }
+  }
+
+  @override
+  Future<Quote> fetchQOD() async {
+    await _waitRandomTime();
+
+    if (random.nextDouble() < ERROR_CHANCE) {
+      throw const NetworkException("Error fetching QOD");
+    } else {
+      return cachedQod;
     }
   }
 

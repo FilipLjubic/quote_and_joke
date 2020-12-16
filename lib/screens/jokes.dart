@@ -9,7 +9,6 @@ import 'dart:math' as math;
 import 'package:quote_and_joke/widgets/themed_circular_progress_indicator.dart';
 
 // add Nunito font
-// onTap pop outa joke
 
 class Jokes extends HookWidget {
   @override
@@ -36,13 +35,22 @@ class Jokes extends HookWidget {
       return () {};
     }, []);
 
-    final showDelivery = useState(false);
     final deliveryAnimationController = useAnimationController(
       duration: const Duration(milliseconds: 300),
+      lowerBound: 0.0,
+    );
+
+    final animationValue = useAnimation(
+      CurvedAnimation(
+          curve: Curves.elasticOut,
+          parent: deliveryAnimationController,
+          reverseCurve: Curves.linear),
     );
 
     return GestureDetector(
-      onTap: () => showDelivery.value = !showDelivery.value,
+      onTap: () => deliveryAnimationController.isCompleted
+          ? deliveryAnimationController.reverse()
+          : deliveryAnimationController.forward(),
       behavior: HitTestBehavior.opaque,
       // Indexed stack kad budem koristio i single jokeove
       child: Stack(
@@ -84,26 +92,32 @@ class Jokes extends HookWidget {
             ),
           ),
           twoPartJokes.when(
-              data: (twoPartJokes) => Positioned(
-                    bottom: SizeConfig.screenHeight * 0.25,
-                    left: SizeConfig.blockSizeHorizontal * 3,
-                    child: SizedBox(
-                      width: SizeConfig.screenWidth * 0.95,
-                      child: AnimatedOpacity(
-                        opacity: showDelivery.value ? 1.0 : 0.0,
-                        duration: Duration(milliseconds: 300),
-                        curve: Curves.easeInOutQuad,
-                        child: Text(
-                          twoPartJokes[twoPartJokesIndex].delivery,
-                          style: TextStyle(
-                              fontSize: SizeConfig.blockSizeHorizontal * 7.5,
-                              color: Colors.black87),
-                        ),
-                      ),
+            data: (twoPartJokes) => Positioned(
+              bottom: SizeConfig.screenHeight * 0.25,
+              left: SizeConfig.blockSizeHorizontal * 3,
+              child: SizedBox(
+                width: SizeConfig.screenWidth * 0.95,
+                child: AnimatedBuilder(
+                  animation: deliveryAnimationController,
+                  builder: (context, child) => Transform.scale(
+                    scale: 0.75 + 0.25 * animationValue,
+                    child: Opacity(
+                      opacity: deliveryAnimationController.value,
+                      child: child,
                     ),
                   ),
-              error: (e, st) => Container(),
-              loading: () => Container()),
+                  child: Text(
+                    twoPartJokes[twoPartJokesIndex].delivery,
+                    style: TextStyle(
+                        fontSize: SizeConfig.blockSizeHorizontal * 7.5,
+                        color: Colors.black87),
+                  ),
+                ),
+              ),
+            ),
+            error: (e, st) => Container(),
+            loading: () => Container(),
+          ),
         ],
       ),
     );

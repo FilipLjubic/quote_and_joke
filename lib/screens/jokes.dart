@@ -4,7 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:quote_and_joke/state/joke_index_notifier.dart';
 import 'package:quote_and_joke/state/two_part_jokes_notifier.dart';
 import 'package:quote_and_joke/utils/screen_size_config.dart';
-import 'dart:math' as math;
+import 'package:quote_and_joke/widgets/jokes_screen/wobbly_container.dart';
 
 import 'package:quote_and_joke/widgets/themed_circular_progress_indicator.dart';
 
@@ -36,7 +36,7 @@ class Jokes extends HookWidget {
     }, []);
 
     final deliveryAnimationController = useAnimationController(
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 450),
       lowerBound: 0.0,
     );
 
@@ -121,79 +121,5 @@ class Jokes extends HookWidget {
         ],
       ),
     );
-  }
-}
-
-class WobblyContainer extends StatelessWidget {
-  const WobblyContainer({
-    @required this.animationController,
-    this.opacity,
-    @required this.height,
-  });
-
-  final AnimationController animationController;
-  final double opacity;
-  final double height;
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: animationController,
-      child: Opacity(
-        opacity: opacity,
-        child: Container(
-          height: SizeConfig.screenHeight * height,
-          width: SizeConfig.screenWidth,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-                begin: Alignment.bottomLeft,
-                end: Alignment.topCenter,
-                colors: [
-                  Theme.of(context).primaryColor.withOpacity(0.8),
-                  Theme.of(context).accentColor.withOpacity(0.8),
-                ]),
-          ),
-        ),
-      ),
-      builder: (_, child) => ClipPath(
-        clipper: DrawIdleClipper(animationController.value),
-        child: child,
-      ),
-    );
-  }
-}
-
-class DrawIdleClipper extends CustomClipper<Path> {
-  DrawIdleClipper(this.value);
-  var value;
-
-  @override
-  Path getClip(Size size) {
-    Path path = Path();
-    path.lineTo(0, size.height * 0.85);
-
-    final ctrlPoint = Offset(
-      size.width * 0.2 + (size.width * 0.07) * math.cos(value * math.pi),
-      size.height + 10 * math.sin(value * math.pi),
-    );
-
-    path.quadraticBezierTo(
-        ctrlPoint.dx, ctrlPoint.dy, size.width * 0.5, size.height * 0.92);
-
-    final ctrlPoint2 = Offset(
-      size.width * 0.9 - (size.width * 0.05) * math.cos(value * math.pi),
-      size.height * 0.8 - 10 * math.sin(value * math.pi),
-    );
-
-    path.quadraticBezierTo(
-        ctrlPoint2.dx, ctrlPoint2.dy, size.width, size.height * 0.87);
-
-    path.lineTo(size.width, 0);
-    return path;
-  }
-
-  @override
-  bool shouldReclip(covariant CustomClipper<Path> oldClipper) {
-    return true;
   }
 }

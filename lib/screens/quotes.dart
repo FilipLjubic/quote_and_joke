@@ -5,7 +5,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/all.dart';
 import 'package:quote_and_joke/state/quote_index_notifier.dart';
 import 'package:quote_and_joke/state/visibility_helper.dart';
-import 'package:quote_and_joke/utils/mixins/quote_animation_mixin.dart';
+import 'package:quote_and_joke/utils/mixins/quote/quote_animation_mixin.dart';
 import 'package:quote_and_joke/utils/screen_size_config.dart';
 import 'package:quote_and_joke/widgets/quotes_screen/background/background_container.dart';
 import 'package:quote_and_joke/widgets/quotes_screen/background/background_container_drag.dart';

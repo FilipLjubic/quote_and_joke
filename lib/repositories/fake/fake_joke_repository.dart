@@ -7,11 +7,21 @@ import 'package:quote_and_joke/utils/exceptions/network_exception.dart';
 final _sampleTwoPartJokes = [
   JokeTwoPart(
       setup: "Anton, do you think I’m a bad mother?",
-      delivery: "My name is Paul. fucking dicks man asdaasdsad")
+      delivery: "My name is Paul."),
+  JokeTwoPart(
+      setup: "What's a chicken with 4 legs called?",
+      delivery: "A human LOL!!!."),
+  JokeTwoPart(
+    setup: "Why are we on this planet?",
+    delivery: "Just to suffer??.",
+  ),
 ];
 
 final _sampleSingleJokes = [
-  JokeSingle(text: "Java told C a joke, but he didn't get the reference.")
+  JokeSingle(text: "Java told C a joke, but he didn't get the reference."),
+  JokeSingle(text: "Java told C a joke, but he didn't get the memo."),
+  JokeSingle(text: "Java told C a joke, but he didn't get it."),
+  JokeSingle(text: "Java told C a joke, but he didn't getIt."),
 ];
 
 final _sampleJod = JokeSingle(

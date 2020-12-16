@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:quote_and_joke/utils/mixins/quote_animation_mixin_fields.dart';
+import 'package:quote_and_joke/utils/mixins/quote/quote_animation_mixin_fields.dart';
 import 'package:quote_and_joke/utils/screen_size_config.dart';
 
 class FirstBackgroundContainer extends StatelessWidget {

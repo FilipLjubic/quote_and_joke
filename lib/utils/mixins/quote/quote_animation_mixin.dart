@@ -4,7 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:quote_and_joke/state/quote_index_notifier.dart';
 import 'package:quote_and_joke/state/quotes_notifier.dart';
 import 'package:quote_and_joke/utils/constants.dart';
-import 'package:quote_and_joke/utils/mixins/quote_animation_mixin_fields.dart';
+import 'package:quote_and_joke/utils/mixins/quote/quote_animation_mixin_fields.dart';
 import 'package:hooks_riverpod/all.dart';
 
 // Needed so that you can't trigger another animation while one is running

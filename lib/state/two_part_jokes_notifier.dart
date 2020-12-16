@@ -9,12 +9,12 @@ final twoPartJokesNotifierProvider = StateNotifierProvider<JokeTwoPartNotifier>(
 class JokeTwoPartNotifier extends StateNotifier<AsyncValue<List<JokeTwoPart>>> {
   JokeTwoPartNotifier(this.read, [AsyncValue<List<JokeTwoPart>> jokeTwoParts])
       : super(jokeTwoParts ?? const AsyncValue.loading()) {
-    getJokeTwoParts();
+    getTwoPartJokes();
   }
 
   final Reader read;
 
-  Future<void> getJokeTwoParts() async {
+  Future<void> getTwoPartJokes() async {
     try {
       state = AsyncValue.loading();
 

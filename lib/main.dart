@@ -15,7 +15,6 @@ void main() async {
 
   return runApp(
     ProviderScope(
-      //TODO: ADD JOKE REPOSITORY
       overrides: [
         quoteRepositoryProvider.overrideWithValue(FakeQuoteRepository()),
         jokeRepositoryProvider.overrideWithValue(FakeJokeRepository()),

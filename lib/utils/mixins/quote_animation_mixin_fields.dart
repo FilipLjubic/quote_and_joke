@@ -51,28 +51,28 @@ class QuoteAnimationMixinFields {
         Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: animationController,
-        curve: Interval(0.0, 0.875, curve: Curves.easeOut),
+        curve: Interval(0.0, 0.875, curve: Curves.easeInOutSine),
       ),
     );
     final _animationContainerDrag2 =
         Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: animationController,
-        curve: Interval(0.05, 0.93, curve: Curves.easeOut),
+        curve: Interval(0.05, 0.93, curve: Curves.easeInOutSine),
       ),
     );
     final _animationContainerDrag3 =
         Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: animationController,
-        curve: Interval(0.07, 0.96, curve: Curves.easeOut),
+        curve: Interval(0.07, 0.96, curve: Curves.easeInOutSine),
       ),
     );
     final _animationContainerDrag4 =
         Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: animationController,
-        curve: Interval(0.1, 1.0, curve: Curves.easeOut),
+        curve: Interval(0.1, 1.0, curve: Curves.easeInOutSine),
       ),
     );
 

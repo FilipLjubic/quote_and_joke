@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:quote_and_joke/state/joke_index_notifier.dart';
 import 'package:quote_and_joke/state/two_part_jokes_notifier.dart';
 import 'package:quote_and_joke/utils/screen_size_config.dart';
 import 'dart:math' as math;
+
+import 'package:quote_and_joke/widgets/themed_circular_progress_indicator.dart';
 
 // add Nunito font
 // onTap pop outa joke
@@ -11,14 +14,14 @@ import 'dart:math' as math;
 class Jokes extends HookWidget {
   @override
   Widget build(BuildContext context) {
-    final animationController = useAnimationController(
+    final containerAnimationController = useAnimationController(
       duration: const Duration(seconds: 10),
       initialValue: 0,
       lowerBound: -1,
       upperBound: 1,
     );
 
-    final animationController2 = useAnimationController(
+    final containerAnimationController2 = useAnimationController(
       duration: const Duration(seconds: 7),
       initialValue: 0,
       lowerBound: -1,
@@ -26,40 +29,58 @@ class Jokes extends HookWidget {
     );
 
     final twoPartJokes = useProvider(twoPartJokesNotifierProvider.state);
-
+    final twoPartJokesIndex = useProvider(twoPartJokeIndexProvider.state);
     useEffect(() {
-      animationController.repeat();
-      animationController2.repeat();
+      containerAnimationController.repeat();
+      containerAnimationController2.repeat();
+      return () {};
     }, []);
 
     final showDelivery = useState(false);
+    final deliveryAnimationController = useAnimationController(
+      duration: const Duration(milliseconds: 300),
+    );
 
     return GestureDetector(
       onTap: () => showDelivery.value = !showDelivery.value,
       behavior: HitTestBehavior.opaque,
+      // Indexed stack kad budem koristio i single jokeove
       child: Stack(
         children: [
           WobblyContainer(
-            animationController: animationController,
+            animationController: containerAnimationController,
             opacity: 1,
             height: 0.6,
           ),
           WobblyContainer(
-            animationController: animationController2,
+            animationController: containerAnimationController2,
             opacity: 0.3,
             height: 0.61,
           ),
-          Positioned(
-            left: SizeConfig.blockSizeHorizontal * 3,
-            top: SizeConfig.screenHeight * 0.25,
-            child: SizedBox(
-              width: SizeConfig.screenWidth * 0.95,
-              child: Text(
-                "What's a chicken with 3 legs called?",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: SizeConfig.blockSizeHorizontal * 7.5),
+          twoPartJokes.when(
+            data: (twoPartJokes) => Positioned(
+              left: SizeConfig.blockSizeHorizontal * 3,
+              top: SizeConfig.screenHeight * 0.25,
+              child: SizedBox(
+                width: SizeConfig.screenWidth * 0.95,
+                child: Text(
+                  twoPartJokes[twoPartJokesIndex].setup,
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: SizeConfig.blockSizeHorizontal * 7.5),
+                ),
               ),
+            ),
+            // TODO: handle error state
+            error: (e, st) => Container(
+              alignment: Alignment.center,
+              child: Text("error!"),
+            ),
+            loading: () => const Center(
+              child: const SizedBox(
+                  height: 50,
+                  width: 50,
+                  child: ThemedCircularProgressIndicator()),
             ),
           ),
           twoPartJokes.when(
@@ -68,12 +89,15 @@ class Jokes extends HookWidget {
                     left: SizeConfig.blockSizeHorizontal * 3,
                     child: SizedBox(
                       width: SizeConfig.screenWidth * 0.95,
-                      child: Text(
-                        //TODO: dodati index provider
-                        twoPartJokes[0].delivery,
-                        style: TextStyle(
-                          fontSize: SizeConfig.blockSizeHorizontal * 7.5,
-                          color: Colors.black87,
+                      child: AnimatedOpacity(
+                        opacity: showDelivery.value ? 1.0 : 0.0,
+                        duration: Duration(milliseconds: 300),
+                        curve: Curves.easeInOutQuad,
+                        child: Text(
+                          twoPartJokes[twoPartJokesIndex].delivery,
+                          style: TextStyle(
+                              fontSize: SizeConfig.blockSizeHorizontal * 7.5,
+                              color: Colors.black87),
                         ),
                       ),
                     ),

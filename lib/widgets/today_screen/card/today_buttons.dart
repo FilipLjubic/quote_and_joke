@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:quote_and_joke/services/visibility_helper.dart';
+import 'package:quote_and_joke/state/visibility_helper.dart';
 import 'package:quote_and_joke/utils/screen_size_config.dart';
 import 'package:quote_and_joke/widgets/today_screen/card/button_type.dart';
 import 'package:quote_and_joke/widgets/today_screen/card/x_of_day_button.dart';

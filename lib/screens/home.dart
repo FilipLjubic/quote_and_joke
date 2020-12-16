@@ -5,7 +5,7 @@ import 'package:quote_and_joke/screens/bookmarks.dart';
 import 'package:quote_and_joke/screens/jokes.dart';
 import 'package:quote_and_joke/screens/quotes.dart';
 import 'package:quote_and_joke/screens/today.dart';
-import 'package:quote_and_joke/services/visibility_helper.dart';
+import 'package:quote_and_joke/state/visibility_helper.dart';
 import 'package:quote_and_joke/utils/screen_size_config.dart';
 import 'package:quote_and_joke/widgets/bottom_nav_bar.dart';
 

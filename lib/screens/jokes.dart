@@ -44,60 +44,62 @@ class Jokes extends HookWidget with JokeAnimationMixin {
             opacity: 0.3,
             height: 0.61,
           ),
-          twoPartJokes.when(
-            data: (twoPartJokes) => Positioned(
-              left: SizeConfig.blockSizeHorizontal * 3,
-              top: SizeConfig.screenHeight * 0.25,
-              child: SizedBox(
-                width: SizeConfig.screenWidth * 0.95,
-                child: Text(
-                  twoPartJokes[twoPartJokesIndex].setup,
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: SizeConfig.blockSizeHorizontal * 7.5),
-                ),
-              ),
-            ),
-            error: (e, st) => Container(
-              alignment: Alignment.center,
-              child: Text("error!"),
-            ),
-            loading: () => const Center(
-              child: const SizedBox(
-                  height: 50,
-                  width: 50,
-                  child: ThemedCircularProgressIndicator()),
-            ),
-          ),
-          twoPartJokes.when(
-            data: (twoPartJokes) => Positioned(
-              bottom: SizeConfig.screenHeight * 0.25,
-              left: SizeConfig.blockSizeHorizontal * 3,
-              child: SizedBox(
-                width: SizeConfig.screenWidth * 0.95,
-                child: AnimatedBuilder(
-                  animation: fields.deliveryAnimationController,
-                  builder: (context, child) => Transform.scale(
-                    scale: 0.6 + 0.4 * fields.deliveryAnimation.value,
-                    child: child,
-                  ),
-                  child: AnimatedOpacity(
-                    opacity: showDelivery ? 1 : 0,
-                    duration: const Duration(milliseconds: 550),
-                    curve: Curves.elasticInOut,
-                    child: Text(
-                      twoPartJokes[twoPartJokesIndex].delivery,
-                      style: TextStyle(
-                          fontSize: SizeConfig.blockSizeHorizontal * 7.5,
-                          color: Colors.black87),
+          ...twoPartJokes.when(
+              data: (twoPartJokes) => [
+                    Positioned(
+                      left: SizeConfig.blockSizeHorizontal * 3,
+                      top: SizeConfig.screenHeight * 0.25,
+                      child: SizedBox(
+                        width: SizeConfig.screenWidth * 0.95,
+                        child: Text(
+                          twoPartJokes[twoPartJokesIndex].setup,
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: SizeConfig.blockSizeHorizontal * 7.5),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ),
-            ),
-            error: (e, st) => Container(),
-            loading: () => Container(),
-          ),
+                    Positioned(
+                      bottom: SizeConfig.screenHeight * 0.25,
+                      left: SizeConfig.blockSizeHorizontal * 3,
+                      child: SizedBox(
+                        width: SizeConfig.screenWidth * 0.95,
+                        child: AnimatedBuilder(
+                          animation: fields.deliveryAnimationController,
+                          builder: (context, child) => Transform.scale(
+                            scale: 0.6 + 0.4 * fields.deliveryAnimation.value,
+                            child: child,
+                          ),
+                          child: AnimatedOpacity(
+                            opacity: showDelivery ? 1 : 0,
+                            duration: const Duration(milliseconds: 550),
+                            curve: Curves.elasticInOut,
+                            child: Text(
+                              twoPartJokes[twoPartJokesIndex].delivery,
+                              style: TextStyle(
+                                  fontSize:
+                                      SizeConfig.blockSizeHorizontal * 7.5,
+                                  color: Colors.black87),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+              error: (e, st) => [
+                    Container(
+                      alignment: Alignment.center,
+                      child: Text("error!"),
+                    ),
+                  ],
+              loading: () => const [
+                    Center(
+                      child: const SizedBox(
+                          height: 50,
+                          width: 50,
+                          child: ThemedCircularProgressIndicator()),
+                    ),
+                  ]),
         ],
       ),
     );

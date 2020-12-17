@@ -25,7 +25,7 @@ mixin JokeAnimationMixin {
     );
 
     final deliveryAnimationController = useAnimationController(
-      duration: const Duration(milliseconds: 550),
+      duration: const Duration(milliseconds: 450),
       lowerBound: 0.0,
     );
     fields = useMemoized(

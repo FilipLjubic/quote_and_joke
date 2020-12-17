@@ -30,7 +30,7 @@ class TwoPartIndex extends StateNotifier<int> {
     state = 0;
   }
 
-  void increaseIndex() {
-    state = state + 1;
+  void changeIndex(int index) {
+    state = index;
   }
 }

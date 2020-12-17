@@ -8,5 +8,6 @@
 /// add Nunito font
 /// add font change onTap in quotes screen
 /// animate quotes background to wobble when idle
+/// quotes screen right swipe to return last quote
 /// retweet quote/joke
 /// ads every 20th quote/joke

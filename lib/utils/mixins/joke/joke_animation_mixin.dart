@@ -1,5 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/all.dart';
 import 'package:quote_and_joke/utils/mixins/joke/joke_animation_mixin_fields.dart';
+
+final jokeInAnimationProvider = StateProvider((ref) => false);
 
 mixin JokeAnimationMixin {
   JokeAnimationMixinFields fields;
@@ -30,5 +34,19 @@ mixin JokeAnimationMixin {
         deliveryAnimationController,
       ),
     );
+  }
+
+  void onTap(BuildContext context) {
+    final inAnimation = context.read(jokeInAnimationProvider);
+
+    if (inAnimation.state == false) {
+      inAnimation.state = true;
+
+      fields.deliveryAnimationController.isCompleted
+          ? fields.deliveryAnimationController.reverse()
+          : fields.deliveryAnimationController.forward();
+
+      inAnimation.state = false;
+    }
   }
 }

@@ -26,14 +26,9 @@ class Jokes extends HookWidget with JokeAnimationMixin {
     final twoPartJokes = useProvider(twoPartJokesNotifierProvider.state);
     final twoPartJokesIndex = useProvider(twoPartJokeIndexProvider.state);
 
+    // TODO: IMPLEMENT CAROUSEL SLIDER!
     return GestureDetector(
-      onTap: () => fields.deliveryAnimationController.isCompleted
-          ? fields.deliveryAnimationController.reverse()
-          : fields.deliveryAnimationController.forward(),
-
-      // onHorizontalDragStart: (details) => onDragStart(context, details),
-      // onHorizontalDragUpdate: (details) => onDragUpdate(context, details),
-      // onHorizontalDragEnd: (details) => onDragEnd(context, details),
+      onTap: () => onTap(context),
       behavior: HitTestBehavior.opaque,
       // Indexed stack kad budem koristio i single jokeove
       child: Stack(
@@ -81,10 +76,10 @@ class Jokes extends HookWidget with JokeAnimationMixin {
                 width: SizeConfig.screenWidth * 0.95,
                 child: AnimatedBuilder(
                   animation: fields.deliveryAnimationController,
-                  builder: (context, child) => Transform.scale(
-                    scale: 0.6 + 0.4 * fields.deliveryAnimation.value,
-                    child: Opacity(
-                      opacity: fields.deliveryAnimationController.value,
+                  builder: (context, child) => Opacity(
+                    opacity: fields.deliveryAnimationController.value,
+                    child: Transform.scale(
+                      scale: 0.6 + 0.4 * fields.deliveryAnimation.value,
                       child: child,
                     ),
                   ),

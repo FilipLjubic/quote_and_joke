@@ -9,7 +9,7 @@ import 'package:quote_and_joke/widgets/jokes_screen/wobbly_container.dart';
 
 import 'package:quote_and_joke/widgets/themed_circular_progress_indicator.dart';
 
-// add Nunito font
+final showDeliveryProvider = StateProvider<bool>((ref) => false);
 
 // ignore: must_be_immutable
 class Jokes extends HookWidget with JokeAnimationMixin {
@@ -23,10 +23,11 @@ class Jokes extends HookWidget with JokeAnimationMixin {
       return () {};
     }, []);
 
+    final showDelivery = useProvider(showDeliveryProvider).state;
+
     final twoPartJokes = useProvider(twoPartJokesNotifierProvider.state);
     final twoPartJokesIndex = useProvider(twoPartJokeIndexProvider.state);
 
-    // TODO: IMPLEMENT CAROUSEL SLIDER!
     return GestureDetector(
       onTap: () => onTap(context),
       behavior: HitTestBehavior.opaque,
@@ -76,18 +77,20 @@ class Jokes extends HookWidget with JokeAnimationMixin {
                 width: SizeConfig.screenWidth * 0.95,
                 child: AnimatedBuilder(
                   animation: fields.deliveryAnimationController,
-                  builder: (context, child) => Opacity(
-                    opacity: fields.deliveryAnimationController.value,
-                    child: Transform.scale(
-                      scale: 0.6 + 0.4 * fields.deliveryAnimation.value,
-                      child: child,
-                    ),
+                  builder: (context, child) => Transform.scale(
+                    scale: 0.6 + 0.4 * fields.deliveryAnimation.value,
+                    child: child,
                   ),
-                  child: Text(
-                    twoPartJokes[twoPartJokesIndex].delivery,
-                    style: TextStyle(
-                        fontSize: SizeConfig.blockSizeHorizontal * 7.5,
-                        color: Colors.black87),
+                  child: AnimatedOpacity(
+                    opacity: showDelivery ? 1 : 0,
+                    duration: const Duration(milliseconds: 550),
+                    curve: Curves.elasticInOut,
+                    child: Text(
+                      twoPartJokes[twoPartJokesIndex].delivery,
+                      style: TextStyle(
+                          fontSize: SizeConfig.blockSizeHorizontal * 7.5,
+                          color: Colors.black87),
+                    ),
                   ),
                 ),
               ),

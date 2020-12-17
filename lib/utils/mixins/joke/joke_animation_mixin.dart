@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/all.dart';
+import 'package:quote_and_joke/screens/jokes.dart';
 import 'package:quote_and_joke/utils/mixins/joke/joke_animation_mixin_fields.dart';
 
 final jokeInAnimationProvider = StateProvider((ref) => false);
@@ -24,7 +25,7 @@ mixin JokeAnimationMixin {
     );
 
     final deliveryAnimationController = useAnimationController(
-      duration: const Duration(milliseconds: 450),
+      duration: const Duration(milliseconds: 550),
       lowerBound: 0.0,
     );
     fields = useMemoized(
@@ -38,6 +39,7 @@ mixin JokeAnimationMixin {
 
   void onTap(BuildContext context) {
     final inAnimation = context.read(jokeInAnimationProvider);
+    final showDelivery = context.read(showDeliveryProvider);
 
     if (inAnimation.state == false) {
       inAnimation.state = true;
@@ -45,6 +47,7 @@ mixin JokeAnimationMixin {
       fields.deliveryAnimationController.isCompleted
           ? fields.deliveryAnimationController.reverse()
           : fields.deliveryAnimationController.forward();
+      showDelivery.state = !showDelivery.state;
 
       inAnimation.state = false;
     }

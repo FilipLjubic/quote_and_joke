@@ -19,9 +19,9 @@ class JokeAnimationMixinFields {
     AnimationController deliveryAnimationController,
   ) {
     final _deliveryAnimation = CurvedAnimation(
-        curve: Curves.elasticOut,
-        parent: deliveryAnimationController,
-        reverseCurve: Curves.linear);
+      curve: Curves.elasticInOut,
+      parent: deliveryAnimationController,
+    );
 
     return JokeAnimationMixinFields._(
       containerAnimationController,

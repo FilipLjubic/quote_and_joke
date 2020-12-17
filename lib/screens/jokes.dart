@@ -29,6 +29,7 @@ class Jokes extends HookWidget with JokeAnimationMixin {
     final twoPartJokes = useProvider(twoPartJokesNotifierProvider.state);
     final twoPartJokesIndex = useProvider(twoPartJokeIndexProvider.state);
     final inAnimation = useProvider(jokeInAnimationProvider).state;
+
     return GestureDetector(
       onTap: () => onTap(context),
       behavior: HitTestBehavior.opaque,
@@ -92,18 +93,25 @@ class Jokes extends HookWidget with JokeAnimationMixin {
               ),
               options: CarouselOptions(
                 height: SizeConfig.screenHeight,
+                enableInfiniteScroll: false,
                 disableCenter: true,
                 viewportFraction: 1.0,
-                scrollPhysics: BouncingScrollPhysics(
-                    parent: AlwaysScrollableScrollPhysics()),
                 onScrolled: (value) {
-                  print(value);
-                  context.read(showDeliveryProvider).state = false;
-                  fields.deliveryAnimationController.value = 0;
+                  // final jokesIndex =
+                  //     context.read(twoPartJokeIndexProvider.state);
+                  // // because value is index +- 1
+                  // final usefulValue = value - jokesIndex;
+                  // print(jokesIndex);
+                  // print(usefulValue);
+                  // if (usefulValue > 0.5 || usefulValue < -0.5) {
+                  // }
                 },
                 onPageChanged: (index, reason) async {
                   final jokes = context.read(twoPartJokesNotifierProvider);
                   final jokesIndex = context.read(twoPartJokeIndexProvider);
+                  print("changed index");
+                  context.read(showDeliveryProvider).state = false;
+                  fields.deliveryAnimationController.value = 0;
                   if (index == 9) {
                     await jokes.getTwoPartJokes();
                     jokesIndex.resetIndex();

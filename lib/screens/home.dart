@@ -22,6 +22,7 @@ class Home extends HookWidget {
   void _onTap(BuildContext context, int index, PageController pageController) {
     final currentPageIndex = context.read(_currentPageIndexProvider);
     final hideScreen = context.read(hideScreenProvider);
+    context.read(showDeliveryProvider).state = false;
 
     index == 1
         ? hideScreen.state = false

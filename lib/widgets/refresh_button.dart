@@ -26,10 +26,14 @@ class RefreshButton extends StatelessWidget {
             padding: const EdgeInsets.all(0.0),
             child: Ink(
               decoration: BoxDecoration(
-                gradient: LinearGradient(begin: begin, end: end, colors: [
-                  Theme.of(context).primaryColor.withOpacity(0.8),
-                  Theme.of(context).accentColor.withOpacity(0.8),
-                ]),
+                gradient: LinearGradient(
+                  begin: begin,
+                  end: end,
+                  colors: [
+                    Theme.of(context).primaryColor.withOpacity(0.8),
+                    Theme.of(context).accentColor.withOpacity(0.8),
+                  ],
+                ),
               ),
               child: Container(
                 // min sizes for Material buttons

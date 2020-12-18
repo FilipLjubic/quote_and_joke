@@ -2,8 +2,8 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:quote_and_joke/state/joke_index_notifier.dart';
-import 'package:quote_and_joke/state/two_part_jokes_notifier.dart';
+import 'package:quote_and_joke/state/joke/joke_index_notifier.dart';
+import 'package:quote_and_joke/state/joke/two_part_jokes_notifier.dart';
 import 'package:quote_and_joke/utils/mixins/joke/joke_animation_mixin.dart';
 import 'package:quote_and_joke/utils/screen_size_config.dart';
 import 'package:quote_and_joke/widgets/jokes_screen/wobbly_container.dart';
@@ -138,37 +138,71 @@ class Jokes extends HookWidget with JokeAnimationMixin {
             end: Alignment.bottomLeft,
           ),
           Positioned(
-            top: 32,
-            left: 100,
+            top: SizeConfig.screenHeight * 0.1,
+            left: SizeConfig.screenWidth * 0.23,
             child: SizedBox(
-              height: 36,
-              width: 80,
+              height: 40,
+              width: 86,
               child: RaisedButton(
+                // ako je vec stisnuto onda nis
+                // ako je trenutno drugi stisnut onda ga aktivirati
+                // promjeniti mu boju, boju teksta,
+                // promjeniti index stackedindexa
+                // triggerati fade animaciju
                 onPressed: () {},
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(80.0),
+                  borderRadius: BorderRadius.circular(60.0),
                 ),
                 padding: const EdgeInsets.all(0.0),
                 child: Ink(
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.topRight,
-                        colors: [
-                          Theme.of(context).primaryColor.withOpacity(0.8),
-                          Theme.of(context).accentColor.withOpacity(0.8),
-                        ]),
-                    borderRadius: BorderRadius.all(Radius.circular(80.0)),
+                    color: Theme.of(context).accentColor,
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(60.0),
+                    ),
                   ),
                   child: Container(
-                    constraints: const BoxConstraints(
-                        minWidth: 88.0,
-                        minHeight: 36.0), // min sizes for Material buttons
                     alignment: Alignment.center,
                     child: const Text(
-                      'Two Part',
+                      'Two-part',
                       textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(color: Colors.white, letterSpacing: 1),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            top: SizeConfig.screenHeight * 0.1,
+            right: SizeConfig.screenWidth * 0.23,
+            child: SizedBox(
+              height: 40,
+              width: 86,
+              child: RaisedButton(
+                // ako je vec stisnuto onda nis
+                // ako je trenutno drugi stisnut onda ga aktivirati
+                // promjeniti mu boju, boju teksta,
+                // promjeniti index stackedindexa
+                // triggerati fade animaciju
+                onPressed: () {},
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(60.0),
+                ),
+                padding: const EdgeInsets.all(0.0),
+                child: Ink(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor.withOpacity(0.6),
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(60.0),
+                    ),
+                  ),
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: const Text(
+                      'One-liner',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.white, letterSpacing: 1),
                     ),
                   ),
                 ),

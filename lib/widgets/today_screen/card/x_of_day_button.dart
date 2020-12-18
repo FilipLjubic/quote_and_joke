@@ -14,7 +14,7 @@ class XOfDayButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return RaisedButton(
         color: showQod
-            ? Theme.of(context).primaryColor
+            ? Theme.of(context).primaryColor.withOpacity(0.8)
             : Theme.of(context).accentColor,
         elevation: 1.0,
         child: Text(

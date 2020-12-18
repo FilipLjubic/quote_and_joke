@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:quote_and_joke/state/visibility_helper.dart';
-import 'package:quote_and_joke/state/qod_notifier.dart';
+import 'package:quote_and_joke/state/today/qod_notifier.dart';
 import 'package:quote_and_joke/utils/screen_size_config.dart';
 import 'package:quote_and_joke/widgets/themed_circular_progress_indicator.dart';
 import 'package:quote_and_joke/widgets/today_screen/card/joke_text.dart';

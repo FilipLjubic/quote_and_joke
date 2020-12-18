@@ -105,10 +105,7 @@ class Jokes extends HookWidget with JokeAnimationMixin {
                 enableInfiniteScroll: false,
                 disableCenter: true,
                 viewportFraction: 1.0,
-                onScrolled: (value) {
-                  context.read(showDeliveryProvider).state = false;
-                  fields.deliveryAnimationController.value = 0;
-                },
+                onScrolled: (_) => refreshScreen(context),
                 onPageChanged: (index, reason) async {
                   final jokes = context.read(twoPartJokesNotifierProvider);
                   final jokesIndex = context.read(twoPartJokeIndexProvider);
@@ -133,7 +130,10 @@ class Jokes extends HookWidget with JokeAnimationMixin {
                   child: ThemedCircularProgressIndicator()),
             ),
           ),
-          RefreshButton(),
+          RefreshButton(onPressed: () {
+            refreshScreen(context);
+            context.read(twoPartJokesNotifierProvider).getTwoPartJokes();
+          }),
         ],
       ),
     );

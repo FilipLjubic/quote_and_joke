@@ -50,4 +50,9 @@ mixin JokeAnimationMixin {
       showDelivery.state = !showDelivery.state;
     }
   }
+
+  void refreshScreen(BuildContext context) {
+    context.read(showDeliveryProvider).state = false;
+    fields.deliveryAnimationController.value = 0;
+  }
 }

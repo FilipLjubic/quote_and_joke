@@ -48,8 +48,6 @@ mixin JokeAnimationMixin {
           ? fields.deliveryAnimationController.reverse()
           : fields.deliveryAnimationController.forward();
       showDelivery.state = !showDelivery.state;
-
-      inAnimation.state = false;
     }
   }
 }

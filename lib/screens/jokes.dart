@@ -18,9 +18,17 @@ class Jokes extends HookWidget with JokeAnimationMixin {
   Widget build(BuildContext context) {
     initializeControllers();
 
+    final inAnimation = useProvider(jokeInAnimationProvider);
     useEffect(() {
       fields.containerAnimationController.repeat();
       fields.containerAnimationController2.repeat();
+
+      fields.deliveryAnimationController.addStatusListener((status) {
+        if (status != AnimationStatus.forward &&
+            status != AnimationStatus.reverse) {
+          inAnimation.state = false;
+        }
+      });
       return () {};
     }, []);
 
@@ -28,7 +36,6 @@ class Jokes extends HookWidget with JokeAnimationMixin {
 
     final twoPartJokes = useProvider(twoPartJokesNotifierProvider.state);
     final twoPartJokesIndex = useProvider(twoPartJokeIndexProvider.state);
-    final inAnimation = useProvider(jokeInAnimationProvider).state;
 
     return GestureDetector(
       onTap: () => onTap(context),
@@ -72,7 +79,7 @@ class Jokes extends HookWidget with JokeAnimationMixin {
                       child: AnimatedBuilder(
                         animation: fields.deliveryAnimationController,
                         builder: (context, child) => Transform.scale(
-                          scale: 0.6 + 0.4 * fields.deliveryAnimation.value,
+                          scale: fields.deliveryAnimation.value,
                           child: child,
                         ),
                         child: AnimatedOpacity(
@@ -92,26 +99,25 @@ class Jokes extends HookWidget with JokeAnimationMixin {
                 ],
               ),
               options: CarouselOptions(
+                initialPage: twoPartJokesIndex,
                 height: SizeConfig.screenHeight,
                 enableInfiniteScroll: false,
                 disableCenter: true,
                 viewportFraction: 1.0,
                 onScrolled: (value) {
-                  // final jokesIndex =
-                  //     context.read(twoPartJokeIndexProvider.state);
-                  // // because value is index +- 1
-                  // final usefulValue = value - jokesIndex;
-                  // print(jokesIndex);
-                  // print(usefulValue);
-                  // if (usefulValue > 0.5 || usefulValue < -0.5) {
-                  // }
+                  final jokesIndex =
+                      context.read(twoPartJokeIndexProvider.state);
+                  // because value is index +- 1
+                  final usefulValue = value - jokesIndex;
+                  if (usefulValue > 0.25 || usefulValue < -0.25) {
+                    context.read(showDeliveryProvider).state = false;
+                    fields.deliveryAnimationController.value = 0;
+                  }
                 },
                 onPageChanged: (index, reason) async {
                   final jokes = context.read(twoPartJokesNotifierProvider);
                   final jokesIndex = context.read(twoPartJokeIndexProvider);
-                  print("changed index");
-                  context.read(showDeliveryProvider).state = false;
-                  fields.deliveryAnimationController.value = 0;
+
                   if (index == 9) {
                     await jokes.getTwoPartJokes();
                     jokesIndex.resetIndex();

@@ -7,6 +7,7 @@ import 'package:quote_and_joke/state/two_part_jokes_notifier.dart';
 import 'package:quote_and_joke/utils/mixins/joke/joke_animation_mixin.dart';
 import 'package:quote_and_joke/utils/screen_size_config.dart';
 import 'package:quote_and_joke/widgets/jokes_screen/wobbly_container.dart';
+import 'package:quote_and_joke/widgets/refresh_button.dart';
 
 import 'package:quote_and_joke/widgets/themed_circular_progress_indicator.dart';
 
@@ -105,14 +106,8 @@ class Jokes extends HookWidget with JokeAnimationMixin {
                 disableCenter: true,
                 viewportFraction: 1.0,
                 onScrolled: (value) {
-                  final jokesIndex =
-                      context.read(twoPartJokeIndexProvider.state);
-                  // because value is index +- 1
-                  final usefulValue = value - jokesIndex;
-                  if (usefulValue > 0.25 || usefulValue < -0.25) {
-                    context.read(showDeliveryProvider).state = false;
-                    fields.deliveryAnimationController.value = 0;
-                  }
+                  context.read(showDeliveryProvider).state = false;
+                  fields.deliveryAnimationController.value = 0;
                 },
                 onPageChanged: (index, reason) async {
                   final jokes = context.read(twoPartJokesNotifierProvider);
@@ -138,6 +133,7 @@ class Jokes extends HookWidget with JokeAnimationMixin {
                   child: ThemedCircularProgressIndicator()),
             ),
           ),
+          RefreshButton(),
         ],
       ),
     );

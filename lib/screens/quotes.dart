@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/all.dart';
 import 'package:quote_and_joke/state/quote_index_notifier.dart';
+import 'package:quote_and_joke/state/quotes_notifier.dart';
 import 'package:quote_and_joke/state/visibility_helper.dart';
 import 'package:quote_and_joke/utils/mixins/quote/quote_animation_mixin.dart';
 import 'package:quote_and_joke/utils/screen_size_config.dart';
@@ -15,6 +16,7 @@ import 'package:quote_and_joke/widgets/quotes_screen/text/on_slide_quote.dart';
 import 'package:quote_and_joke/widgets/quotes_screen/text/on_slide_quote_off_screen.dart';
 import 'package:quote_and_joke/widgets/quotes_screen/text/on_tap_quote_hidden.dart';
 import 'package:quote_and_joke/widgets/quotes_screen/text/on_tap_quote_shown.dart';
+import 'package:quote_and_joke/widgets/refresh_button.dart';
 
 // FIRST MAKING THE WIDGETS WORK, THEN CHANGING THEM TO HOOKWIDGETS,
 // THEN CHANGING THEIR DEPENDENCIES TO USE PROVIDER
@@ -143,6 +145,19 @@ class QuotesScreen extends HookWidget with QuoteAnimationMixin {
           OnSlideQuoteOffScreen(
             fields: fields,
             quoteIndex: quoteIndex,
+          ),
+          RefreshButton(
+            begin: Alignment.bottomCenter,
+            end: Alignment.topRight,
+            onPressed: () async {
+              final inAnimation = context.read(inAnimationProvider);
+              if (inAnimation.state == false) {
+                inAnimation.state = true;
+                await context.read(quotesNotifierProvider).getQuotes();
+                context.read(quoteIndexProvider).resetIndex();
+                inAnimation.state = false;
+              }
+            },
           ),
         ],
       ),

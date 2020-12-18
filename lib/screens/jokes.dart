@@ -130,10 +130,14 @@ class Jokes extends HookWidget with JokeAnimationMixin {
                   child: ThemedCircularProgressIndicator()),
             ),
           ),
-          RefreshButton(onPressed: () {
-            refreshScreen(context);
-            context.read(twoPartJokesNotifierProvider).getTwoPartJokes();
-          }),
+          RefreshButton(
+            onPressed: () {
+              refreshScreen(context);
+              context.read(twoPartJokesNotifierProvider).getTwoPartJokes();
+            },
+            begin: Alignment.topCenter,
+            end: Alignment.bottomLeft,
+          ),
         ],
       ),
     );

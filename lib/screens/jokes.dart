@@ -45,15 +45,17 @@ class Jokes extends HookWidget with JokeAnimationMixin {
       child: Stack(
         children: [
           WobblyContainer(
-            animationController: fields.containerAnimationController,
-            opacity: 1,
-            height: 0.6,
-          ),
+              animationController: fields.containerAnimationController2,
+              opacity: 0.4,
+              height: 0.61,
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter),
           WobblyContainer(
-            animationController: fields.containerAnimationController2,
-            opacity: 0.3,
-            height: 0.61,
-          ),
+              animationController: fields.containerAnimationController,
+              opacity: 1,
+              height: 0.6,
+              begin: Alignment.bottomLeft,
+              end: Alignment.topCenter),
           twoPartJokes.when(
             data: (twoPartJokes) => CarouselSlider.builder(
               itemCount: twoPartJokes.length,
@@ -124,10 +126,7 @@ class Jokes extends HookWidget with JokeAnimationMixin {
               child: Text("error!"),
             ),
             loading: () => const Center(
-              child: const SizedBox(
-                  height: 50,
-                  width: 50,
-                  child: ThemedCircularProgressIndicator()),
+              child: const ThemedCircularProgressIndicator(50.0),
             ),
           ),
           RefreshButton(
@@ -138,6 +137,44 @@ class Jokes extends HookWidget with JokeAnimationMixin {
             begin: Alignment.topCenter,
             end: Alignment.bottomLeft,
           ),
+          Positioned(
+            top: 32,
+            left: 100,
+            child: SizedBox(
+              height: 36,
+              width: 80,
+              child: RaisedButton(
+                onPressed: () {},
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(80.0),
+                ),
+                padding: const EdgeInsets.all(0.0),
+                child: Ink(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.topRight,
+                        colors: [
+                          Theme.of(context).primaryColor.withOpacity(0.8),
+                          Theme.of(context).accentColor.withOpacity(0.8),
+                        ]),
+                    borderRadius: BorderRadius.all(Radius.circular(80.0)),
+                  ),
+                  child: Container(
+                    constraints: const BoxConstraints(
+                        minWidth: 88.0,
+                        minHeight: 36.0), // min sizes for Material buttons
+                    alignment: Alignment.center,
+                    child: const Text(
+                      'Two Part',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          )
         ],
       ),
     );

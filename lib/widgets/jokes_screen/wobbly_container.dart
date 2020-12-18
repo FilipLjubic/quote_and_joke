@@ -6,10 +6,14 @@ class WobblyContainer extends StatelessWidget {
   const WobblyContainer({
     @required this.animationController,
     this.opacity,
+    @required this.begin,
+    @required this.end,
     @required this.height,
   });
 
   final AnimationController animationController;
+  final begin;
+  final end;
   final double opacity;
   final double height;
 
@@ -23,13 +27,10 @@ class WobblyContainer extends StatelessWidget {
           height: SizeConfig.screenHeight * height,
           width: SizeConfig.screenWidth,
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-                begin: Alignment.bottomLeft,
-                end: Alignment.topCenter,
-                colors: [
-                  Theme.of(context).primaryColor.withOpacity(0.8),
-                  Theme.of(context).accentColor.withOpacity(0.8),
-                ]),
+            gradient: LinearGradient(begin: begin, end: end, colors: [
+              Theme.of(context).primaryColor.withOpacity(0.8),
+              Theme.of(context).accentColor.withOpacity(0.8),
+            ]),
           ),
         ),
       ),

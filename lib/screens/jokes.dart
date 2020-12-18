@@ -140,77 +140,74 @@ class Jokes extends HookWidget with JokeAnimationMixin {
           Positioned(
             top: SizeConfig.screenHeight * 0.1,
             left: SizeConfig.screenWidth * 0.23,
-            child: SizedBox(
-              height: 40,
-              width: 86,
-              child: RaisedButton(
-                // ako je vec stisnuto onda nis
-                // ako je trenutno drugi stisnut onda ga aktivirati
-                // promjeniti mu boju, boju teksta,
-                // promjeniti index stackedindexa
-                // triggerati fade animaciju
-                onPressed: () {},
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(60.0),
-                ),
-                padding: const EdgeInsets.all(0.0),
-                child: Ink(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).accentColor,
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(60.0),
-                    ),
-                  ),
-                  child: Container(
-                    alignment: Alignment.center,
-                    child: const Text(
-                      'Two-part',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.white, letterSpacing: 1),
-                    ),
-                  ),
-                ),
-              ),
+            child: JokeTypeButton(
+              onPressed: () {},
+              jokeType: JokeType.twopart,
             ),
           ),
           Positioned(
             top: SizeConfig.screenHeight * 0.1,
             right: SizeConfig.screenWidth * 0.23,
-            child: SizedBox(
-              height: 40,
-              width: 86,
-              child: RaisedButton(
-                // ako je vec stisnuto onda nis
-                // ako je trenutno drugi stisnut onda ga aktivirati
-                // promjeniti mu boju, boju teksta,
-                // promjeniti index stackedindexa
-                // triggerati fade animaciju
-                onPressed: () {},
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(60.0),
-                ),
-                padding: const EdgeInsets.all(0.0),
-                child: Ink(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor.withOpacity(0.6),
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(60.0),
-                    ),
-                  ),
-                  child: Container(
-                    alignment: Alignment.center,
-                    child: const Text(
-                      'One-liner',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.white, letterSpacing: 1),
-                    ),
-                  ),
-                ),
-              ),
+            child: JokeTypeButton(
+              onPressed: () {},
+              jokeType: JokeType.oneliner,
             ),
           )
         ],
       ),
     );
   }
+}
+
+class JokeTypeButton extends StatelessWidget {
+  const JokeTypeButton({@required this.jokeType, @required this.onPressed});
+
+  final JokeType jokeType;
+  final Function onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 40,
+      width: 86,
+      child: RaisedButton(
+        // ako je vec stisnuto onda nis
+        // ako je trenutno drugi stisnut onda ga aktivirati
+        // promjeniti mu boju, boju teksta,
+        // promjeniti index stackedindexa
+        // triggerati fade animaciju
+        onPressed: onPressed,
+        shape: const RoundedRectangleBorder(
+          borderRadius: const BorderRadius.all(Radius.circular(60.0)),
+        ),
+        padding: const EdgeInsets.all(0.0),
+        child: Ink(
+          decoration: BoxDecoration(
+            color: jokeType == JokeType.oneliner
+                ? Theme.of(context).primaryColor.withOpacity(0.6)
+                : Theme.of(context).accentColor,
+            borderRadius: const BorderRadius.all(
+              Radius.circular(60.0),
+            ),
+          ),
+          child: Container(
+            alignment: Alignment.center,
+            child: Text(
+              jokeType == JokeType.oneliner ? 'One-liner' : 'Two-part',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white,
+                letterSpacing: 1,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+enum JokeType {
+  twopart,
+  oneliner,
 }

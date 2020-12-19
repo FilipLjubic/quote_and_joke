@@ -28,16 +28,16 @@ final _sampleTwoPartJokes = [
   JokeTwoPart(
       setup:
           "What did the cowboy say went he went into the car showroom in Germany?",
-      delivery: " Audi."),
+      delivery: "Audi."),
   JokeTwoPart(
       setup:
           "What is the quickest way to speed up your 70 year old husband’s heart rate?",
       delivery: "Tell him that you are pregnant ."),
   JokeTwoPart(
-      setup: "What three letters alter boys into men and girls into women? ?",
+      setup: "What three letters alter boys into men and girls into women?",
       delivery: "Age."),
   JokeTwoPart(
-      setup: "Why are fish so easy to weigh? ?",
+      setup: "Why are fish so easy to weigh?",
       delivery: "Because they have their own scales."),
 ];
 

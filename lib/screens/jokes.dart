@@ -62,10 +62,10 @@ class Jokes extends HookWidget with JokeAnimationMixin {
               itemBuilder: (context, index) => Stack(
                 children: [
                   Positioned(
-                    left: SizeConfig.blockSizeHorizontal * 3,
+                    left: SizeConfig.blockSizeHorizontal * 6,
                     top: SizeConfig.screenHeight * 0.25,
                     child: SizedBox(
-                      width: SizeConfig.screenWidth * 0.95,
+                      width: SizeConfig.screenWidth * 0.92,
                       child: Text(
                         twoPartJokes[twoPartJokesIndex].setup,
                         style: TextStyle(
@@ -75,10 +75,10 @@ class Jokes extends HookWidget with JokeAnimationMixin {
                     ),
                   ),
                   Positioned(
-                    bottom: SizeConfig.screenHeight * 0.25,
-                    left: SizeConfig.blockSizeHorizontal * 3,
+                    bottom: SizeConfig.screenHeight * 0.2,
+                    left: SizeConfig.blockSizeHorizontal * 6,
                     child: SizedBox(
-                      width: SizeConfig.screenWidth * 0.95,
+                      width: SizeConfig.screenWidth * 0.92,
                       child: AnimatedBuilder(
                         animation: fields.deliveryAnimationController,
                         builder: (context, child) => Transform.scale(
@@ -133,6 +133,7 @@ class Jokes extends HookWidget with JokeAnimationMixin {
             onPressed: () {
               refreshScreen(context);
               context.read(twoPartJokesNotifierProvider).getTwoPartJokes();
+              context.read(twoPartJokeIndexProvider).resetIndex();
             },
             begin: Alignment.topCenter,
             end: Alignment.bottomLeft,

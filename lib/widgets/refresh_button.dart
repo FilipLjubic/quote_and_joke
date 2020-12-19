@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 class RefreshButton extends StatelessWidget {
   const RefreshButton({
-    this.onPressed,
-    this.begin,
-    this.end,
+    @required this.onPressed,
+    @required this.begin,
+    @required this.end,
   });
 
   final Function onPressed;

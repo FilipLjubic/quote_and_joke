@@ -6,15 +6,39 @@ import 'package:quote_and_joke/utils/exceptions/network_exception.dart';
 
 final _sampleTwoPartJokes = [
   JokeTwoPart(
-      setup: "Anton, do you think I’m a bad mother?",
-      delivery: "My name is Paul."),
+      setup: "Why do most married men die before their wives?",
+      delivery: "Because they want to."),
   JokeTwoPart(
-      setup: "What's a chicken with 4 legs called?",
-      delivery: "A human LOL!!!."),
+      setup: "What do diapers and Politicians have in common?",
+      delivery:
+          "They both need changing regularly - for exactly the same reason."),
   JokeTwoPart(
-    setup: "Why are we on this planet?",
-    delivery: "Just to suffer??.",
+    setup: "What is the definition of the early evening news",
+    delivery:
+        'It starts with the words "Good evening" then spends the next half an hour tellling you why it isn\'t one.',
   ),
+  JokeTwoPart(
+      setup: "What device will find furniture in a poorly lit room every time?",
+      delivery: "Your shinbone."),
+  JokeTwoPart(
+      setup: "Why do parents give children a middle name?",
+      delivery: "So the child knows when it is in seriously in trouble."),
+  JokeTwoPart(
+      setup: "What is another name for female Viagra?", delivery: "A Diamond "),
+  JokeTwoPart(
+      setup:
+          "What did the cowboy say went he went into the car showroom in Germany?",
+      delivery: " Audi."),
+  JokeTwoPart(
+      setup:
+          "What is the quickest way to speed up your 70 year old husband’s heart rate?",
+      delivery: "Tell him that you are pregnant ."),
+  JokeTwoPart(
+      setup: "What three letters alter boys into men and girls into women? ?",
+      delivery: "Age."),
+  JokeTwoPart(
+      setup: "Why are fish so easy to weigh? ?",
+      delivery: "Because they have their own scales."),
 ];
 
 final _sampleSingleJokes = [
@@ -25,7 +49,8 @@ final _sampleSingleJokes = [
 ];
 
 final _sampleJod = JokeSingle(
-    text: "Anton, do you think I’m a bad mother?\r\nMy name is Paul.\r\n\r\n");
+    text:
+        'Yesterday I saw a guy spill all his Scrabble letters on the road. I asked him: "What\'s the word on the street?"');
 
 class FakeJokeRepository implements JokeRepository {
   FakeJokeRepository()

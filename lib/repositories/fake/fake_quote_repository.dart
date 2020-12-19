@@ -5,9 +5,10 @@ import 'package:quote_and_joke/repositories/abstract/quotes_repository.dart';
 import 'package:quote_and_joke/utils/exceptions/network_exception.dart';
 
 final _sampleQOD = Quote(
-    quote: 'Go put your creed into the deed. Nor speak with double tongue.',
-    author: 'Ralph Waldo Emerson',
-    authorShort: 'Emerson');
+    quote:
+        'Things work out best for those who make the best of how things work out.',
+    author: 'John Wooden',
+    authorShort: 'Wooden');
 
 class FakeQuoteRepository implements QuoteRepository {
   FakeQuoteRepository()

@@ -56,6 +56,7 @@ class Jokes extends HookWidget with JokeAnimationMixin {
               height: 0.6,
               begin: Alignment.bottomLeft,
               end: Alignment.topCenter),
+          //TODO: IMPLEMENT ANIMATEDSWITCHER, dont forget the key!
           twoPartJokes.when(
             data: (twoPartJokes) => CarouselSlider.builder(
               itemCount: twoPartJokes.length,

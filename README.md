@@ -28,5 +28,4 @@ It seems laggy in the gif, but it's actually working pretty well irl.
 ![updated_gif](https://github.com/fljubic-flutter/quote_and_joke/blob/master/images/update.gif)
 
 ### Design from dribbble
-![design](https://github.com/fljubic-flutter/quote_and_joke/blob/master/images/qjdesign.mp4)
 - Made by [tubik](https://dribbble.com/shots/10842266-Quotes-App-UI-Design)

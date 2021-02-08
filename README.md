@@ -27,5 +27,5 @@ It seems laggy in the gif, but it's actually working pretty well irl.
 ### After refactoring the whole app and adding jokes screen
 ![updated_gif](https://github.com/fljubic-flutter/quote_and_joke/blob/master/images/update.gif)
 
-### Design from dribbble
-- Made by [tubik](https://dribbble.com/shots/10842266-Quotes-App-UI-Design)
+### [Design from dribbble](https://dribbble.com/shots/10842266-Quotes-App-UI-Design)
+- Made by [tubik](https://dribbble.com/Tubik)
